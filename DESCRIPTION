@@ -1,0 +1,9 @@
+Package: admixturegraph
+Type: Package
+Title: Admixture graph manipulation
+Version: 1.0
+Date: 2015-04-21
+Author: Thomas Mailund <mailund@birc.au.dk>
+Maintainer: Thomas Mailund <mailund@birc.au.dk>
+Description: Implements tools for building and manipulating admixture graphs and for extracting equations from them.
+License: GPLv2
