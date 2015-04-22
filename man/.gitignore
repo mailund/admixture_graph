@@ -5,3 +5,5 @@ f4.Rd
 f3.Rd
 f2.Rd
 format_path.Rd
+agraph_parents.Rd
+agraph_weights.Rd
