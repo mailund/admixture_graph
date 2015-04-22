@@ -11,7 +11,7 @@ agraph_parents <- function(nodes, parent_edges) {
   parents <- matrix(FALSE, n, n)
   rownames(parents) <- colnames(parents) <- nodes
   for (row in 1:nrow(parent_edges)) {
-    parents[edges[row,1], edges[row,2]] = TRUE
+    parents[parent_edges[row,1], parent_edges[row,2]] = TRUE
   }
   parents
 }
@@ -27,33 +27,29 @@ agraph_weights <- function(nodes, admixture_weights) {
   n <- length(nodes)
   weights <- matrix("", n, n)
   rownames(weights) <- colnames(weights) <- nodes
+  cat(weights, "\n")
   for (row in 1:nrow(admixture_weights)) {
     weights[admixture_weights[row,1], admixture_weights[row,2]] = admixture_weights[row,3]
   }
   weights
 }
 
-#' Build the children incidence matrix from the parents incidence matrix.
+#' Build a children incidene matrix from an parent edge list
 #' 
-#' @param parents The incidence matrix for the parent structure in an admixture graph.
-#' 
-#' @return An incidence matrix for the children structure.
-agraph_children <- function(parents) {
-  nodes <- rownames(parents)
+#' @param nodes The name of the nodes in the admxture graph
+#' @param parent_edges An n x 2 matrix where the first column is the child node and the second the parent.
+#'                          
+#' @return An incidence matrix for the children structure of an admixture graph.
+agraph_children <- function(nodes, parent_edges) {
   n <- length(nodes)
   children <- matrix(FALSE, n, n)
   rownames(children) <- colnames(children) <- nodes
-  
-  for (child in nodes) {
-    node_parents <- parents[child,]
-    node_parents <- names(node_parents[node_parents > 0])
-    for (p in node_parents) {
-      children[p, child] = parents[child, p]
-    }
+  for (row in 1:nrow(parent_edges)) {
+    children[parent_edges[row,2], parent_edges[row,1]] = TRUE
   }
-  
   children
 }
+
 
 #' Create an admixture graph object.
 #' 
@@ -85,11 +81,8 @@ agraph_children <- function(parents) {
 #' @export
 agraph <- function(nodes, parent_edges, admixture_proportions) {
   parents <- agraph_parents(nodes, parent_edges)
-  weigths <- agraph_weights(nodes, admixture_proportions)
-  
-  graph <- structure(list(parents = parents, probs = weights,
-                          children = agraph_children(parents)), 
-                     class = "agraph")
-  graph
+  children <- agraph_children(nodes, parent_edges)
+  admixture_probs <- agraph_weights(nodes, admixture_proportions)
+  structure(list(parents = parents, probs = admixture_probs, children = children), class = "agraph")
 }
 
