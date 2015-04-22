@@ -30,6 +30,7 @@ agraph_weights <- function(nodes, admixture_weights) {
   cat(weights, "\n")
   for (row in 1:nrow(admixture_weights)) {
     weights[admixture_weights[row,1], admixture_weights[row,2]] = admixture_weights[row,3]
+    weights[admixture_weights[row,2], admixture_weights[row,1]] = admixture_weights[row,3]
   }
   weights
 }
