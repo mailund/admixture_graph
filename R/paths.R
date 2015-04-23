@@ -29,8 +29,8 @@ all_paths <- function(graph, src, dst) {
     up_edges <- which(graph$parents[node,] != 0)
     down_edges <- which(graph$children[node,] != 0)
     
-    sapply(up_edges, function(e) recurse_up(e, c(path, node)))
-    sapply(down_edges, function(e) recurse_down(e, c(path, node)))
+    lapply(up_edges, function(e) recurse_up(e, c(path, node)))
+    lapply(down_edges, function(e) recurse_down(e, c(path, node)))
   }
   
   recurse_down <- function(node, path) {
@@ -40,7 +40,7 @@ all_paths <- function(graph, src, dst) {
       X <<- X + 1
     } else {
       down_edges <- which(graph$children[node,] != 0)
-      sapply(down_edges, function(e) recurse_down(e, c(path, node)))
+      lapply(down_edges, function(e) recurse_down(e, c(path, node)))
     }
   }
   
