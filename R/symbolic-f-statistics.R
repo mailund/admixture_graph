@@ -1,52 +1,53 @@
 
 path_probability <- function(path) {
-  paste(path$prob, sep=" ", collapse="")
+  Filter(function(x) x != "", path$prob)
 }
 
 path_overlap <- function(path1, path2) {
-  probability = paste(path_probability(path1), path_probability(path2), sep='', collapse='')
   rev_path2 <- data.frame(from = path2$to, to = path2$from, prob = path2$prob)
-  
-  list(prob = probability,
+  list(prob = c(path_probability(path1), path_probability(path2)),
        positive = merge(path1, path2)[,1:2],
        negative = merge(path1, rev_path2)[,1:2])
 }
 
+format_edge <- function(from, to) paste('[',from,':',to,']',sep='') # FIXME
 
-path_overlap_weight <- function(overlap) {
-  if (nrow(overlap$positive) > 0) {
-    positive = paste(paste('[', overlap$positive$from, ':', overlap$positive$to, ']', sep=''),
-                     collapse=' + ')  
-  } else {
-    positive = ''
-  }
-  if (nrow(overlap$negative) > 0) {
-    negative = paste(paste('[', overlap$negative$from, ':', overlap$negative$to, ']', sep=''),
-                     collapse=' - ')  
-  } else {
-    negative = ''
+format_path_overlap <- function(overlap) {
+  weight <- NULL
+  if (length(overlap$prob) > 0) {
+    weight <- paste(overlap$prob, collapse = " * ")
   }
   
-  if (positive != '' && negative != '') {
-    paste(overlap$prob, ' * (', positive, ' - ', negative, ')', sep='')  
-  } else if (positive == '' && negative != '') {
-    paste('-', overlap$prob, ' * (', negative, ')', sep='')  
-  } else if (positive != '' && negative == '') {
-    paste(overlap$prob, ' * (', positive, ')', sep='')  
+  positive <- unlist(Map(format_edge, overlap$positive$from, overlap$positive$to), use.names = FALSE)
+  negative <- unlist(Map(format_edge, overlap$negative$from, overlap$negative$to), use.names = FALSE)
+  
+  format_list <- c()
+  
+  if (length(positive) > 0) {
+    format_list <- c(paste(positive, collapse = ' + '))
+  }
+  if (length(negative) > 0) {
+    format_list <- c(format_list, ' - ', paste(negative, collapse = ' - '))
+  }
+  
+  if (length(format_list) > 0 && !is.null(weight)) {
+    format_list <- c(weight, ' * ', '(', format_list, ')')
   } else {
-    ''
-  }  
+    format_list <- c('0')
+  }
+  paste(format_list, collapse = "")
 }
 
-all_overlaps_weights <- function(paths1, paths2) {
+format_all_overlaps <- function(paths1, paths2) {
   overlap_weights <- c()
   for (i in 1:length(paths1)) {
     for (j in 1:length(paths2)) {
       overlap <- path_overlap(paths1[[i]], paths2[[j]])
-      overlap_weights <- c(path_overlap_weight(overlap), overlap_weights)
+      overlap_weights <- c(format_path_overlap(overlap), overlap_weights)
     }
   }
-  paste(Filter(function(x) x != "", overlap_weights), sep=" + ")
+  result <- paste(Filter(function(x) x != "0", overlap_weights), sep=" + ")
+  if (length(result) > 0) result else '0'
 }
 
 #' Calculate the f4(W,X;Y,Z) statistics.
@@ -62,7 +63,7 @@ all_overlaps_weights <- function(paths1, paths2) {
 f4 <- function(graph, W, X, Y, Z) {
   WX <- all_paths(graph, W, X)
   YZ <- all_paths(graph, Y, Z)
-  all_overlaps_weights(WX, YZ)
+  format_all_overlaps(WX, YZ)
 }
 
 #' Calculate the f4(A;B,C) statistics.
