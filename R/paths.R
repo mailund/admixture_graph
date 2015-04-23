@@ -6,10 +6,13 @@
 #' 
 #' @return A data frame capturing the path and the probabilities/weights on the edges.
 format_path <- function(graph, nodes) {
-  path <- data.frame(from = nodes[1:length(nodes)-1], to = nodes[2:length(nodes)])
+  path <- data.frame(from = graph$nodes[nodes[1:length(nodes)-1]], 
+                     to = graph$nodes[nodes[2:length(nodes)]],
+                     stringsAsFactors = FALSE)
   path$prob <- mapply(function(f,t) graph$probs[f,t], path$from, path$to)
   path
 }
+
 
 #' Computes all paths from one leaf to another.
 #' 
