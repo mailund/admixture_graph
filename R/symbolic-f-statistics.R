@@ -46,7 +46,7 @@ format_all_overlaps <- function(paths1, paths2) {
       overlap_weights <- c(format_path_overlap(overlap), overlap_weights)
     }
   }
-  result <- paste(Filter(function(x) x != "0", overlap_weights), sep=" + ")
+  result <- paste(Filter(function(x) x != "0", overlap_weights), collapse = " + ")
   if (length(result) > 0) result else '0'
 }
 

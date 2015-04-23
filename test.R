@@ -29,4 +29,23 @@ admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
 
 
 graph <- agraph(nodes, edges, admixture_proportions)
-f4(graph, "BLK", "APB", "BB", "EBB")
+
+pdf('bear-graph.pdf', width = 6)
+plot(graph, c("BLK", "APB", "PB", "BC", "A", "YB", "BB", "EBB"))
+dev.off()
+
+f4(graph, "BLK", "PB", "BC", "EBB")
+f4(graph, "BLK", "PB", "A", "EBB")
+f4(graph, "BLK", "PB", "YB", "EBB")
+f4(graph, "BLK", "PB", "BB", "EBB")
+
+f4(graph, "BLK", "PB", "A", "BB")
+f4(graph, "BLK", "PB", "BC", "BB")
+f4(graph, "BLK", "PB", "YB", "BB")
+
+f4(graph, "BLK", "PB", "A", "YB")
+f4(graph, "BLK", "PB", "BC", "YB")
+
+f4(graph, "BLK", "PB", "BC", "A")
+
+
