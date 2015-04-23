@@ -84,6 +84,10 @@ agraph <- function(nodes, parent_edges, admixture_proportions) {
   parents <- agraph_parents(nodes, parent_edges)
   children <- agraph_children(nodes, parent_edges)
   admixture_probs <- agraph_weights(nodes, admixture_proportions)
-  structure(list(parents = parents, probs = admixture_probs, children = children), class = "agraph")
+  structure(list(nodes = nodes, 
+                 parents = parents, 
+                 probs = admixture_probs, 
+                 children = children), 
+            class = "agraph")
 }
 
