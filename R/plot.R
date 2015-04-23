@@ -63,9 +63,7 @@ plot.agraph <- function(graph, ordered_leaves) {
   
   text(xpos[inner_nodes], ypos[inner_nodes], labels = graph$nodes[inner_nodes], cex=0.6, col='blue', pos=3)
   text(xpos[leaves], ypos[leaves], labels = graph$nodes[leaves], cex=0.7, col='black', pos=1)
-  #points(xpos, ypos, pch=20)
-  
-  inner_nodes
+
+  invisible()
 }
 
-plot(graph, c("BLK", "APB", "PB", "BC", "A", "YB", "BB", "EBB"))
