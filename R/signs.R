@@ -24,6 +24,8 @@ is_negative <- function(overlaps) {
   !is_zero(overlaps) && all(unlist(Map(path_non_positive, overlaps)))
 }
 
+#' Overlapping edges have both positive and negative contributions
+#' @export
 is_unknown <- function(overlaps) {
   !is_zero(overlaps) && !is_positive(overlaps) && !is_negative(overlaps)
 }
