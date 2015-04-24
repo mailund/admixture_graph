@@ -13,3 +13,6 @@ all_path_overlaps.Rd
 sf2.Rd
 sf3.Rd
 sf4.Rd
+is_negative.Rd
+is_positive.Rd
+is_zero.Rd
