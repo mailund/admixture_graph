@@ -37,5 +37,4 @@ sign <- function(overlaps) {
   if (is_negative(overlaps)) return('-')
   if (is_positive(overlaps)) return('+')
   else return('?')
-    
 }
