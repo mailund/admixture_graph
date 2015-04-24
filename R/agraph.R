@@ -1,6 +1,6 @@
 
 
-#' Build a parent incidene matrix from an edge list
+#' Build a parent incidence matrix from an edge list
 #' 
 #' @param nodes The name of the nodes in the admxture graph
 #' @param parent_edges An n x 2 matrix where the first column is the child node and the second the parent.
