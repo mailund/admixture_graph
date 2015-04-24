@@ -34,18 +34,18 @@ graph <- agraph(nodes, edges, admixture_proportions)
 plot(graph, c("BLK", "APB", "PB", "BC", "A", "YB", "BB", "EBB"))
 #dev.off()
 
-sf4(graph, "BLK", "PB", "BC", "EBB")
-sf4(graph, "BLK", "PB", "A", "EBB")
-sf4(graph, "BLK", "PB", "YB", "EBB")
-sf4(graph, "BLK", "PB", "BB", "EBB")
+sign(f4(graph, "BLK", "PB", "BC", "EBB"))
+sign(f4(graph, "BLK", "PB", "A", "EBB"))
+sign(f4(graph, "BLK", "PB", "YB", "EBB"))
+sign(f4(graph, "BLK", "PB", "BB", "EBB"))
 
-sf4(graph, "BLK", "PB", "A", "BB")
-sf4(graph, "BLK", "PB", "BC", "BB")
-sf4(graph, "BLK", "PB", "YB", "BB")
+sign(f4(graph, "BLK", "PB", "A", "BB"))
+sign(f4(graph, "BLK", "PB", "BC", "BB"))
+sign(f4(graph, "BLK", "PB", "YB", "BB"))
 
-sf4(graph, "BLK", "PB", "A", "YB")
-sf4(graph, "BLK", "PB", "BC", "YB")
+sign(f4(graph, "BLK", "PB", "A", "YB"))
+sign(f4(graph, "BLK", "PB", "BC", "YB"))
 
-sf4(graph, "BLK", "PB", "BC", "A")
+sign(f4(graph, "BLK", "PB", "BC", "A"))
 
 
