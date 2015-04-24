@@ -28,7 +28,7 @@ format_path_overlap <- function(overlap) {
   paste(format_list, collapse = "")
 }
 
-format_all_overlaps <- function(overlaps) {
+format_overlaps <- function(overlaps) {
   overlaps <- vapply(overlaps, format_path_overlap, character(1))
   result <- paste(Filter(function(x) x != "0", overlaps), collapse = " + ")
   if (length(result) > 0) result else '0'
@@ -44,12 +44,7 @@ format_all_overlaps <- function(overlaps) {
 #' 
 #' @return A symbolic representation of the equation for the f4 statistics given by the admixture graph.
 #' @export
-f4 <- function(graph, W, X, Y, Z) {
-  WX <- all_paths(graph, W, X)
-  YZ <- all_paths(graph, Y, Z)
-  overlaps <- all_path_overlaps(WX, YZ)
-  format_all_overlaps(overlaps)
-}
+sf4 <- function(graph, W, X, Y, Z) format_overlaps(f4(graph, W, X, Y, Z))
 
 #' Calculate the f4(A;B,C) statistics.
 #'  
@@ -60,7 +55,7 @@ f4 <- function(graph, W, X, Y, Z) {
 #' 
 #' @return A symbolic representation of the equation for the f3 statistics given by the admixture graph.
 #' @export
-f3 <- function(graph, A, B, C) f4(graph, A, B, A, C)
+sf3 <- function(graph, A, B, C) sf4(graph, A, B, A, C)
 
 #' Calculate the f2(A,B) statistics.
 #'  
@@ -70,5 +65,5 @@ f3 <- function(graph, A, B, C) f4(graph, A, B, A, C)
 #' 
 #' @return A symbolic representation of the equation for the f2 statistics given by the admixture graph.
 #' @export
-f2 <- function(graph, A, B) f4(graph, A, B, A, B)
+sf2 <- function(graph, A, B) sf4(graph, A, B, A, B)
 
