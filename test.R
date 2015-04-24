@@ -30,22 +30,22 @@ admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
 
 graph <- agraph(nodes, edges, admixture_proportions)
 
-pdf('bear-graph.pdf', width = 6)
+#pdf('bear-graph.pdf', width = 6)
 plot(graph, c("BLK", "APB", "PB", "BC", "A", "YB", "BB", "EBB"))
-dev.off()
+#dev.off()
 
-f4(graph, "BLK", "PB", "BC", "EBB")
-f4(graph, "BLK", "PB", "A", "EBB")
-f4(graph, "BLK", "PB", "YB", "EBB")
-f4(graph, "BLK", "PB", "BB", "EBB")
+sign(f4(graph, "BLK", "PB", "BC", "EBB"))
+sign(f4(graph, "BLK", "PB", "A", "EBB"))
+sign(f4(graph, "BLK", "PB", "YB", "EBB"))
+sign(f4(graph, "BLK", "PB", "BB", "EBB"))
 
-f4(graph, "BLK", "PB", "A", "BB")
-f4(graph, "BLK", "PB", "BC", "BB")
-f4(graph, "BLK", "PB", "YB", "BB")
+sign(f4(graph, "BLK", "PB", "A", "BB"))
+sign(f4(graph, "BLK", "PB", "BC", "BB"))
+sign(f4(graph, "BLK", "PB", "YB", "BB"))
 
-f4(graph, "BLK", "PB", "A", "YB")
-f4(graph, "BLK", "PB", "BC", "YB")
+sign(f4(graph, "BLK", "PB", "A", "YB"))
+sign(f4(graph, "BLK", "PB", "BC", "YB"))
 
-f4(graph, "BLK", "PB", "BC", "A")
+sign(f4(graph, "BLK", "PB", "BC", "A"))
 
 

@@ -27,7 +27,10 @@ plot.agraph <- function(graph, ordered_leaves) {
     result
   }
   
-  root <- "R"
+  no_parents <- function(node) length(which(graph$parents[node,]))
+  roots <- which(Map(no_parents, graph$nodes) == 0)
+  if (length(roots) > 1) stop("Don't know how to handle more than one root")
+  root <- roots[1]
   ypos <- dfs(root, basis = function(x) 0.0, step = function(x) max(x) + 1.0)
   
   leaf_index <- function(n) which(graph$nodes[n] == ordered_leaves)

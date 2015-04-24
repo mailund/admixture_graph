@@ -1,16 +1,6 @@
 
-path_probability <- function(path) {
-  Filter(function(x) x != "", path$prob)
-}
-
-path_overlap <- function(path1, path2) {
-  rev_path2 <- data.frame(from = path2$to, to = path2$from, prob = path2$prob)
-  list(prob = c(path_probability(path1), path_probability(path2)),
-       positive = merge(path1, path2)[,1:2],
-       negative = merge(path1, rev_path2)[,1:2])
-}
-
-format_edge <- function(from, to) paste('[',from,':',to,']',sep='') # FIXME
+path_probability <- function(path) Filter(function(x) x != "", path$prob)
+format_edge <- function(from, to) paste('[',from,':',to,']',sep='')
 
 format_path_overlap <- function(overlap) {
   weight <- NULL
@@ -38,15 +28,9 @@ format_path_overlap <- function(overlap) {
   paste(format_list, collapse = "")
 }
 
-format_all_overlaps <- function(paths1, paths2) {
-  overlap_weights <- c()
-  for (i in 1:length(paths1)) {
-    for (j in 1:length(paths2)) {
-      overlap <- path_overlap(paths1[[i]], paths2[[j]])
-      overlap_weights <- c(format_path_overlap(overlap), overlap_weights)
-    }
-  }
-  result <- paste(Filter(function(x) x != "0", overlap_weights), collapse = " + ")
+format_overlaps <- function(overlaps) {
+  overlaps <- vapply(overlaps, format_path_overlap, character(1))
+  result <- paste(Filter(function(x) x != "0", overlaps), collapse = " + ")
   if (length(result) > 0) result else '0'
 }
 
@@ -60,11 +44,7 @@ format_all_overlaps <- function(paths1, paths2) {
 #' 
 #' @return A symbolic representation of the equation for the f4 statistics given by the admixture graph.
 #' @export
-f4 <- function(graph, W, X, Y, Z) {
-  WX <- all_paths(graph, W, X)
-  YZ <- all_paths(graph, Y, Z)
-  format_all_overlaps(WX, YZ)
-}
+sf4 <- function(graph, W, X, Y, Z) format_overlaps(f4(graph, W, X, Y, Z))
 
 #' Calculate the f4(A;B,C) statistics.
 #'  
@@ -75,7 +55,7 @@ f4 <- function(graph, W, X, Y, Z) {
 #' 
 #' @return A symbolic representation of the equation for the f3 statistics given by the admixture graph.
 #' @export
-f3 <- function(graph, A, B, C) f4(graph, A, B, A, C)
+sf3 <- function(graph, A, B, C) sf4(graph, A, B, A, C)
 
 #' Calculate the f2(A,B) statistics.
 #'  
@@ -85,5 +65,5 @@ f3 <- function(graph, A, B, C) f4(graph, A, B, A, C)
 #' 
 #' @return A symbolic representation of the equation for the f2 statistics given by the admixture graph.
 #' @export
-f2 <- function(graph, A, B) f4(graph, A, B, A, B)
+sf2 <- function(graph, A, B) sf4(graph, A, B, A, B)
 
