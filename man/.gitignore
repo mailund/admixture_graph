@@ -8,3 +8,5 @@ format_path.Rd
 agraph_parents.Rd
 agraph_weights.Rd
 plot.agraph.Rd
+path_overlap.Rd
+all_path_overlaps.Rd
