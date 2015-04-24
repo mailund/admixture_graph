@@ -64,8 +64,8 @@ format_path_overlap <- function(overlap) {
   paste(format_list, collapse = "")
 }
 
-format_all_overlaps <- function(paths1, paths2) {
-  overlaps <- vapply(all_path_overlaps(paths1, paths2), format_path_overlap, character(1))
+format_all_overlaps <- function(overlaps) {
+  overlaps <- vapply(overlaps, format_path_overlap, character(1))
   result <- paste(Filter(function(x) x != "0", overlaps), collapse = " + ")
   if (length(result) > 0) result else '0'
 }
@@ -83,7 +83,8 @@ format_all_overlaps <- function(paths1, paths2) {
 f4 <- function(graph, W, X, Y, Z) {
   WX <- all_paths(graph, W, X)
   YZ <- all_paths(graph, Y, Z)
-  format_all_overlaps(WX, YZ)
+  overlaps <- all_path_overlaps(WX, YZ)
+  format_all_overlaps(overlaps)
 }
 
 #' Calculate the f4(A;B,C) statistics.
