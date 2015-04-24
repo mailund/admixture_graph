@@ -30,5 +30,12 @@ is_unknown <- function(overlaps) {
   !is_zero(overlaps) && !is_positive(overlaps) && !is_negative(overlaps)
 }
 
-
-
+#' Get the sign of overlapping paths
+#' @export
+sign <- function(overlaps) {
+  if (is_zero(overlaps)) return('0')
+  if (is_negative(overlaps)) return('-')
+  if (is_positive(overlaps)) return('+')
+  else return('?')
+    
+}
