@@ -1,6 +1,6 @@
 
 path_probability <- function(path) Filter(function(x) x != "", path$prob)
-format_edge <- function(from, to) paste('[',from,':',to,']',sep='')
+format_edge <- function(from, to) paste('edge_',from,'_',to,sep='')
 
 format_path_overlap <- function(overlap) {
   weight <- NULL
@@ -31,7 +31,7 @@ format_path_overlap <- function(overlap) {
 format_overlaps <- function(overlaps) {
   overlaps <- vapply(overlaps, format_path_overlap, character(1))
   result <- paste(Filter(function(x) x != "0", overlaps), collapse = " + ")
-  if (length(result) > 0) result else '0'
+  if (result != "") parse(text = result) else expression(0)
 }
 
 #' Calculate the f4(W,X;Y,Z) statistics.
