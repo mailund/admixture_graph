@@ -34,18 +34,18 @@ graph <- agraph(nodes, edges, admixture_proportions)
 plot(graph, c("BLK", "APB", "PB", "BC", "A", "YB", "BB", "EBB"))
 #dev.off()
 
-sign(f4(graph, "BLK", "PB", "BC", "EBB"))
-sign(f4(graph, "BLK", "PB", "A", "EBB"))
-sign(f4(graph, "BLK", "PB", "YB", "EBB"))
-sign(f4(graph, "BLK", "PB", "BB", "EBB"))
+overlaps_sign(f4(graph, "BLK", "PB", "BC", "EBB"))
+overlaps_sign(f4(graph, "BLK", "PB", "A", "EBB"))
+overlaps_sign(f4(graph, "BLK", "PB", "YB", "EBB"))
+overlaps_sign(f4(graph, "BLK", "PB", "BB", "EBB"))
 
-sign(f4(graph, "BLK", "PB", "A", "BB"))
-sign(f4(graph, "BLK", "PB", "BC", "BB"))
-sign(f4(graph, "BLK", "PB", "YB", "BB"))
+overlaps_sign(f4(graph, "BLK", "PB", "A", "BB"))
+overlaps_sign(f4(graph, "BLK", "PB", "BC", "BB"))
+overlaps_sign(f4(graph, "BLK", "PB", "YB", "BB"))
 
-sign(f4(graph, "BLK", "PB", "A", "YB"))
-sign(f4(graph, "BLK", "PB", "BC", "YB"))
+overlaps_sign(f4(graph, "BLK", "PB", "A", "YB"))
+overlaps_sign(f4(graph, "BLK", "PB", "BC", "YB"))
 
-sign(f4(graph, "BLK", "PB", "BC", "A"))
+overlaps_sign(f4(graph, "BLK", "PB", "BC", "A"))
 
 

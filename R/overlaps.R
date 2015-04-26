@@ -22,7 +22,7 @@ path_overlap <- function(path1, path2) {
 all_path_overlaps <- function(paths1, paths2) {
   n1 <- length(paths1)
   n2 <- length(paths2)
-  overlaps <- list(rep(NA), n1*n2)
+  overlaps <- list(rep(NA, n1*n2))
   
   idx <- 1
   for (i in 1:n1) {
