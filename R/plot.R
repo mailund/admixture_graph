@@ -9,21 +9,21 @@
 #'                       it is required as a function argument.
 #'                       
 #' @export
-plot.agraph <- function(graph, ordered_leaves) {
+plot.agraph <- function(graph, ordered_leaves, show_admixture_labels = FALSE, show_inner_node_labels = FALSE) {
   
   dfs <- function(node, basis, step) {
     result <- rep(NA, length(graph$nodes))
     names(result) <- graph$nodes
     
-    dfs <- function(node) {
+    dfs_ <- function(node) {
       children <- which(graph$children[node,])
       if (length(children) == 0) {
         result[node] <<- basis(node)
       } else {
-        result[node] <<- step(vapply(children, dfs, numeric(1)))
+        result[node] <<- step(vapply(children, dfs_, numeric(1)))
       } 
     }
-    dfs(node)
+    dfs_(node)
     result
   }
   
@@ -55,8 +55,10 @@ plot.agraph <- function(graph, ordered_leaves) {
       lines(c(xpos[parents[2]], break_x_right), c(ypos[parents[2]], break_y))
       segments(break_x_left, break_y, xpos[node],  ypos[node], col='red')
       segments(break_x_right, break_y, xpos[node], ypos[node], col='red')
-      text(break_x_left, break_y, graph$probs[parents[[1]],node], cex=0.5, pos=1, col='red', offset=0.1)
-      text(break_x_right, break_y, graph$probs[parents[[2]],node], cex=0.5, pos=1, col='red', offset=0.1)
+      if (show_admixture_labels) {
+        text(break_x_left, break_y, graph$probs[parents[[1]],node], cex=0.5, pos=1, col='red', offset=0.1)
+        text(break_x_right, break_y, graph$probs[parents[[2]],node], cex=0.5, pos=1, col='red', offset=0.1)  
+      }
     }
   }
   
@@ -64,9 +66,11 @@ plot.agraph <- function(graph, ordered_leaves) {
   inner_nodes <- which(is_inner(graph$nodes))
   leaves <- which(!is_inner(graph$nodes))
   
-  text(xpos[inner_nodes], ypos[inner_nodes], labels = graph$nodes[inner_nodes], cex=0.6, col='blue', pos=3)
+  if (show_inner_node_labels) {
+    text(xpos[inner_nodes], ypos[inner_nodes], labels = graph$nodes[inner_nodes], cex=0.6, col='blue', pos=3)
+  }
   text(xpos[leaves], ypos[leaves], labels = graph$nodes[leaves], cex=0.7, col='black', pos=1)
-
+  
   invisible()
 }
 
