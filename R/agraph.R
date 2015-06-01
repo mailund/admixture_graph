@@ -24,6 +24,7 @@ agraph_parents <- function(nodes, parent_edges) {
 #'                          
 #' @return A matrix containing the admixture weights.
 agraph_weights <- function(nodes, admixture_weights) {
+  if (is.null(admixture_weights)) return(NULL)
   n <- length(nodes)
   weights <- matrix("", n, n)
   rownames(weights) <- colnames(weights) <- nodes

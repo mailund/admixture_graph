@@ -1,4 +1,13 @@
 
+nodes <- c('A','B','C','ab','abc')
+edges <- matrix(ncol = 2, byrow=TRUE,
+                data = c("A", "ab",
+                         "B", "ab",
+                         "ab", "abc",
+                         "C", "abc"))
+admixture_proportions <- NULL
+graph <- agraph(nodes, edges, admixture_proportions)
+plot(graph, c("A","B","C"), show_admixture_labels = TRUE)
 
 
 nodes <- c("BLK", "APB", "PB", "pb", "BC", "A", "YB", "BB", "bb", "EBB",
