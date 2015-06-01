@@ -24,14 +24,14 @@ agraph_parents <- function(nodes, parent_edges) {
 #'                          
 #' @return A matrix containing the admixture weights.
 agraph_weights <- function(nodes, admixture_weights) {
-  if (is.null(admixture_weights)) return(NULL)
   n <- length(nodes)
   weights <- matrix("", n, n)
   rownames(weights) <- colnames(weights) <- nodes
-  cat(weights, "\n")
-  for (row in 1:nrow(admixture_weights)) {
-    weights[admixture_weights[row,1], admixture_weights[row,2]] = admixture_weights[row,3]
-    weights[admixture_weights[row,2], admixture_weights[row,1]] = admixture_weights[row,3]
+  if (!is.null(admixture_weights)) {
+    for (row in 1:nrow(admixture_weights)) {
+      weights[admixture_weights[row,1], admixture_weights[row,2]] = admixture_weights[row,3]
+      weights[admixture_weights[row,2], admixture_weights[row,1]] = admixture_weights[row,3]
+    }
   }
   weights
 }
