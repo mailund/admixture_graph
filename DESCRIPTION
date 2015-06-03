@@ -7,3 +7,5 @@ Author: Thomas Mailund <mailund@birc.au.dk>
 Maintainer: Thomas Mailund <mailund@birc.au.dk>
 Description: Implements tools for building and manipulating admixture graphs and for extracting equations from them.
 License: GPL-2
+Depends:
+  dplyr

@@ -50,3 +50,37 @@ graph_environment <- function(parameters, edge_lengths = NULL, admix_prop = NULL
   }
   env
 }
+
+#' Evaluates an f4 statistics in a given environment.
+#' 
+#' @param graph      The admixture graph
+#' @param env        The environment containing the graph parameters
+#' @param W          First population/sample
+#' @param X          Second population/sample
+#' @param Y          Third population/sample
+#' @param Z          Fourth population/sample
+#' 
+#' @return The f4 value specified by the graph and the environment.
+#' 
+#' @export
+evaluate_f4 <- function(graph, env, W, X, Y, Z) {
+  eval(sf4(graph, W, X, Y, Z), env)
+}
+
+#' Evalutes the f4 statistics for all rows in a data frame and extends the data frame with the graph f4.
+#' 
+#' The data frame, \code{data}, must contain columns \code{W}, \code{X}, \code{Y}, and \code{Z}. The function then computes
+#' the f4(W,X;Y,Z) statistics for all rows and adds these as a column, \code{graph_f4}, to the data frame.
+#' 
+#' @param data     The data frame to get the labels to compute the f4 statistics from.
+#' @param graph    The admixture graph
+#' @param env      The environment to evaluate the f4 statistics in
+#' 
+#' @return A data frame identical to \code{data} except with an additional column, \code{graph_f4}, containing 
+#'         the f4 values as determined by the graph and the environment.
+#' 
+#' @export
+add_graph_f4 <- function(data, graph, env) {
+  f <- Vectorize(function(W,X,Y,Z) evaluate_f4(graph, env, W, X, Y, Z))
+  data %>% mutate(graph_f4 = f(W, X, Y, Z))
+}

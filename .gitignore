@@ -15,3 +15,7 @@ vignettes/*.pdf
 man/is_unknown.Rd
 man/sign.Rd
 overlaps_sign.Rd
+man/add_graph_f4.Rd
+man/evaluate_f4.Rd
+man/extract_graph_parameters.Rd
+man/graph_environment.Rd
