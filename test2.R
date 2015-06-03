@@ -37,12 +37,8 @@ graph <- agraph(nodes, edges, admixture_proportions)
 plot(graph, ordered_leaves = c("BLK", "PB", "AK", "ABC_BC", "ABC_A", "YB", "BB", "EBB"), 
      show_admixture_labels = TRUE, show_inner_node_labels = TRUE)
 
-(xx <- sf4(graph, "BLK", "PB", "AK", "BB"))
-(yy <- sf4(graph, "PB", "BLK", "BB", "AK"))
+data <- read.table('testdata.txt', header=TRUE)
 
 env <- graph_environment(extract_graph_parameters(graph))
-eval(xx, env)
-eval(yy, env)
 
-data <- read.table('testdata.txt', header=TRUE)
 data %>% add_graph_f4_sign(graph) %>% add_graph_f4(graph, env)
