@@ -1,6 +1,12 @@
 
 path_probability <- function(path) Filter(function(x) x != "", path$prob)
-format_edge <- function(from, to) paste('edge_',from,'_',to,sep='')
+format_edge <- function(graph) function(from, to) {
+  if (graph$children[from,to]) {
+    paste('edge_',from,'_',to,sep='')
+  } else {
+    paste('edge_',to,'_',from,sep='')
+  }
+}
 
 format_path_overlap <- function(overlap) {
   weight <- NULL
@@ -8,8 +14,8 @@ format_path_overlap <- function(overlap) {
     weight <- paste(overlap$prob, collapse = " * ")
   }
   
-  positive <- unlist(Map(format_edge, overlap$positive$from, overlap$positive$to), use.names = FALSE)
-  negative <- unlist(Map(format_edge, overlap$negative$from, overlap$negative$to), use.names = FALSE)
+  positive <- unlist(Map(format_edge(graph), overlap$positive$from, overlap$positive$to), use.names = FALSE)
+  negative <- unlist(Map(format_edge(graph), overlap$negative$from, overlap$negative$to), use.names = FALSE)
   
   format_list <- c()
   

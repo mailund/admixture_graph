@@ -34,4 +34,8 @@ admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
 
 
 graph <- agraph(nodes, edges, admixture_proportions)
-plot(graph, ordered_leaves = c("BLK", "PB", "AK", "ABC_BC", "ABC_A", "YB", "BB", "EBB"))
+plot(graph, ordered_leaves = c("BLK", "PB", "AK", "ABC_BC", "ABC_A", "YB", "BB", "EBB"), 
+     show_admixture_labels = TRUE, show_inner_node_labels = TRUE)
+
+sf4(graph, "BLK", "PB", "AK", "BB")
+sf4(graph, "PB", "BLK", "BB", "AK")
