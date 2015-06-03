@@ -45,3 +45,4 @@ eval(xx, env)
 eval(yy, env)
 
 data <- read.table('testdata.txt', header=TRUE)
+data %>% add_graph_f4_sign(graph) %>% add_graph_f4(graph, env)

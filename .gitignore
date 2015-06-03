@@ -19,3 +19,5 @@ man/add_graph_f4.Rd
 man/evaluate_f4.Rd
 man/extract_graph_parameters.Rd
 man/graph_environment.Rd
+man/add_graph_f4_sign.Rd
+man/get_graph_f4_sign.Rd
