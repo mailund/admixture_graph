@@ -1,9 +1,15 @@
 Package: admixturegraph
 Type: Package
-Title: Admixture graph manipulation
+Title: Admixture Graph Manipulation and Fitting
 Version: 0.2
-Date: 2015-04-24
-Author: Thomas Mailund <mailund@birc.au.dk>
-Maintainer: Thomas Mailund <mailund@birc.au.dk>
-Description: Implements tools for building and manipulating admixture graphs and for extracting equations from them.
+Date: 2015-06-04
+Authors@R: person("Thomas", "Mailund", email = "mailund@birc.au.dk", role = c("cre", "aut"))
+Description: Implements tools for building and visualising admixture graphs and for extracting
+    equations from them. These equations can be compared to f-statistics obtained from data
+    to test the consistency of a graph against data -- for example by comparing the sign of 
+    f4 statistics with the signs predicted by the graph -- and graph parameters (edge lengths
+    and admixture proportions) can be fitted to observed statistics.
 License: GPL-2
+Suggests: 
+  dplyr, 
+  neldermead
