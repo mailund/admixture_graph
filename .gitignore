@@ -21,3 +21,4 @@ man/extract_graph_parameters.Rd
 man/graph_environment.Rd
 man/add_graph_f4_sign.Rd
 man/get_graph_f4_sign.Rd
+fit_graph.Rd

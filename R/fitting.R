@@ -57,6 +57,16 @@ make_cost_function <- function(data, graph) {
 #' 
 #' @seealso neldermead::optimset
 fit_graph <- function(data, graph, optimisation_options = NULL) {
+  if (!requireNamespace("dplyr", quietly = TRUE)) {
+    # FIXME: THIS IS ONLY NEEDED TO ADD THE FITTED DATA
+    # TO THE DATA FRAME. THAT ISN'T STRICLTY NECESSARY
+    # SO PROBABLY SHOULDN'T REQUIRE IT THIS STRONGLY
+    stop("This function requires dplyr to be installed.")
+  }
+  if (!requireNamespace("neldermead", quietly = TRUE)) {
+    stop("This function requires neldermead to be installed.")
+  }
+  
   params <- extract_graph_parameters(graph)
   init_env <- graph_environment(params)
   x0 <- pack_environment(params, init_env)
@@ -67,10 +77,6 @@ fit_graph <- function(data, graph, optimisation_options = NULL) {
   best_fit <- neldermead.get(opti, 'xopt')
   best_fit_env <- unpack_environment(params, best_fit)
   
-  data %>% add_graph_f4(graph, best_fit_env)
+  add_graph_f4(data, graph, best_fit_env)
 }
 
-fitted_data <- data %>% fit_graph(graph, optimset(Display='iter'))
-
-library(ggplot2)
-qplot(D, graph_f4, data = fitted_data)
