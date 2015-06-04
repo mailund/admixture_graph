@@ -1,7 +1,7 @@
 Package: admixturegraph
 Type: Package
 Title: Admixture Graph Manipulation and Fitting
-Version: 0.2
+Version: 0.3
 Date: 2015-06-04
 Authors@R: person("Thomas", "Mailund", email = "mailund@birc.au.dk", role = c("cre", "aut"))
 Description: Implements tools for building and visualising admixture graphs and for extracting
