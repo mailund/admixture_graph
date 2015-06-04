@@ -89,7 +89,8 @@ evaluate_f4 <- function(graph, env, W, X, Y, Z) {
 #'
 #' @export
 add_graph_f4 <- function(data, graph, env) {
-  data$graph_f4 <- Map(function(W,X,Y,Z) evaluate_f4(graph, env, W, X, Y, Z),
-                       data$W, data$X, data$Y, data$Z)
+  data$graph_f4 <- unlist(Map(function(W,X,Y,Z) evaluate_f4(graph, env, W, X, Y, Z),
+                          data$W, data$X, data$Y, data$Z),
+                          use.names = FALSE)
   data
 }

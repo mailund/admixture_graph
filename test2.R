@@ -48,5 +48,5 @@ library(neldermead)
 fitted <- data %>% fit_graph(graph, optimset(Display='iter', MaxIter=1))
 
 library(ggplot2)
-qplot(D, graph_f4, data = fitted$data)
+qplot(D, graph_f4, data = fitted$fit_data)
 
