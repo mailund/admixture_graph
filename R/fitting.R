@@ -28,11 +28,13 @@ make_cost_function <- function(data, graph,
   force(data)
   force(graph)
   force(parameters)
+  goal <- data$D
   function(x) {
     env <- unpack_environment(parameters, x)
-    predictions <- Map(function(W,X,Y,Z) evaluate_f4(graph, env, W, X, Y, Z),
-                       data$W, data$X, data$Y, data$Z)
-    sum( (data$D - predictions) ** 2)
+    predictions <- unlist(Map(function(W,X,Y,Z) evaluate_f4(graph, env, W, X, Y, Z),
+                          data$W, data$X, data$Y, data$Z),
+                          use.names = FALSE)
+    sum( (goal - predictions) ** 2)
   }
 }
 
@@ -51,9 +53,12 @@ make_cost_function <- function(data, graph,
 #' @param graph The admixture graph.
 #' @param optimisation_options  Options to the optimisation algorithm. 
 #' 
-#' @return FIXME
+#' @return A list containing the best fitted values (in an environment) and the data extended with a column
+#' containing the graph predictions.
 #' 
 #' @seealso neldermead::optimset
+#' 
+#' @export
 fit_graph <- function(data, graph, optimisation_options = NULL) {
   if (!requireNamespace("neldermead", quietly = TRUE)) {
     stop("This function requires neldermead to be installed.")
@@ -64,11 +69,13 @@ fit_graph <- function(data, graph, optimisation_options = NULL) {
   x0 <- pack_environment(params, init_env)
   cfunc <- make_cost_function(data, graph, params)
 
-  opti <- fminbnd(cfunc, x0 = x0, xmin = rep(0, length(x0)), 
-                  xmax = rep(1, length(x0)), options = optimisation_options)
+  opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = rep(0, length(x0)),
+                              xmax = rep(1, length(x0)),
+                              options = optimisation_options)
 
   best_fit <- neldermead.get(opti, "xopt")
   best_fit_env <- unpack_environment(params, best_fit)
-
-  add_graph_f4(data, graph, best_fit_env)
+  best_fit_data <- add_graph_f4(data, graph, best_fit_env)
+  
+  list(fit_env = best_fit_env, fit_data = best_fit_data)
 }

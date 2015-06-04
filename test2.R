@@ -44,8 +44,9 @@ env <- graph_environment(extract_graph_parameters(graph))
 library(dplyr)
 data %>% add_graph_f4_sign(graph) %>% add_graph_f4(graph, env)
 
-fitted_data <- data %>% fit_graph(graph, optimset(Display='iter', MaxIter=1))
+library(neldermead)
+fitted <- data %>% fit_graph(graph, optimset(Display='iter', MaxIter=1))
 
 library(ggplot2)
-qplot(D, graph_f4, data = fitted_data)
+qplot(D, graph_f4, data = fitted$data)
 
