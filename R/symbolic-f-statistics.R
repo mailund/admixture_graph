@@ -1,29 +1,40 @@
 
 path_probability <- function(path) Filter(function(x) x != "", path$prob)
-format_edge <- function(from, to) paste('edge_',from,'_',to,sep='')
+
+format_edge <- function(graph) function(from, to) {
+  if (graph$children[from,to]) {
+    paste("edge_", from, "_", to, sep="")
+  } else {
+    paste("edge_", to, "_", from, sep="")
+  }
+}
 
 format_path_overlap <- function(overlap) {
   weight <- NULL
   if (length(overlap$prob) > 0) {
     weight <- paste(overlap$prob, collapse = " * ")
   }
-  
-  positive <- unlist(Map(format_edge, overlap$positive$from, overlap$positive$to), use.names = FALSE)
-  negative <- unlist(Map(format_edge, overlap$negative$from, overlap$negative$to), use.names = FALSE)
-  
+
+  positive <- unlist(Map(format_edge(graph),
+                         overlap$positive$from, overlap$positive$to),
+                     use.names = FALSE)
+  negative <- unlist(Map(format_edge(graph),
+                         overlap$negative$from, overlap$negative$to),
+                     use.names = FALSE)
+
   format_list <- c()
-  
+
   if (length(positive) > 0) {
-    format_list <- c(paste(positive, collapse = ' + '))
+    format_list <- c(paste(positive, collapse = " + "))
   }
   if (length(negative) > 0) {
-    format_list <- c(format_list, ' - ', paste(negative, collapse = ' - '))
+    format_list <- c(format_list, " - ", paste(negative, collapse = " - "))
   }
-  
+
   if (length(format_list) > 0 && !is.null(weight)) {
-    format_list <- c(weight, ' * ', '(', format_list, ')')
+    format_list <- c(weight, " * ", "(", format_list, ")")
   } else {
-    format_list <- c('0')
+    format_list <- c("0")
   }
   paste(format_list, collapse = "")
 }
@@ -35,35 +46,34 @@ format_overlaps <- function(overlaps) {
 }
 
 #' Calculate the f4(W,X;Y,Z) statistics.
-#'  
+#'
 #' @param graph The admixture graph
 #' @param W     A leaf node
 #' @param X     A leaf node
 #' @param Y     A leaf node
 #' @param Z     A leaf node
-#' 
+#'
 #' @return A symbolic representation of the equation for the f4 statistics given by the admixture graph.
 #' @export
 sf4 <- function(graph, W, X, Y, Z) format_overlaps(f4(graph, W, X, Y, Z))
 
 #' Calculate the f4(A;B,C) statistics.
-#'  
+#'
 #' @param graph The admixture graph
 #' @param A     A leaf node
 #' @param B     A leaf node
 #' @param C     A leaf node
-#' 
+#'
 #' @return A symbolic representation of the equation for the f3 statistics given by the admixture graph.
 #' @export
 sf3 <- function(graph, A, B, C) sf4(graph, A, B, A, C)
 
 #' Calculate the f2(A,B) statistics.
-#'  
+#'
 #' @param graph The admixture graph
 #' @param A     A leaf node
 #' @param B     A leaf node
-#' 
+#'
 #' @return A symbolic representation of the equation for the f2 statistics given by the admixture graph.
 #' @export
 sf2 <- function(graph, A, B) sf4(graph, A, B, A, B)
-
