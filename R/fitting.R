@@ -24,18 +24,15 @@ unpack_environment <- function(parameters, x) {
   graph_environment(parameters, edges, admix_prop)
 }
 
-make_cost_function <- function(data, graph) {
-  data
-  goal <- data$D
-  parameters <- extract_graph_parameters(graph)
-  
-  f <- function(x) {
+make_cost_function <- function(data, graph, parameters = extract_graph_parameters(graph)) {
+  force(data)
+  force(graph)
+  force(parameters)
+  function(x) {
     env <- unpack_environment(parameters, x)
     predictions <- with(data, Vectorize(function(W,X,Y,Z) evaluate_f4(graph, env, W, X, Y, Z))(W, X, Y, Z))
-    sum((goal - predictions)**2)
+    sum((data$D - predictions)**2)
   }
-  
-  f
 }
 
 #' Fit the graph parameters to a data set.
@@ -57,12 +54,6 @@ make_cost_function <- function(data, graph) {
 #' 
 #' @seealso neldermead::optimset
 fit_graph <- function(data, graph, optimisation_options = NULL) {
-  if (!requireNamespace("dplyr", quietly = TRUE)) {
-    # FIXME: THIS IS ONLY NEEDED TO ADD THE FITTED DATA
-    # TO THE DATA FRAME. THAT ISN'T STRICLTY NECESSARY
-    # SO PROBABLY SHOULDN'T REQUIRE IT THIS STRONGLY
-    stop("This function requires dplyr to be installed.")
-  }
   if (!requireNamespace("neldermead", quietly = TRUE)) {
     stop("This function requires neldermead to be installed.")
   }
@@ -70,7 +61,7 @@ fit_graph <- function(data, graph, optimisation_options = NULL) {
   params <- extract_graph_parameters(graph)
   init_env <- graph_environment(params)
   x0 <- pack_environment(params, init_env)
-  cfunc <- make_cost_function(data, graph)
+  cfunc <- make_cost_function(data, graph, params)
   
   opti <- fminbnd(cfunc, x0=x0, xmin=rep(0,length(x0)), xmax=rep(1,length(x0)), options=optimisation_options)
   
