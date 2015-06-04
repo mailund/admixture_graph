@@ -33,19 +33,19 @@ admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
                                 ))
 
 
-graph <- agraph(nodes, edges, admixture_proportions)
-plot(graph, ordered_leaves = c("BLK", "PB", "AK", "ABC_BC", "ABC_A", "YB", "BB", "EBB"), 
+test_graph <- agraph(nodes, edges, admixture_proportions)
+plot(test_graph, ordered_leaves = c("BLK", "PB", "AK", "ABC_BC", "ABC_A", "YB", "BB", "EBB"), 
      show_admixture_labels = TRUE, show_inner_node_labels = TRUE)
 
 data <- read.table('testdata.txt', header=TRUE)
 
-env <- graph_environment(extract_graph_parameters(graph))
+env <- graph_environment(extract_graph_parameters(test_graph))
 
 library(dplyr)
-data %>% add_graph_f4_sign(graph) %>% add_graph_f4(graph, env)
+data %>% add_graph_f4_sign(test_graph) %>% add_graph_f4(test_graph, env)
 
 library(neldermead)
-fitted <- data %>% fit_graph(graph, optimset(Display='iter', MaxIter=1))
+fitted <- data %>% fit_graph(test_graph, optimset(Display='iter', MaxIter=1))
 
 library(ggplot2)
 qplot(D, graph_f4, data = fitted$fit_data)
