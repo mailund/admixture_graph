@@ -14,11 +14,11 @@ format_path <- function(graph, nodes) {
 
 #' Computes all paths from one leaf to another.
 #'
-#' @param graph The admixture graph
-#' @param src   The starting leaf
-#' @param dst   The destination leaf
+#' @param graph The admixture graph.
+#' @param src   The starting leaf.
+#' @param dst   The destination leaf.
 #'
-#' @return A list containing all the paths from \code{src} to \code{dst}
+#' @return A list containing all the paths from \code{src} to \code{dst}.
 #' @export
 all_paths <- function(graph, src, dst) {
   src_idx <- which(src == rownames(graph$parents))

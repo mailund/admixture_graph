@@ -1,8 +1,9 @@
-#' Build a parent incidence matrix from an edge list
-#'
-#' @param nodes The name of the nodes in the admxture graph
-#' @param parent_edges An n x 2 matrix where the first column is the child node and the second the parent.
-#'
+#' Build a parent incidence matrix from an edge list.
+#' 
+#' @param nodes The name of the nodes in the admxture graph.
+#' @param parent_edges An \eqn{n \times 2} matrix where the first column is the
+#'   child node and the second the parent.
+#'   
 #' @return An incidence matrix for the parent structure of an admixture graph.
 agraph_parents <- function(nodes, parent_edges) {
   n <- length(nodes)
@@ -14,12 +15,13 @@ agraph_parents <- function(nodes, parent_edges) {
   parents
 }
 
-#' Build matrix of admixture proportions from an edge list
-#'
-#' @param nodes The name of the nodes in the admxture graph
-#' @param admixture_weights An n x 3 matrix where the first column is the child node, the second the parent
-#' and the third the admixture weight on that edge.
-#'
+#' Build matrix of admixture proportions from an edge list.
+#' 
+#' @param nodes The name of the nodes in the admxture graph.
+#' @param admixture_weights An \eqn{n \times 3} matrix where the first column is
+#'   the child node, the second the parent. and the third the admixture weight
+#'   on that edge.
+#'   
 #' @return A matrix containing the admixture weights.
 agraph_weights <- function(nodes, admixture_weights) {
   n <- length(nodes)
@@ -36,11 +38,12 @@ agraph_weights <- function(nodes, admixture_weights) {
   weights
 }
 
-#' Build a children incidene matrix from an parent edge list
-#'
-#' @param nodes The name of the nodes in the admxture graph
-#' @param parent_edges An n x 2 matrix where the first column is the child node and the second the parent.
-#'
+#' Build a children incidene matrix from an parent edge list.
+#' 
+#' @param nodes The name of the nodes in the admxture graph.
+#' @param parent_edges An \eqn{n \times 2} matrix where the first column is the 
+#'   child node and the second the parent.
+#'   
 #' @return An incidence matrix for the children structure of an admixture graph.
 agraph_children <- function(nodes, parent_edges) {
   n <- length(nodes)
@@ -53,14 +56,18 @@ agraph_children <- function(nodes, parent_edges) {
 }
 
 #' Create an admixture graph object.
-#'
-#' @param nodes The name of the nodes in the admxture graph
-#' @param parent_edges An n x 2 matrix where the first column is the child node and the second the parent.
-#' @param admixture_weights An n x 3 matrix where the first column is the child node, the second the parent
-#' and the third the admixture weight on that edge.
-#'
-#' @return An admixture graph object.
 #' 
+#' @param nodes             The name of the nodes in the admxture graph.
+#'   
+#' @param parent_edges      An \eqn{n \times 2} matrix where the first column is
+#'   the child node and the second the parent.
+#'   
+#' @param admixture_weights An \eqn{n \times 3} matrix where the first column is
+#'   the child node, the second the parent and the third the admixture weight on
+#'   that edge.
+#'   
+#' @return An admixture graph object.
+#'   
 #' @examples
 #' nodes <- c("A", "B", "C", "AB", "BC", "ABC", "R", "O")
 #' edges <- matrix(ncol = 2, byrow=TRUE,
@@ -75,10 +82,10 @@ agraph_children <- function(nodes, parent_edges) {
 #' admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
 #'                                 data = c("B", "AB", "a",
 #'                                          "B", "BC", "(1-a)"))
-#'
-#'
+#' 
+#' 
 #' graph <- agraph(nodes, edges, admixture_proportions)
-#'
+#' 
 #' @export
 agraph <- function(nodes, parent_edges, admixture_proportions) {
   parents <- agraph_parents(nodes, parent_edges)
