@@ -6,6 +6,10 @@
 \usage{
 overlaps_sign(overlaps)
 }
+\arguments{
+\item{overlaps}{Data frame representing path overlaps, typically generated
+  by \code{\link{all_path_overlaps}}.}
+}
 \description{
 Get the sign of overlapping paths.
 }

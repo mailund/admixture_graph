@@ -62,9 +62,9 @@ agraph_children <- function(nodes, parent_edges) {
 #' @param parent_edges      An \eqn{n \times 2} matrix where the first column is
 #'   the child node and the second the parent.
 #'   
-#' @param admixture_weights An \eqn{n \times 3} matrix where the first column is
-#'   the child node, the second the parent and the third the admixture weight on
-#'   that edge.
+#' @param admixture_proportions An \eqn{n \times 3} matrix where the first 
+#'   column is the child node, the second the parent and the third the admixture
+#'   weight on that edge.
 #'   
 #' @return An admixture graph object.
 #'   
