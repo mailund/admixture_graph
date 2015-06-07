@@ -2,9 +2,8 @@
 #' 
 #' The package provides functionality to analyse and test admixture graphs 
 #' against the \eqn{f} statistics described in the paper 
-#' \href{http://genetics.med.harvard.edu/reich/Reich_Lab/Software_files/2012_Patterson_AncientAdmixture_Genetics.pdf}{Ancient
-#' Admixture in Human History}, Patternson \emph{et al.}, Genetics, Vol. 192, 
-#' 1065–1093, 2012.
+#' \href{http://tinyurl.com/o5a4kr4}{Ancient Admixture in Human History},
+#' Patternson \emph{et al.}, Genetics, Vol. 192, 1065–1093, 2012.
 #' 
 #' The \eqn{f} statistics --- \eqn{f_2}, \eqn{f_3}, and \eqn{f_4} --- extract 
 #' information about correlations between gene frequencies in different 
@@ -18,7 +17,7 @@
 #' This package provides functions for extracting these equations and for 
 #' fitting them against computed \eqn{f} statistics. It does not currently 
 #' provide functions for computing the \eqn{f} statistics --- for that we refer 
-#' to  the \href{https://github.com/DReichLab/AdmixTools}{ADMIXTOOLS} software
+#' to  the \href{https://github.com/DReichLab/AdmixTools}{ADMIXTOOLS} software 
 #' package.
 #' 
 #' @docType package
