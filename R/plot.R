@@ -1,17 +1,17 @@
 #' Plot an admixture graph.
-#'
-#' This is a basic drawing routine for visualising the graph. For publication quality graphs a lot
-#' more tweaking is probably needed.
-#'
+#' 
+#' This is a basic drawing routine for visualising the graph. For publication
+#' quality graphs a lot more tweaking is probably needed.
+#' 
 #' @param graph The admixture graph.
-#' @param ordered_leaves The leaf-nodes in the left to right order they should be drawn.
-#' I don't have a good algorithm for figuring out that order so for now it is
-#' required as a function argument.
-#' @param show_admixture_labels A flag determining if the plot should include the names of
-#' admixture proportions.
-#' @param show_inner_node_labels A flat determining if the plot should include the names of
-#' inner nodes.
-#'
+#' @param ordered_leaves The leaf-nodes in the left to right order they should
+#'   be drawn. I don't have a good algorithm for figuring out that order so for
+#'   now it is required as a function argument.
+#' @param show_admixture_labels A flag determining if the plot should include
+#'   the names of admixture proportions.
+#' @param show_inner_node_labels A flat determining if the plot should include
+#'   the names of inner nodes.
+#'   
 #' @export
 plot.agraph <- function(graph, ordered_leaves,
                         show_admixture_labels = FALSE,

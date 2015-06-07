@@ -11,31 +11,31 @@ path_non_negative <- function(overlap)
 path_non_positive <- function(overlap)
   path_zero(overlap) || path_negative(overlap)
 
-#' All overlaps are empty
+#' All overlaps are empty.
 #' @export
 is_zero <- function(overlaps) {
   all(unlist(Map(path_zero, overlaps)))
 }
 
-#' All overlaps are either empty or have a positive weight
+#' All overlaps are either empty or have a positive weight.
 #' @export
 is_positive <- function(overlaps) {
   !is_zero(overlaps) && all(unlist(Map(path_non_negative, overlaps)))
 }
 
-#' All overlaps are either empty or have a negative weight
+#' All overlaps are either empty or have a negative weight.
 #' @export
 is_negative <- function(overlaps) {
   !is_zero(overlaps) && all(unlist(Map(path_non_positive, overlaps)))
 }
 
-#' Overlapping edges have both positive and negative contributions
+#' Overlapping edges have both positive and negative contributions.
 #' @export
 is_unknown <- function(overlaps) {
   !is_zero(overlaps) && !is_positive(overlaps) && !is_negative(overlaps)
 }
 
-#' Get the sign of overlapping paths
+#' Get the sign of overlapping paths.
 #' @export
 overlaps_sign <- function(overlaps) {
   if (is_zero(overlaps)) return(0)
@@ -44,35 +44,40 @@ overlaps_sign <- function(overlaps) {
   else return(NA)
 }
 
-#' Extracts the sign for the f4 statistics predicted by the graph.
-#'
+#' Extracts the sign for the \eqn{f_4} statistics predicted by the graph.
+#' 
 #' @param graph      The admixture graph
 #' @param W          First population/sample
 #' @param X          Second population/sample
 #' @param Y          Third population/sample
 #' @param Z          Fourth population/sample
-#'
-#' @return The sign of the f4 specified by the graph (or NA when it cannot be determined without knowing the
-#' graph parameters).
-#'
+#'   
+#' @return The sign of the \eqn{f_4} specified by the graph (or NA when it
+#'   cannot be determined without knowing the graph parameters).
+#'   
 #' @export
 get_graph_f4_sign <- function(graph, W, X, Y, Z) {
   overlaps_sign(f4(graph, W, X, Y, Z))
 }
 
-#' Extracts the sign for the f4 statistics predicted by the graph for all rows in a data frame and extends
-#' the data frame with the graph f4.
-#'
-#' The data frame, \code{data}, must contain columns \code{W}, \code{X}, \code{Y}, and \code{Z}.
-#' The function then computes the sign of the f4(W,X;Y,Z) statistics for all rows and adds these
-#' as a column, \code{graph_f4_sign}, to the data frame.
-#'
-#' @param data     The data frame to get the labels to compute the f4 statistics from.
+#' Extend a data frame with \eqn{f_4} statistics predicted by a graph.
+#' 
+#' Extracts the sign for the \eqn{f_4} statistics predicted by the graph for all
+#' rows in a data frame and extends the data frame with the graph \eqn{f_4}.
+#' 
+#' The data frame, \code{data}, must contain columns \code{W}, \code{X}, 
+#' \code{Y}, and \code{Z}. The function then computes the sign of the 
+#' f4(W,X;Y,Z) statistics for all rows and adds these as a column, 
+#' \code{graph_f4_sign}, to the data frame.
+#' 
+#' @param data     The data frame to get the labels to compute the \eqn{f_4} 
+#'   statistics from.
 #' @param graph    The admixture graph
-#'
-#' @return A data frame identical to \code{data} except with an additional column, \code{graph_f4_sign}, containing
-#' the sign of the f4 statistics as determined by the graph.
-#'
+#'   
+#' @return A data frame identical to \code{data} except with an additional 
+#'   column, \code{graph_f4_sign}, containing the sign of the \eqn{f_4}
+#'   statistics as determined by the graph.
+#'   
 #' @export
 add_graph_f4_sign <- function(data, graph) {
   signs <- Map(function(W,X,Y,Z) get_graph_f4_sign(graph, W, X, Y, Z),
