@@ -3,7 +3,7 @@
 #' This is a basic drawing routine for visualising the graph. For publication
 #' quality graphs a lot more tweaking is probably needed.
 #' 
-#' @param graph The admixture graph.
+#' @param x The admixture graph.
 #' @param ordered_leaves The leaf-nodes in the left to right order they should
 #'   be drawn. I don't have a good algorithm for figuring out that order so for
 #'   now it is required as a function argument.
@@ -12,10 +12,19 @@
 #' @param show_inner_node_labels A flat determining if the plot should include
 #'   the names of inner nodes.
 #'   
+#' @param ... Additional plotting options
+#'   
 #' @export
-plot.agraph <- function(graph, ordered_leaves,
+plot.agraph <- function(x, 
+                        ordered_leaves = NULL,
                         show_admixture_labels = FALSE,
-                        show_inner_node_labels = FALSE) {
+                        show_inner_node_labels = FALSE,
+                        ...) {
+  
+  graph <- x
+  
+  if (is.null(ordered_leaves))
+    ordered_leaves <- graph$leaves
 
   dfs <- function(node, basis, step) {
     result <- rep(NA, length(graph$nodes))
@@ -46,7 +55,7 @@ plot.agraph <- function(graph, ordered_leaves,
 
   # Start the actual drawing of the graph...
   plot(xpos, ypos, type = "n", axes = FALSE, frame.plot = FALSE,
-       xlab = "", ylab = "", ylim = c(-1, max(ypos) + 0.5))
+       xlab = "", ylab = "", ylim = c(-1, max(ypos) + 0.5), ...)
 
   for (node in graph$nodes) {
     parents <- graph$nodes[graph$parents[node, ]]

@@ -10,6 +10,8 @@ test_that("we can build a simple tree.", {
                            "C", "ABC"))
   graph <- agraph(leaves, inner_nodes, edges, NULL)
   
+  expect_equal(graph$leaves, leaves)
+  expect_equal(graph$inner_nodes, inner_nodes)
   expect_equal(graph$nodes, c(leaves, inner_nodes))
   
   expect_equal(names(which(graph$children["A",])), character(0))
@@ -34,6 +36,8 @@ test_that("we can build an unresolved simple tree.", {
                            "C", "ABC"))
   graph <- agraph(leaves, inner_nodes, edges, NULL)
   
+  expect_equal(graph$leaves, leaves)
+  expect_equal(graph$inner_nodes, inner_nodes)
   expect_equal(graph$nodes, c(leaves, inner_nodes))
   
   expect_equal(names(which(graph$children["A",])), character(0))
@@ -61,6 +65,8 @@ test_that("we can build a simple graph.", {
   
   graph <- agraph(leaves, inner_nodes, edges, admixture_proportions)
   
+  expect_equal(graph$leaves, leaves)
+  expect_equal(graph$inner_nodes, inner_nodes)
   expect_equal(graph$nodes, c(leaves, inner_nodes))
   
   expect_equal(names(which(graph$children["A",])), character(0))
