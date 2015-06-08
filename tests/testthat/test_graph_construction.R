@@ -26,6 +26,29 @@ test_that("we can build a simple tree.", {
   expect_equal(names(which(graph$parents["ABC",])), character(0))
 })
 
+test_that("we can build an unresolved simple tree.", {
+  nodes <- c("A", "B", "C", "ABC")
+  edges <- matrix(ncol = 2, byrow=TRUE,
+                  data = c("A", "ABC",
+                           "B", "ABC",
+                           "C", "ABC"))
+  admixture_proportions <- NULL
+  
+  graph <- agraph(nodes, edges, admixture_proportions)
+  
+  expect_equal(graph$nodes, nodes)
+  
+  expect_equal(names(which(graph$children["A",])), character(0))
+  expect_equal(names(which(graph$children["B",])), character(0))
+  expect_equal(names(which(graph$children["C",])), character(0))
+  expect_equal(names(which(graph$children["ABC",])), c("A", "B", "C"))
+  
+  expect_equal(names(which(graph$parents["A",])), c("ABC"))
+  expect_equal(names(which(graph$parents["B",])), c("ABC"))
+  expect_equal(names(which(graph$parents["C",])), c("ABC"))
+  expect_equal(names(which(graph$parents["ABC",])), character(0))
+})
+
 test_that("we can build a simple graph.", {
   nodes <- c("A", "B", "C", "AC", "BC", "ABC")
   edges <- matrix(ncol = 2, byrow=TRUE,
