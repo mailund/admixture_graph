@@ -1,7 +1,8 @@
 context("Path overlaps")
 
 test_that("we can compute the overlap between paths.", {
-  nodes <- c("A", "B", "C", "AC", "BC", "ABC")
+  leaves <- c("A", "B", "C")
+  inner_nodes <- c("AC", "BC", "ABC")
   edges <- matrix(ncol = 2, byrow=TRUE,
                   data = c("A", "AC",
                            "B", "BC",
@@ -10,7 +11,7 @@ test_that("we can compute the overlap between paths.", {
                            "BC", "ABC"))
   admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
                                   data = c("C", "AC", "a", "C", "BC", "(1-a)"))
-  graph <- agraph(nodes, edges, admixture_proportions)
+  graph <- agraph(leaves, inner_nodes, edges, admixture_proportions)
   
   AB_paths <- all_paths(graph, "A", "B")
   CB_paths <- all_paths(graph, "C", "B")

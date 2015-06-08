@@ -57,7 +57,9 @@ agraph_children <- function(nodes, parent_edges) {
 
 #' Create an admixture graph object.
 #' 
-#' @param nodes             The name of the nodes in the admxture graph.
+#' @param leaves            The names of the leaves in the admixture graph.
+#' 
+#' @param inner_nodes       The name of the inner nodes in the admxture graph.
 #'   
 #' @param parent_edges      An \eqn{n \times 2} matrix where the first column is
 #'   the child node and the second the parent.
@@ -69,7 +71,8 @@ agraph_children <- function(nodes, parent_edges) {
 #' @return An admixture graph object.
 #'   
 #' @examples
-#' nodes <- c("A", "B", "C", "AB", "BC", "ABC", "R", "O")
+#' leaves <- c("A", "B", "C")
+#' inner_nodes <- c("AB", "BC", "ABC", "R", "O")
 #' edges <- matrix(ncol = 2, byrow=TRUE,
 #'                 data = c("A", "AB",
 #'                          "C", "BC",
@@ -84,14 +87,16 @@ agraph_children <- function(nodes, parent_edges) {
 #'                                          "B", "BC", "(1-a)"))
 #' 
 #' 
-#' graph <- agraph(nodes, edges, admixture_proportions)
+#' graph <- agraph(leaves, inner_nodes, edges, admixture_proportions)
 #' 
 #' @export
-agraph <- function(nodes, parent_edges, admixture_proportions) {
+agraph <- function(leaves, inner_nodes, parent_edges, admixture_proportions) {
+  nodes <- c(leaves, inner_nodes)
   parents <- agraph_parents(nodes, parent_edges)
   children <- agraph_children(nodes, parent_edges)
   admixture_probs <- agraph_weights(nodes, admixture_proportions)
-  structure(list(nodes = nodes,
+  structure(list(leaves = leaves, inner_nodes = inner_nodes,
+                 nodes = nodes,
                  parents = parents,
                  probs = admixture_probs,
                  children = children),
