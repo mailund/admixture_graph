@@ -100,8 +100,8 @@ get_graph_f4_sign <- function(graph, W, X, Y, Z) {
 #'   
 #' @export
 add_graph_f4_sign <- function(data, graph) {
-  signs <- Map(function(W,X,Y,Z) get_graph_f4_sign(graph, W, X, Y, Z),
-               data$W, data$X, data$Y, data$Z)
+  signs <- unlist(Map(function(W,X,Y,Z) get_graph_f4_sign(graph, W, X, Y, Z),
+                      data$W, data$X, data$Y, data$Z))
   data$graph_f4_sign <- signs
   data
 }
