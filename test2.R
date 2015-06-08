@@ -50,3 +50,18 @@ fitted <- data %>% fit_graph(test_graph, optimset(Display='iter', MaxIter=1))
 library(ggplot2)
 qplot(D, graph_f4, data = fitted$fit_data)
 
+
+
+
+nodes <- c("A", "B", "C", "c", "BC", "AC", "ABC")
+edges <- matrix(ncol = 2, byrow=TRUE,
+                data = c("A", "AC",
+                         "B", "BC",
+                         "C", "c", "c", "AC", "c", "BC",
+                         "AC", "ABC",
+                         "BC", "ABC"))
+admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
+                                data = c("C", "BC", "a", "C", "AC", "(1-a)"))
+
+graph <- agraph(nodes, edges, admixture_proportions)
+plot(graph, c("A", "C", "B"))
