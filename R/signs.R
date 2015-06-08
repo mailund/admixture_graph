@@ -12,30 +12,50 @@ path_non_positive <- function(overlap)
   path_zero(overlap) || path_negative(overlap)
 
 #' All overlaps are empty.
+#' 
+#' @param overlaps   Data frame representing path overlaps, typically generated
+#'   by \code{\link{all_path_overlaps}}.
+#'   
 #' @export
 is_zero <- function(overlaps) {
   all(unlist(Map(path_zero, overlaps)))
 }
 
 #' All overlaps are either empty or have a positive weight.
+#' 
+#' @param overlaps   Data frame representing path overlaps, typically generated
+#'   by \code{\link{all_path_overlaps}}.
+#'
 #' @export
 is_positive <- function(overlaps) {
   !is_zero(overlaps) && all(unlist(Map(path_non_negative, overlaps)))
 }
 
 #' All overlaps are either empty or have a negative weight.
+#' 
+#' @param overlaps   Data frame representing path overlaps, typically generated
+#'   by \code{\link{all_path_overlaps}}.
+#'
 #' @export
 is_negative <- function(overlaps) {
   !is_zero(overlaps) && all(unlist(Map(path_non_positive, overlaps)))
 }
 
 #' Overlapping edges have both positive and negative contributions.
+#' 
+#' @param overlaps   Data frame representing path overlaps, typically generated
+#'   by \code{\link{all_path_overlaps}}.
+#'
 #' @export
 is_unknown <- function(overlaps) {
   !is_zero(overlaps) && !is_positive(overlaps) && !is_negative(overlaps)
 }
 
 #' Get the sign of overlapping paths.
+#' 
+#' @param overlaps   Data frame representing path overlaps, typically generated
+#'   by \code{\link{all_path_overlaps}}.
+#'
 #' @export
 overlaps_sign <- function(overlaps) {
   if (is_zero(overlaps)) return(0)
@@ -80,8 +100,9 @@ get_graph_f4_sign <- function(graph, W, X, Y, Z) {
 #'   
 #' @export
 add_graph_f4_sign <- function(data, graph) {
-  signs <- Map(function(W,X,Y,Z) get_graph_f4_sign(graph, W, X, Y, Z),
-               data$W, data$X, data$Y, data$Z)
+  signs <- unlist(Map(function(W,X,Y,Z) get_graph_f4_sign(graph, W, X, Y, Z),
+                      data$W, data$X, data$Y, data$Z),
+                  use.names = FALSE)
   data$graph_f4_sign <- signs
   data
 }

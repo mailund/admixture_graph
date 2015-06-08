@@ -58,8 +58,14 @@ plot.agraph <- function(graph, ordered_leaves,
       break_x_left <- xpos[node] - 0.3
       break_x_right <- xpos[node] + 0.3
       
-      lines(c(xpos[parents[1]], break_x_left), c(ypos[parents[1]], break_y))
-      lines(c(xpos[parents[2]], break_x_right), c(ypos[parents[2]], break_y))
+      if (xpos[parents[1]] < xpos[parents[2]]) {
+        lines(c(xpos[parents[1]], break_x_left), c(ypos[parents[1]], break_y))
+        lines(c(xpos[parents[2]], break_x_right), c(ypos[parents[2]], break_y))  
+      } else {
+        lines(c(xpos[parents[2]], break_x_left), c(ypos[parents[2]], break_y))
+        lines(c(xpos[parents[1]], break_x_right), c(ypos[parents[1]], break_y))
+      }
+      
       
       segments(break_x_left, break_y, xpos[node], ypos[node], col = "red")
       segments(break_x_right, break_y, xpos[node], ypos[node], col = "red")

@@ -6,6 +6,10 @@
 \usage{
 is_unknown(overlaps)
 }
+\arguments{
+\item{overlaps}{Data frame representing path overlaps, typically generated
+  by \code{\link{all_path_overlaps}}.}
+}
 \description{
 Overlapping edges have both positive and negative contributions.
 }
