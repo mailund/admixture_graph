@@ -69,7 +69,8 @@ agraph_children <- function(nodes, parent_edges) {
 #' @return An admixture graph object.
 #'   
 #' @examples
-#' nodes <- c("A", "B", "C", "AB", "BC", "ABC", "R", "O")
+#' leaves <- c("A", "B", "C")
+#' inner_nodes <- c("AB", "BC", "ABC", "R", "O")
 #' edges <- matrix(ncol = 2, byrow=TRUE,
 #'                 data = c("A", "AB",
 #'                          "C", "BC",
@@ -84,10 +85,11 @@ agraph_children <- function(nodes, parent_edges) {
 #'                                          "B", "BC", "(1-a)"))
 #' 
 #' 
-#' graph <- agraph(nodes, edges, admixture_proportions)
+#' graph <- agraph(leaves, inner_nodes, edges, admixture_proportions)
 #' 
 #' @export
-agraph <- function(nodes, parent_edges, admixture_proportions) {
+agraph <- function(leaves, inner_nodes, parent_edges, admixture_proportions) {
+  nodes <- c(leaves, inner_nodes)
   parents <- agraph_parents(nodes, parent_edges)
   children <- agraph_children(nodes, parent_edges)
   admixture_probs <- agraph_weights(nodes, admixture_proportions)

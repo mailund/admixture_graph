@@ -1,15 +1,16 @@
 context("Graph construction")
 
 test_that("we can build a simple tree.", {
-  nodes <- c("A", "B", "C", "AB", "ABC")
+  leaves <- c("A", "B", "C")
+  inner_nodes <- c("AB", "ABC")
   edges <- matrix(ncol = 2, byrow=TRUE,
                   data = c("A", "AB",
                            "B", "AB",
                            "AB", "ABC",
                            "C", "ABC"))
-  graph <- agraph(nodes, edges, NULL)
+  graph <- agraph(leaves, inner_nodes, edges, NULL)
   
-  expect_equal(graph$nodes, nodes)
+  expect_equal(graph$nodes, c(leaves, inner_nodes))
   
   expect_equal(names(which(graph$children["A",])), character(0))
   expect_equal(names(which(graph$children["B",])), character(0))
@@ -25,14 +26,15 @@ test_that("we can build a simple tree.", {
 })
 
 test_that("we can build an unresolved simple tree.", {
-  nodes <- c("A", "B", "C", "ABC")
+  leaves <- c("A", "B", "C")
+  inner_nodes <- c("ABC")
   edges <- matrix(ncol = 2, byrow=TRUE,
                   data = c("A", "ABC",
                            "B", "ABC",
                            "C", "ABC"))
-  graph <- agraph(nodes, edges, NULL)
+  graph <- agraph(leaves, inner_nodes, edges, NULL)
   
-  expect_equal(graph$nodes, nodes)
+  expect_equal(graph$nodes, c(leaves, inner_nodes))
   
   expect_equal(names(which(graph$children["A",])), character(0))
   expect_equal(names(which(graph$children["B",])), character(0))
@@ -46,7 +48,8 @@ test_that("we can build an unresolved simple tree.", {
 })
 
 test_that("we can build a simple graph.", {
-  nodes <- c("A", "B", "C", "AC", "BC", "ABC")
+  leaves <- c("A", "B", "C")
+  inner_nodes <- c("AC", "BC", "ABC")
   edges <- matrix(ncol = 2, byrow=TRUE,
                   data = c("A", "AC",
                            "B", "BC",
@@ -56,9 +59,9 @@ test_that("we can build a simple graph.", {
   admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
                                   data = c("C", "AC", "a", "C", "BC", "(1-a)"))
   
-  graph <- agraph(nodes, edges, admixture_proportions)
+  graph <- agraph(leaves, inner_nodes, edges, admixture_proportions)
   
-  expect_equal(graph$nodes, nodes)
+  expect_equal(graph$nodes, c(leaves, inner_nodes))
   
   expect_equal(names(which(graph$children["A",])), character(0))
   expect_equal(names(which(graph$children["B",])), character(0))
