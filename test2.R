@@ -1,8 +1,8 @@
 ### flow polar -> brown
-nodes <- c("BLK", "PB", "AK",
-           "ABC_BC", "ABC_A", "YB", "BB", "EBB",
-           "R", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
-           "abc_bc", "I", "E", "bb")
+leaves <- c("BLK", "PB", "AK",
+            "ABC_BC", "ABC_A", "YB", "BB", "EBB") 
+inner_nodes <- c("R", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+                 "abc_bc", "I", "E", "bb")
 
 edges <- matrix(ncol = 2, byrow=TRUE,
                 data = c("BLK", "R",
@@ -33,9 +33,11 @@ admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
                                 ))
 
 
-test_graph <- agraph(nodes, edges, admixture_proportions)
+test_graph <- agraph(leaves, inner_nodes, edges, admixture_proportions)
+plot(test_graph)
 plot(test_graph, ordered_leaves = c("BLK", "PB", "AK", "ABC_BC", "ABC_A", "YB", "BB", "EBB"), 
      show_admixture_labels = TRUE, show_inner_node_labels = TRUE)
+
 
 data <- read.table('testdata.txt', header=TRUE)
 
@@ -53,15 +55,3 @@ qplot(D, graph_f4, data = fitted$fit_data)
 
 
 
-nodes <- c("A", "B", "C", "c", "BC", "AC", "ABC")
-edges <- matrix(ncol = 2, byrow=TRUE,
-                data = c("A", "AC",
-                         "B", "BC",
-                         "C", "c", "c", "AC", "c", "BC",
-                         "AC", "ABC",
-                         "BC", "ABC"))
-admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
-                                data = c("C", "BC", "a", "C", "AC", "(1-a)"))
-
-graph <- agraph(nodes, edges, admixture_proportions)
-plot(graph, c("A", "C", "B"))
