@@ -7,9 +7,7 @@ test_that("we can build a simple tree.", {
                            "B", "AB",
                            "AB", "ABC",
                            "C", "ABC"))
-  admixture_proportions <- NULL
-  
-  graph <- agraph(nodes, edges, admixture_proportions)
+  graph <- agraph(nodes, edges, NULL)
   
   expect_equal(graph$nodes, nodes)
   
@@ -32,9 +30,7 @@ test_that("we can build an unresolved simple tree.", {
                   data = c("A", "ABC",
                            "B", "ABC",
                            "C", "ABC"))
-  admixture_proportions <- NULL
-  
-  graph <- agraph(nodes, edges, admixture_proportions)
+  graph <- agraph(nodes, edges, NULL)
   
   expect_equal(graph$nodes, nodes)
   
