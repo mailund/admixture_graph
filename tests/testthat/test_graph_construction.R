@@ -34,7 +34,8 @@ test_that("we can build a simple graph.", {
                            "C", "AC", "C", "BC",
                            "AC", "ABC",
                            "BC", "ABC"))
-  admixture_proportions <- NULL
+  admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
+                                  data = c("C", "AC", "a", "C", "BC", "(1-a)"))
   
   graph <- agraph(nodes, edges, admixture_proportions)
   
@@ -53,4 +54,10 @@ test_that("we can build a simple graph.", {
   expect_equal(names(which(graph$parents["AC",])), c("ABC"))
   expect_equal(names(which(graph$parents["BC",])), c("ABC"))
   expect_equal(names(which(graph$parents["ABC",])), character(0))
+  
+  expect_equal(graph$probs["C","AC"], c("a"))
+  expect_equal(graph$probs["C","BC"], c("(1-a)"))
+  expect_equal(graph$probs["AC","C"], c("a"))
+  expect_equal(graph$probs["BC","C"], c("(1-a)"))
+  
 })
