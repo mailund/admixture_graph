@@ -6,19 +6,163 @@ output:
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, warning=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "README-"
 )
+
+library(admixturegraph)
+suppressPackageStartupMessages(library(dplyr, quietly = TRUE))
+suppressPackageStartupMessages(library(ggplot2, quietly = TRUE))
+suppressPackageStartupMessages(library(ggthemes, quietly = TRUE))
+suppressPackageStartupMessages(library(knitr, quietly = TRUE))
 ```
 
 # admixturegraph: Admixture Graph Manipulation and Fitting
 
-The package provides functionality to analyse and test admixture graphs against the f statisticsdescribed in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson et al., Genetics, Vol. 192, 1065--1093, 2012.
+The package provides functionality to analyse and test admixture graphs against the f statisticsdescribed in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson *et al.*, Genetics, Vol. 192, 1065--1093, 2012.
 
 The f statistics --- $f_2$, $f_3$, and $f_4$ --- extract information about correlations between gene frequencies in different populations (or single diploid genome samples), which can be informative about patterns of gene flow between these populations in form of admixture events. If a graph is constructed as a hypothesis for the relationship between the populations, equations for the expected values of the f statistics can be extracted, as functions of edge lenghs — representing genetic drift — and admixture proportions.
 
 This package provides functions for extracting these equations and for fitting them against computed f statistics. It does not currently provide functions for computing the f statistics — for that we refer to the [ADMIXTOOLS](https://github.com/DReichLab/AdmixTools) software package.
+
+## Example
+
+Below is a quick example of how the package can be used. The example uses data
+from polar bears and brown bears with a black bear as outgroup. The BLK sample
+is the black bear, the PB and AK populations are polar bears, and the rest
+are brown bears. There are two populations of so-called ABC bears, ABC_A and
+ABC_BC, a population of Yellow Stone bears, YB, and a population of European
+brown bears, EBB.
+
+Using ADMIXTOOLS I have computed $f_4$ statistics --- there called $D$ statistics
+--- and have the results:
+
+```{r}
+data(bears)
+bears
+```
+
+The $D$ column is the $f_4(W,X;Y,Z)$ statistic and the $Z$ column is the Z-values
+obtained from a blocked jacknife (see Patterson *et al.* for details).
+
+From the statistics we can see that the ABC bears are closer related to the
+polar bears compared to the other brown bears and that the Yellow Stone bears
+are closer to the polar bears than the European bears, and also that the two
+populations of ABC bears are not equally pulled towards the polar bears.
+
+We can explain this by several waves of admixture from ancestral polar bears
+into brown bears, so a first attempt of a graph can be constructed as this:
+
+```{r first_graph}
+leaves <- c("BLK", "PB", "AK", "ABC_BC", "ABC_A", "YB", "EBB") 
+inner_nodes <- c("R", "a", "b", "c", "d", "e", "f", "g", "h",
+                 "abc_bc", "G", "E")
+
+edges <- matrix(ncol = 2, byrow=TRUE,
+                data = c("BLK", "R",
+                         "PB", "h", "AK", "h",
+                         "ABC_BC", "abc_bc", "abc_bc", "f", "abc_bc", "g",
+                         "ABC_A", "g", 
+                         "YB", "e",
+                         "EBB", "c",
+                         "h", "f",
+                         "f", "d",
+                         "g", "G", "G", "d", "G", "e",
+                         "d", "b",
+                         "e", "E", "E", "b", "E", "c",
+                         "b", "a",
+                         "c", "a",
+                         "a", "R"
+                ))
+
+admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
+                                data = c(
+                                  "abc_bc", "f", "a", "abc_bc", "g", "(1-a)",
+                                  "G", "d", "b", "G", "e", "(1-b)",
+                                  "E", "b", "d", "E", "c", "(1-d)"
+                                ))
+
+
+bears_graph <- agraph(leaves, inner_nodes, edges, admixture_proportions)
+plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
+```
+
+The graph makes predictions on how the $f_4$ statistics should look, in particular
+it allows us to predict the signs of the $f_4$ statistics.
+
+```{r}
+add_graph_f4_sign(bears, bears_graph)
+```
+
+Here we see that it generally predicts the signs well, but I made a mistake in
+the structure of the ABC bears --- the A versus BC statistics compared to polar
+bears have the wrong sign --- so we can try to update the graph.
+
+```{r second_graph}
+leaves <- c("BLK", "PB", "AK", "ABC_A", "ABC_BC", "YB", "EBB") 
+inner_nodes <- c("R", "a", "b", "c", "d", "e", "f", "g", "h",
+                 "abc_a", "G", "E")
+
+edges <- matrix(ncol = 2, byrow=TRUE,
+                data = c("BLK", "R",
+                         "PB", "h", "AK", "h",
+                         "ABC_A", "abc_a", "abc_a", "f", "abc_a", "g",
+                         "ABC_BC", "g", 
+                         "YB", "e",
+                         "EBB", "c",
+                         "h", "f",
+                         "f", "d",
+                         "g", "G", "G", "d", "G", "e",
+                         "d", "b",
+                         "e", "E", "E", "b", "E", "c",
+                         "b", "a",
+                         "c", "a",
+                         "a", "R"
+                ))
+
+admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
+                                data = c(
+                                  "abc_a", "f", "a", "abc_a", "g", "(1-a)",
+                                  "G", "d", "b", "G", "e", "(1-b)",
+                                  "E", "b", "d", "E", "c", "(1-d)"
+                                ))
+
+
+bears_graph <- agraph(leaves, inner_nodes, edges, admixture_proportions)
+plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
+```
+
+Which now predicts the signs better.
+
+```{r}
+add_graph_f4_sign(bears, bears_graph)
+```
+
+The way the signs are predicted is by extracting the equations for the $f_4$
+statistics that the graph implies: For each quartet of leaves we can extract
+an equation for the corresponding $f_4$ statistics --- an equation in the
+edge lenghts and admixture proportions --- and if this equation only have positive
+values we know that the sign must be positive, if it only has negative values we
+know that it must be negative, and if it constant zero we know it must be zero.
+
+For example
+
+```{r}
+sf4(bears_graph, "BLK", "PB", "ABC_A", "EBB")
+```
+
+only has negative terms so we know it must be negative.
+
+In general we will not always have only positive or negative terms, in which case
+we cannot this simply predict the sign for $f_4$ statistics. If this is the case
+we need to set the parameters of the graph --- the edge lengths and admixture 
+proportions --- to get the sign, and in that case we can also predict the
+numerical value of the $f_4$ statistics from the graph.
+
+The package also has functionality for computing $f_4$ statistics when knowing
+the graph parameters and for fitting the graph parameters to data.
+
 
