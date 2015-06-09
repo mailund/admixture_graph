@@ -201,10 +201,16 @@ add_graph_f4_sign(bears, bears_graph)
 
 The way the signs are predicted is by extracting the equations for the \(f_4\) statistics that the graph implies: For each quartet of leaves we can extract an equation for the corresponding \(f_4\) statistics --- an equation in the edge lenghts and admixture proportions --- and if this equation only have positive values we know that the sign must be positive, if it only has negative values we know that it must be negative, and if it constant zero we know it must be zero.
 
-For example:
+For example
 
 ``` r
 sf4(bears_graph, "BLK", "PB", "ABC_A", "EBB")
 #> expression(a * (-edge_a_b - edge_b_d - edge_d_f) + (1 - a) * 
 #>     b * (-edge_a_b - edge_b_d) + (1 - a) * (1 - b) * d * (-edge_a_b))
 ```
+
+only has negative terms so we know it must be negative.
+
+In general we will not always have only positive or negative terms, in which case we cannot this simply predict the sign for \(f_4\) statistics. If this is the case we need to set the parameters of the graph --- the edge lengths and admixture proportions --- to get the sign, and in that case we can also predict the numerical value of the \(f_4\) statistics from the graph.
+
+The package also has functionality for computing \(f_4\) statistics when knowing the graph parameters and for fitting the graph parameters to data.
