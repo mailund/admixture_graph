@@ -10,6 +10,12 @@ agraph_parents <- function(nodes, parent_edges) {
   parents <- matrix(FALSE, n, n)
   rownames(parents) <- colnames(parents) <- nodes
   for (row in 1:nrow(parent_edges)) {
+    if (!(parent_edge[row,1] %in% rownames(parents))) {
+      stop(paste("The node", parent_edge[row,1], "is used in the edges but is not specified as a node."))
+    }
+    if (!(parent_edge[row,2] %in% rownames(parents))) {
+      stop(paste("The node", parent_edge[row,2], "is used in the edges but is not specified as a node."))
+    }
     parents[parent_edges[row,1], parent_edges[row,2]] <- TRUE
   }
   parents

@@ -10,6 +10,7 @@ Description: Implements tools for building and visualising admixture graphs and 
     f4 statistics with the signs predicted by the graph -- and graph parameters (edge lengths
     and admixture proportions) can be fitted to observed statistics.
 License: GPL-2
+Depends: R (>= 2.10)
 Suggests: 
   dplyr, 
   neldermead,
