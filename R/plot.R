@@ -50,7 +50,8 @@ plot.agraph <- function(x,
 
   leaf_index <- function(n) {
     result <- which(graph$nodes[n] == ordered_leaves)
-    if (length(result) > 1) stop("Unexpected number of matching nodes")
+    if (length(result) != 1) stop("Unexpected number of matching nodes")
+    result
   }
   left_x  <- dfs(root, basis = leaf_index, step = min)
   right_x <- dfs(root, basis = leaf_index, step = max)
