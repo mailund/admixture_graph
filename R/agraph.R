@@ -77,8 +77,8 @@ agraph_children <- function(nodes, parent_edges) {
 #' @return An admixture graph object.
 #'   
 #' @examples
-#' leaves <- c("A", "B", "C")
-#' inner_nodes <- c("AB", "BC", "ABC", "R", "O")
+#' leaves <- c("A", "B", "C", "O")
+#' inner_nodes <- c("AB", "BC", "ABC", "R")
 #' edges <- matrix(ncol = 2, byrow=TRUE,
 #'                 data = c("A", "AB",
 #'                          "C", "BC",
