@@ -60,32 +60,31 @@ leaves <- c("BLK", "PB", "AK", "ABC_BC", "ABC_A", "YB", "EBB")
 inner_nodes <- c("R", "a", "b", "c", "d", "e", "f", "g", "h",
                  "abc_bc", "G", "E")
 
-edges <- matrix(ncol = 2, byrow=TRUE,
-                data = c("BLK", "R",
-                         "PB", "h", "AK", "h",
-                         "ABC_BC", "abc_bc", "abc_bc", "f", "abc_bc", "g",
-                         "ABC_A", "g", 
-                         "YB", "e",
-                         "EBB", "c",
-                         "h", "f",
-                         "f", "d",
-                         "g", "G", "G", "d", "G", "e",
-                         "d", "b",
-                         "e", "E", "E", "b", "E", "c",
-                         "b", "a",
-                         "c", "a",
-                         "a", "R"
-                ))
+edges <- parent_edges(c(edge("BLK", "R"),
+                        edge("PB", "h"),
+                        edge("AK", "h"),
+                        edge("ABC_BC", "abc_bc"),
+                        admixture_edge("abc_bc", "f", "g"),
+                        edge("ABC_A", "g"), 
+                        edge("YB", "e"),
+                        edge("EBB", "c"),
+                        edge("h", "f"),
+                        edge("f", "d"),
+                        edge("g", "G"),
+                        admixture_edge("G", "d", "e"),
+                        edge("d", "b"),
+                        edge("e", "E"),
+                        admixture_edge("E", "b", "c"),
+                        edge("b", "a"),
+                        edge("c", "a"),
+                        edge("a", "R")))
+ 
 
-admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
-                                data = c(
-                                  "abc_bc", "f", "a", "abc_bc", "g", "(1-a)",
-                                  "G", "d", "b", "G", "e", "(1-b)",
-                                  "E", "b", "d", "E", "c", "(1-d)"
-                                ))
-
-
-bears_graph <- agraph(leaves, inner_nodes, edges, admixture_proportions)
+admixtures <- admixture_proportions(c(admix_props("abc_bc", "f", "g", "alpha"),
+                                      admix_props("G", "d", "e", "beta"),
+                                      admix_props("E", "b", "c", "gamma")))
+                                
+bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
 plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 ```
 
@@ -133,32 +132,31 @@ leaves <- c("BLK", "PB", "AK", "ABC_A", "ABC_BC", "YB", "EBB")
 inner_nodes <- c("R", "a", "b", "c", "d", "e", "f", "g", "h",
                  "abc_a", "G", "E")
 
-edges <- matrix(ncol = 2, byrow=TRUE,
-                data = c("BLK", "R",
-                         "PB", "h", "AK", "h",
-                         "ABC_A", "abc_a", "abc_a", "f", "abc_a", "g",
-                         "ABC_BC", "g", 
-                         "YB", "e",
-                         "EBB", "c",
-                         "h", "f",
-                         "f", "d",
-                         "g", "G", "G", "d", "G", "e",
-                         "d", "b",
-                         "e", "E", "E", "b", "E", "c",
-                         "b", "a",
-                         "c", "a",
-                         "a", "R"
-                ))
+edges <- parent_edges(c(edge("BLK", "R"),
+                        edge("PB", "h"),
+                        edge("AK", "h"),
+                        edge("ABC_A", "abc_a"),
+                        admixture_edge("abc_a", "f", "g"),
+                        edge("ABC_BC", "g"), 
+                        edge("YB", "e"),
+                        edge("EBB", "c"),
+                        edge("h", "f"),
+                        edge("f", "d"),
+                        edge("g", "G"),
+                        admixture_edge("G", "d", "e"),
+                        edge("d", "b"),
+                        edge("e", "E"),
+                        admixture_edge("E", "b", "c"),
+                        edge("b", "a"),
+                        edge("c", "a"),
+                        edge("a", "R")))
+ 
 
-admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
-                                data = c(
-                                  "abc_a", "f", "a", "abc_a", "g", "(1-a)",
-                                  "G", "d", "b", "G", "e", "(1-b)",
-                                  "E", "b", "d", "E", "c", "(1-d)"
-                                ))
-
-
-bears_graph <- agraph(leaves, inner_nodes, edges, admixture_proportions)
+admixtures <- admixture_proportions(c(admix_props("abc_a", "f", "g", "alpha"),
+                                      admix_props("G", "d", "e", "beta"),
+                                      admix_props("E", "b", "c", "gamma")))
+                                
+bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
 plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 ```
 
@@ -205,8 +203,9 @@ For example
 
 ``` r
 sf4(bears_graph, "BLK", "PB", "ABC_A", "EBB")
-#> expression(a * (-edge_a_b - edge_b_d - edge_d_f) + (1 - a) * 
-#>     b * (-edge_a_b - edge_b_d) + (1 - a) * (1 - b) * d * (-edge_a_b))
+#> expression(alpha * (-edge_a_b - edge_b_d - edge_d_f) + (1 - alpha) * 
+#>     beta * (-edge_a_b - edge_b_d) + (1 - alpha) * (1 - beta) * 
+#>     gamma * (-edge_a_b))
 ```
 
 only has negative terms so we know it must be negative.
