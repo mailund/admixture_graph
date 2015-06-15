@@ -48,7 +48,11 @@ plot.agraph <- function(x,
   root <- roots[1]
   ypos <- dfs(root, basis = function(x) 0.0, step = function(x) max(x) + 1.0)
 
-  leaf_index <- function(n) which(graph$nodes[n] == ordered_leaves)
+  leaf_index <- function(n) {
+    result <- which(graph$nodes[n] == ordered_leaves)
+    if (length(result) != 1) stop("Unexpected number of matching nodes")
+    result
+  }
   left_x  <- dfs(root, basis = leaf_index, step = min)
   right_x <- dfs(root, basis = leaf_index, step = max)
   xpos <- left_x + (right_x - left_x) / 2.0

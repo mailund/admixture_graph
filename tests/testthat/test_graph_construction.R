@@ -3,11 +3,10 @@ context("Graph construction")
 test_that("we can build a simple tree.", {
   leaves <- c("A", "B", "C")
   inner_nodes <- c("AB", "ABC")
-  edges <- matrix(ncol = 2, byrow=TRUE,
-                  data = c("A", "AB",
-                           "B", "AB",
-                           "AB", "ABC",
-                           "C", "ABC"))
+  edges <- parent_edges(c(edge("A", "AB"),
+                          edge("B", "AB"),
+                          edge("AB", "ABC"),
+                          edge("C", "ABC")))
   graph <- agraph(leaves, inner_nodes, edges, NULL)
   
   expect_equal(graph$leaves, leaves)
@@ -30,10 +29,9 @@ test_that("we can build a simple tree.", {
 test_that("we can build an unresolved simple tree.", {
   leaves <- c("A", "B", "C")
   inner_nodes <- c("ABC")
-  edges <- matrix(ncol = 2, byrow=TRUE,
-                  data = c("A", "ABC",
-                           "B", "ABC",
-                           "C", "ABC"))
+  edges <- parent_edges(c(edge("A", "ABC"),
+                          edge("B", "ABC"),
+                          edge("C", "ABC")))
   graph <- agraph(leaves, inner_nodes, edges, NULL)
   
   expect_equal(graph$leaves, leaves)
@@ -54,16 +52,14 @@ test_that("we can build an unresolved simple tree.", {
 test_that("we can build a simple graph.", {
   leaves <- c("A", "B", "C")
   inner_nodes <- c("AC", "BC", "ABC")
-  edges <- matrix(ncol = 2, byrow=TRUE,
-                  data = c("A", "AC",
-                           "B", "BC",
-                           "C", "AC", "C", "BC",
-                           "AC", "ABC",
-                           "BC", "ABC"))
-  admixture_proportions <- matrix(ncol = 3, byrow=TRUE,
-                                  data = c("C", "AC", "a", "C", "BC", "(1-a)"))
+  edges <- parent_edges(c(edge("A", "AC"),
+                          edge("B", "BC"),
+                          admixture_edge("C", "AC", "BC"),
+                          edge("AC", "ABC"),
+                          edge("BC", "ABC")))
+  admixtures <- admixture_proportions(c(admix_props("C", "AC", "BC", "a")))
   
-  graph <- agraph(leaves, inner_nodes, edges, admixture_proportions)
+  graph <- agraph(leaves, inner_nodes, edges, admixtures)
   
   expect_equal(graph$leaves, leaves)
   expect_equal(graph$inner_nodes, inner_nodes)
@@ -84,8 +80,8 @@ test_that("we can build a simple graph.", {
   expect_equal(names(which(graph$parents["ABC",])), character(0))
   
   expect_equal(graph$probs["C","AC"], c("a"))
-  expect_equal(graph$probs["C","BC"], c("(1-a)"))
+  expect_equal(graph$probs["C","BC"], c("(1 - a)"))
   expect_equal(graph$probs["AC","C"], c("a"))
-  expect_equal(graph$probs["BC","C"], c("(1-a)"))
+  expect_equal(graph$probs["BC","C"], c("(1 - a)"))
   
 })
