@@ -28,12 +28,13 @@ make_cost_function <- function(data, graph,
   force(data)
   force(graph)
   force(parameters)
+  
   goal <- data$D
+  expressions <- Map(function(W,X,Y,Z) sf4(graph, W, X, Y, Z), data$W, data$X, data$Y, data$Z)
+  
   function(x) {
     env <- unpack_environment(parameters, x)
-    predictions <- unlist(Map(function(W,X,Y,Z) evaluate_f4(graph, env, W, X, Y, Z),
-                          data$W, data$X, data$Y, data$Z),
-                          use.names = FALSE)
+    predictions <- unlist(Map(function(expression) eval(expression, env), expressions), use.names = FALSE)
     sum( (goal - predictions) ** 2)
   }
 }
