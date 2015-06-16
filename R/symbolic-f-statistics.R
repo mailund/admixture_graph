@@ -17,28 +17,29 @@ format_path_overlap <- function(graph) function(overlap) {
   if (length(overlap$prob) > 0) {
     weight <- paste(overlap$prob, collapse = " * ")
   }
-
+  
   positive <- unlist(Map(format_edge(graph),
                          overlap$positive$from, overlap$positive$to),
                      use.names = FALSE)
   negative <- unlist(Map(format_edge(graph),
                          overlap$negative$from, overlap$negative$to),
                      use.names = FALSE)
-
+  
   format_list <- c()
-
+  
   if (length(positive) > 0) {
     format_list <- c(paste(positive, collapse = " + "))
   }
   if (length(negative) > 0) {
     format_list <- c(format_list, " - ", paste(negative, collapse = " - "))
   }
-
+  
   if (length(format_list) > 0 && !is.null(weight)) {
     format_list <- c(weight, " * ", "(", format_list, ")")
-  } else {
-    format_list <- c("0")
+  } else if (length(format_list) == 0) {
+    format_list <- c("0") 
   }
+  
   paste(format_list, collapse = "")
 }
 
