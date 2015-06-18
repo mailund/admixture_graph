@@ -10,6 +10,11 @@
 #'   \code{Y} to \code{Z}.
 #' @export
 f4 <- function(graph, W, X, Y, Z) {
+  if (!(W %in% graph$leaves)) stop(paste(W, "is not a leaf in the graph."))
+  if (!(X %in% graph$leaves)) stop(paste(X, "is not a leaf in the graph."))
+  if (!(Y %in% graph$leaves)) stop(paste(Y, "is not a leaf in the graph."))
+  if (!(Z %in% graph$leaves)) stop(paste(Z, "is not a leaf in the graph."))
+  
   WX <- all_paths(graph, W, X)
   YZ <- all_paths(graph, Y, Z)
   all_path_overlaps(WX, YZ)

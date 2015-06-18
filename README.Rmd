@@ -21,7 +21,7 @@ suppressPackageStartupMessages(library(knitr, quietly = TRUE))
 suppressPackageStartupMessages(library(neldermead, quietly = TRUE))
 ```
 
-# admixturegraph: Admixture Graph Manipulation and Fitting
+# Admixture Graph Manipulation and Fitting
 
 The package provides functionality to analyse and test admixture graphs against the f statisticsdescribed in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson *et al.*, Genetics, Vol. 192, 1065--1093, 2012.
 
@@ -169,15 +169,39 @@ If you have the *neldermead* package installed you can also fit graph parameters
 This is done using the *fit_graph* function
 
 ```{r, warning=FALSE}
-fitted <- fit_graph(bears, bears_graph)
+fit <- fit_graph(bears, bears_graph)
+fit
 ```
 
 The object it returns contains an environment that contains the fitted parameters and a data
 frame containing the original data together with an extra column, graph_f4, containing the fitted
 values.
 
+You can get the fitted values by calling the *summary* function.
+
 ```{r}
-names(fitted)
-head(fitted$fit_data)
+summary(fit)
 ```
 
+This function also returns the fitted values as a list, so you can assign the result to an object
+if you need to access it later.
+
+You can also get the fitted parameters using the generic *coef* or *coefficients* funcions
+
+```{r}
+coef(fit)
+```
+
+To get the fitted predictions, together with the data used for fitting, use the *fitted* function.
+
+```{r}
+fitted(fit)
+```
+
+You can make a plot of the fit against the data using the *plot* function.
+
+```{r fitted_data}
+plot(fit)
+```
+
+The result of this is a ggplot2 object that you can modify by adding ggplot2 commands in the usual way.

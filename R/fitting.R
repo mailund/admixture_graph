@@ -1,6 +1,3 @@
-## NB! I HAVE NOT MADE ANY ATTEMPTS AT OPTIMISING THIS CODE. THE PACKING AND UNPACKING IS COSTLY
-## AS IS COMPUTING THE SYMBOLIC REPRESENTATION OF STATISTICS FOR EACH STATISTICS. THERE IS PLENTY
-## OF  WAYS THIS COULD BE OPTIMISED -- FOR NOW I JUST AIM AT GETTING IT TO WORK.
 
 pack_environment <- function(parameters, env) {
   n_edges <- length(parameters$edges)
@@ -77,9 +74,80 @@ fit_graph <- function(data, graph, optimisation_options = NULL) {
                               xmax = rep(1, length(x0)),
                               options = optimisation_options)
 
-  best_fit <- neldermead.get(opti, "xopt")
+  best_fit <- neldermead::neldermead.get(opti, "xopt")
   best_fit_env <- unpack_environment(params, best_fit)
   best_fit_data <- add_graph_f4(data, graph, best_fit_env)
   
-  list(fit_env = best_fit_env, fit_data = best_fit_data)
+  structure(list(
+      call = sys.call(),
+      graph = graph,
+      params = params,
+      error = with(best_fit_data, sum((D-graph_f4)**2)),
+      fit_env = best_fit_env, 
+      fit_data = best_fit_data),
+    class = "agraph_fit")
+}
+
+#' Print function for a fitted graph.
+#' 
+#' Print summary of the result of a fit.
+#' 
+#' @param x  The fitted object.
+#' @param ...     Additional arguments.
+#'  
+#' @export
+print.agraph_fit <- function(x, ...) {
+  cat("Call:\n")
+  print(x$call)
+  cat("\n")
+  cat("Sum of squared error:", x$error, "\n")
+  invisible(x)
+}
+
+fitted_parameters <- function(object) {
+  edges <- unlist(Map(function(param) get(param, object$fit_env), object$param$edges))
+  admixture_proportions <- unlist(Map(function(param) get(param, object$fit_env), object$param$admix_prop))
+  list(edges = edges, admixture_proportions = admixture_proportions)
+}
+
+#' Get fitted parameters for a fitted graph.
+#' 
+#' Extract the graph parameters for a graph fitted to data.
+#' 
+#' @param object  The fitted object.
+#' @param ...     Additional arguments.
+#' 
+#' @export
+coef.agraph_fit <- function(object, ...) {
+  parameters <- fitted_parameters(object)
+  c(parameters$edges, parameters$admixture_proportions)
+}
+
+#' Print function for a fitted graph.
+#' 
+#' Print summary of the result of a fit.
+#' 
+#' @param object  The fitted object.
+#' @param ...     Additional arguments.
+#' 
+#' @export
+summary.agraph_fit <- function(object, ...) {
+  result <- fitted_parameters(object)
+  print(result)
+  invisible(result)
+}
+
+
+#' Extract fitted data for a fitted graph.
+#' 
+#' Get the predicted f4 statistics for a fitted graph.
+#' 
+#' @param object  The fitted object.
+#' @param full    Should the fitted values include the full data used for fitting?
+#' @param ...     Additional arguments.
+#' 
+#' @export
+fitted.agraph_fit <- function(object, full = TRUE, ...) {
+  if (full) object$fit_data
+  else      object$fit_data$graph_f4
 }
