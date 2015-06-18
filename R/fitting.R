@@ -151,3 +151,16 @@ fitted.agraph_fit <- function(object, full = TRUE, ...) {
   if (full) object$fit_data
   else      object$fit_data$graph_f4
 }
+
+#' Extract the individual errors in a fitted graph.
+#' 
+#' Get D - graph_f4 for each data point used in the fit.
+#' 
+#' @param object  The fitted object.
+#' @param ...     Additional arguments.
+#' 
+#' @export
+residuals.agraph_fit <- function(object, ...) {
+  with(object$fit_data, D - graph_f4)
+}
+
