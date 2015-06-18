@@ -169,15 +169,31 @@ If you have the *neldermead* package installed you can also fit graph parameters
 This is done using the *fit_graph* function
 
 ```{r, warning=FALSE}
-fitted <- fit_graph(bears, bears_graph)
+fit <- fit_graph(bears, bears_graph)
+fit
 ```
 
 The object it returns contains an environment that contains the fitted parameters and a data
 frame containing the original data together with an extra column, graph_f4, containing the fitted
 values.
 
+You can get the fitted values by calling the *summary* function.
+
 ```{r}
-names(fitted)
-head(fitted$fit_data)
+summary(fit)
 ```
 
+This function also returns the fitted values as a list, so you can assign the result to an object
+if you need to access it later.
+
+You can also get the fitted parameters using the generic *coef* or *coefficients* funcions
+
+```{r}
+coef(fit)
+```
+
+To get the fitted predictions, together with the data used for fitting, use the *fitted* function.
+
+```{r}
+fitted(fit)
+```
