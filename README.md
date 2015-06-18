@@ -1,6 +1,6 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-admixturegraph: Admixture Graph Manipulation and Fitting
-========================================================
+Admixture Graph Manipulation and Fitting
+========================================
 
 The package provides functionality to analyse and test admixture graphs against the f statisticsdescribed in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson *et al.*, Genetics, Vol. 192, 1065--1093, 2012.
 
@@ -223,7 +223,7 @@ fit
 #> Call:
 #> fit_graph(bears, bears_graph)
 #> 
-#> Sum of squared error: 0.001129407
+#> Sum of squared error: 0.001134975
 ```
 
 The object it returns contains an environment that contains the fitted parameters and a data frame containing the original data together with an extra column, graph\_f4, containing the fitted values.
@@ -234,21 +234,21 @@ You can get the fitted values by calling the *summary* function.
 summary(fit)
 #> $edges
 #>       edge_R_BLK         edge_R_a         edge_a_b         edge_a_c 
-#>       0.60522804       0.33226546       0.28318597       0.69752365 
+#>       0.68117967       0.26526787       0.18740620       0.26444942 
 #>         edge_b_d         edge_b_E       edge_c_EBB         edge_c_E 
-#>       0.06561857       0.55539853       0.30043748       0.65215908 
+#>       0.05968526       0.34289929       0.43290371       0.19634459 
 #>         edge_d_f         edge_d_G        edge_e_YB         edge_e_G 
-#>       0.20736979       0.24702692       0.31588328       0.30980547 
+#>       0.10745427       0.36928696       0.28469597       0.08088090 
 #>         edge_f_h     edge_f_abc_a    edge_g_ABC_BC     edge_g_abc_a 
-#>       0.54193200       0.45027302       0.58964826       0.76450824 
+#>       0.27944911       0.32810094       0.55008189       0.28469400 
 #>        edge_h_PB        edge_h_AK edge_abc_a_ABC_A         edge_G_g 
-#>       0.38262572       0.18509047       0.78279481       0.73571829 
+#>       0.27629373       0.56812516       0.42011167       0.68400405 
 #>         edge_E_e 
-#>       0.17022210 
+#>       0.31200231 
 #> 
 #> $admixture_proportions
 #>     gamma      beta     alpha 
-#> 0.2836963 0.2008768 0.0572553
+#> 0.4363610 0.3207230 0.1014637
 ```
 
 This function also returns the fitted values as a list, so you can assign the result to an object if you need to access it later.
@@ -258,17 +258,17 @@ You can also get the fitted parameters using the generic *coef* or *coefficients
 ``` r
 coef(fit)
 #>       edge_R_BLK         edge_R_a         edge_a_b         edge_a_c 
-#>       0.60522804       0.33226546       0.28318597       0.69752365 
+#>       0.68117967       0.26526787       0.18740620       0.26444942 
 #>         edge_b_d         edge_b_E       edge_c_EBB         edge_c_E 
-#>       0.06561857       0.55539853       0.30043748       0.65215908 
+#>       0.05968526       0.34289929       0.43290371       0.19634459 
 #>         edge_d_f         edge_d_G        edge_e_YB         edge_e_G 
-#>       0.20736979       0.24702692       0.31588328       0.30980547 
+#>       0.10745427       0.36928696       0.28469597       0.08088090 
 #>         edge_f_h     edge_f_abc_a    edge_g_ABC_BC     edge_g_abc_a 
-#>       0.54193200       0.45027302       0.58964826       0.76450824 
+#>       0.27944911       0.32810094       0.55008189       0.28469400 
 #>        edge_h_PB        edge_h_AK edge_abc_a_ABC_A         edge_G_g 
-#>       0.38262572       0.18509047       0.78279481       0.73571829 
+#>       0.27629373       0.56812516       0.42011167       0.68400405 
 #>         edge_E_e            gamma             beta            alpha 
-#>       0.17022210       0.28369625       0.20087676       0.05725530
+#>       0.31200231       0.43636098       0.32072301       0.10146372
 ```
 
 To get the fitted predictions, together with the data used for fitting, use the *fitted* function.
@@ -276,32 +276,40 @@ To get the fitted predictions, together with the data used for fitting, use the 
 ``` r
 fitted(fit)
 #>      W      X      Y      Z       D Z.value    graph_f4
-#> 1  BLK     AK  ABC_A    EBB -0.1543 -29.149 -0.15842374
-#> 2  BLK     PB  ABC_A    EBB -0.1524 -28.918 -0.15842374
-#> 3  BLK     PB ABC_BC    EBB -0.1322 -26.263 -0.13426733
-#> 4  BLK     AK ABC_BC    EBB -0.1327 -26.054 -0.13426733
-#> 5  BLK     PB     YB    EBB -0.0865 -18.835 -0.08033880
-#> 6  BLK     AK     YB    EBB -0.0872 -18.687 -0.08033880
-#> 7  BLK     AK  ABC_A     YB -0.0796 -12.338 -0.07808494
-#> 8  BLK     PB  ABC_A     YB -0.0781 -12.091 -0.07808494
-#> 9  BLK     PB ABC_BC     YB -0.0554  -8.945 -0.05392853
-#> 10 BLK     AK ABC_BC     YB -0.0554  -8.902 -0.05392853
-#> 11 BLK     AK  ABC_A ABC_BC -0.0275  -4.784 -0.02415641
-#> 12 BLK     PB  ABC_A ABC_BC -0.0255  -4.519 -0.02415641
+#> 1  BLK     AK  ABC_A    EBB -0.1543 -29.149 -0.15709351
+#> 2  BLK     PB  ABC_A    EBB -0.1524 -28.918 -0.15709351
+#> 3  BLK     PB ABC_BC    EBB -0.1322 -26.263 -0.13479698
+#> 4  BLK     AK ABC_BC    EBB -0.1327 -26.054 -0.13479698
+#> 5  BLK     PB     YB    EBB -0.0865 -18.835 -0.08177675
+#> 6  BLK     AK     YB    EBB -0.0872 -18.687 -0.08177675
+#> 7  BLK     AK  ABC_A     YB -0.0796 -12.338 -0.07531675
+#> 8  BLK     PB  ABC_A     YB -0.0781 -12.091 -0.07531675
+#> 9  BLK     PB ABC_BC     YB -0.0554  -8.945 -0.05302023
+#> 10 BLK     AK ABC_BC     YB -0.0554  -8.902 -0.05302023
+#> 11 BLK     AK  ABC_A ABC_BC -0.0275  -4.784 -0.02229653
+#> 12 BLK     PB  ABC_A ABC_BC -0.0255  -4.519 -0.02229653
 #> 13 BLK ABC_BC     PB     AK  0.0011   0.213  0.00000000
 #> 14 BLK    EBB     PB     AK  0.0106   2.155  0.00000000
 #> 15 BLK  ABC_A     PB     AK  0.0175   3.148  0.00000000
 #> 16 BLK     YB     PB     AK  0.0195   3.397  0.00000000
-#> 17 BLK     PB ABC_BC  ABC_A  0.0255   4.519  0.02415641
-#> 18 BLK     AK ABC_BC  ABC_A  0.0275   4.784  0.02415641
-#> 19 BLK     AK     YB ABC_BC  0.0554   8.902  0.05392853
-#> 20 BLK     PB     YB ABC_BC  0.0554   8.945  0.05392853
-#> 21 BLK     PB     YB  ABC_A  0.0781  12.091  0.07808494
-#> 22 BLK     AK     YB  ABC_A  0.0796  12.338  0.07808494
-#> 23 BLK     AK    EBB     YB  0.0872  18.687  0.08033880
-#> 24 BLK     PB    EBB     YB  0.0865  18.835  0.08033880
-#> 25 BLK     AK    EBB ABC_BC  0.1327  26.054  0.13426733
-#> 26 BLK     PB    EBB ABC_BC  0.1322  26.263  0.13426733
-#> 27 BLK     PB    EBB  ABC_A  0.1524  28.918  0.15842374
-#> 28 BLK     AK    EBB  ABC_A  0.1543  29.149  0.15842374
+#> 17 BLK     PB ABC_BC  ABC_A  0.0255   4.519  0.02229653
+#> 18 BLK     AK ABC_BC  ABC_A  0.0275   4.784  0.02229653
+#> 19 BLK     AK     YB ABC_BC  0.0554   8.902  0.05302023
+#> 20 BLK     PB     YB ABC_BC  0.0554   8.945  0.05302023
+#> 21 BLK     PB     YB  ABC_A  0.0781  12.091  0.07531675
+#> 22 BLK     AK     YB  ABC_A  0.0796  12.338  0.07531675
+#> 23 BLK     AK    EBB     YB  0.0872  18.687  0.08177675
+#> 24 BLK     PB    EBB     YB  0.0865  18.835  0.08177675
+#> 25 BLK     AK    EBB ABC_BC  0.1327  26.054  0.13479698
+#> 26 BLK     PB    EBB ABC_BC  0.1322  26.263  0.13479698
+#> 27 BLK     PB    EBB  ABC_A  0.1524  28.918  0.15709351
+#> 28 BLK     AK    EBB  ABC_A  0.1543  29.149  0.15709351
 ```
+
+You can make a plot of the fit against the data using the *plot* function.
+
+``` r
+plot(fit)
+```
+
+![](README-fitted_data-1.png)

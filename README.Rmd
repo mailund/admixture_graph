@@ -197,3 +197,9 @@ To get the fitted predictions, together with the data used for fitting, use the 
 ```{r}
 fitted(fit)
 ```
+
+You can make a plot of the fit against the data using the *plot* function.
+
+```{r fitted_data}
+plot(fit)
+```
