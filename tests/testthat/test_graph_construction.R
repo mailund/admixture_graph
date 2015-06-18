@@ -85,3 +85,31 @@ test_that("we can build a simple graph.", {
   expect_equal(graph$probs["BC","C"], c("(1 - a)"))
   
 })
+
+test_that("we get errors when specifying an edge between non-existing nodes.", {
+  leaves <- c("A", "B", "C")
+  inner_nodes <- c("AC", "BC", "ABC")
+  edges <- parent_edges(c(edge("A", "AC"),
+                          edge("B", "BC"),
+                          admixture_edge("C", "AC", "BC"),
+                          edge("AC", "x"),
+                          edge("BC", "ABC")))
+  admixtures <- admixture_proportions(c(admix_props("C", "AC", "BC", "a")))
+  
+  expect_that(agraph(leaves, inner_nodes, edges, admixtures), throws_error())
+})
+
+test_that("we get errors when specifying admixture proportions for non-existing edges.", {
+  leaves <- c("A", "B", "C")
+  inner_nodes <- c("AC", "BC", "ABC")
+  edges <- parent_edges(c(edge("A", "AC"),
+                          edge("B", "BC"),
+                          admixture_edge("C", "AC", "BC"),
+                          edge("AC", "ABC"),
+                          edge("BC", "ABC")))
+  admixtures <- admixture_proportions(c(admix_props("C", "ABC", "BC", "a")))
+  
+  expect_that(agraph(leaves, inner_nodes, edges, admixtures), throws_error())
+})
+
+

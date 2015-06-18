@@ -4,7 +4,7 @@ admixturegraph: Admixture Graph Manipulation and Fitting
 
 The package provides functionality to analyse and test admixture graphs against the f statisticsdescribed in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson *et al.*, Genetics, Vol. 192, 1065--1093, 2012.
 
-The f statistics --- \(f_2\), \(f_3\), and \(f_4\) --- extract information about correlations between gene frequencies in different populations (or single diploid genome samples), which can be informative about patterns of gene flow between these populations in form of admixture events. If a graph is constructed as a hypothesis for the relationship between the populations, equations for the expected values of the f statistics can be extracted, as functions of edge lenghs — representing genetic drift — and admixture proportions.
+The f statistics --- f2, f3, and f4 --- extract information about correlations between gene frequencies in different populations (or single diploid genome samples), which can be informative about patterns of gene flow between these populations in form of admixture events. If a graph is constructed as a hypothesis for the relationship between the populations, equations for the expected values of the f statistics can be extracted, as functions of edge lenghs — representing genetic drift — and admixture proportions.
 
 This package provides functions for extracting these equations and for fitting them against computed f statistics. It does not currently provide functions for computing the f statistics — for that we refer to the [ADMIXTOOLS](https://github.com/DReichLab/AdmixTools) software package.
 
@@ -13,7 +13,7 @@ Example
 
 Below is a quick example of how the package can be used. The example uses data from polar bears and brown bears with a black bear as outgroup. The BLK sample is the black bear, the PB and AK populations are polar bears, and the rest are brown bears. There are two populations of so-called ABC bears, ABC\_A and ABC\_BC, a population of Yellow Stone bears, YB, and a population of European brown bears, EBB.
 
-Using ADMIXTOOLS I have computed \(f_4\) statistics --- there called \(D\) statistics --- and have the results:
+Using ADMIXTOOLS I have computed f4 statistics --- there called D statistics --- and have the results:
 
 ``` r
 data(bears)
@@ -49,7 +49,7 @@ bears
 #> 28 BLK     AK    EBB  ABC_A  0.1543  29.149
 ```
 
-The \(D\) column is the \(f_4(W,X;Y,Z)\) statistic and the \(Z\) column is the Z-values obtained from a blocked jacknife (see Patterson *et al.* for details).
+The D column is the f4(W,X;Y,Z) statistic and the Z column is the Z-values obtained from a blocked jacknife (see Patterson *et al.* for details).
 
 From the statistics we can see that the ABC bears are closer related to the polar bears compared to the other brown bears and that the Yellow Stone bears are closer to the polar bears than the European bears, and also that the two populations of ABC bears are not equally pulled towards the polar bears.
 
@@ -90,7 +90,7 @@ plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 
 ![](README-first_graph-1.png)
 
-The graph makes predictions on how the \(f_4\) statistics should look, in particular it allows us to predict the signs of the \(f_4\) statistics.
+The graph makes predictions on how the f4 statistics should look, in particular it allows us to predict the signs of the f4 statistics.
 
 ``` r
 add_graph_f4_sign(bears, bears_graph)
@@ -197,7 +197,7 @@ add_graph_f4_sign(bears, bears_graph)
 #> 28 BLK     AK    EBB  ABC_A  0.1543  29.149             1
 ```
 
-The way the signs are predicted is by extracting the equations for the \(f_4\) statistics that the graph implies: For each quartet of leaves we can extract an equation for the corresponding \(f_4\) statistics --- an equation in the edge lenghts and admixture proportions --- and if this equation only have positive values we know that the sign must be positive, if it only has negative values we know that it must be negative, and if it constant zero we know it must be zero.
+The way the signs are predicted is by extracting the equations for the f4 statistics that the graph implies: For each quartet of leaves we can extract an equation for the corresponding f4 statistics --- an equation in the edge lenghts and admixture proportions --- and if this equation only have positive values we know that the sign must be positive, if it only has negative values we know that it must be negative, and if it constant zero we know it must be zero.
 
 For example
 
@@ -210,6 +210,28 @@ sf4(bears_graph, "BLK", "PB", "ABC_A", "EBB")
 
 only has negative terms so we know it must be negative.
 
-In general we will not always have only positive or negative terms, in which case we cannot this simply predict the sign for \(f_4\) statistics. If this is the case we need to set the parameters of the graph --- the edge lengths and admixture proportions --- to get the sign, and in that case we can also predict the numerical value of the \(f_4\) statistics from the graph.
+In general we will not always have only positive or negative terms, in which case we cannot this simply predict the sign for f4 statistics. If this is the case we need to set the parameters of the graph --- the edge lengths and admixture proportions --- to get the sign, and in that case we can also predict the numerical value of the f4 statistics from the graph.
 
-The package also has functionality for computing \(f_4\) statistics when knowing the graph parameters and for fitting the graph parameters to data.
+Fitting a graph to data
+-----------------------
+
+If you have the *neldermead* package installed you can also fit graph parameters to data. This is done using the *fit\_graph* function
+
+``` r
+fitted <- fit_graph(bears, bears_graph)
+```
+
+The object it returns contains an environment that contains the fitted parameters and a data frame containing the original data together with an extra column, graph\_f4, containing the fitted values.
+
+``` r
+names(fitted)
+#> [1] "fit_env"  "fit_data"
+head(fitted$fit_data)
+#>     W  X      Y   Z       D Z.value   graph_f4
+#> 1 BLK AK  ABC_A EBB -0.1543 -29.149 -0.1584237
+#> 2 BLK PB  ABC_A EBB -0.1524 -28.918 -0.1584237
+#> 3 BLK PB ABC_BC EBB -0.1322 -26.263 -0.1342673
+#> 4 BLK AK ABC_BC EBB -0.1327 -26.054 -0.1342673
+#> 5 BLK PB     YB EBB -0.0865 -18.835 -0.0803388
+#> 6 BLK AK     YB EBB -0.0872 -18.687 -0.0803388
+```

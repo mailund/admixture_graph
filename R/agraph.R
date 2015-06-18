@@ -27,18 +27,25 @@ agraph_parents <- function(nodes, parent_edges) {
 #' @param admixture_weights An \eqn{n \times 3} matrix where the first column is
 #'   the child node, the second the parent. and the third the admixture weight
 #'   on that edge.
+#' @param parents The parent edge list. Used for checking graph consistency.
 #'   
 #' @return A matrix containing the admixture weights.
-agraph_weights <- function(nodes, admixture_weights) {
+agraph_weights <- function(nodes, admixture_weights, parents) {
   n <- length(nodes)
   weights <- matrix("", n, n)
   rownames(weights) <- colnames(weights) <- nodes
   if (!is.null(admixture_weights)) {
     for (row in 1:nrow(admixture_weights)) {
-      weights[admixture_weights[row,1], admixture_weights[row,2]] <-
-        admixture_weights[row,3]
-      weights[admixture_weights[row,2], admixture_weights[row,1]] <-
-        admixture_weights[row,3]
+      child <- admixture_weights[row,1]
+      parent <- admixture_weights[row,2]
+      admix_weight <- admixture_weights[row,3]
+      
+      if (! parents[child,parent]) {
+        stop(paste("There is no edge in the graph from", child, "to", parent))
+      }
+      
+      weights[child, parent] <- admix_weight
+      weights[parent, child] <- admix_weight
     }
   }
   weights
@@ -153,7 +160,7 @@ agraph <- function(leaves, inner_nodes, parent_edges, admixture_proportions) {
   nodes <- c(leaves, inner_nodes)
   parents <- agraph_parents(nodes, parent_edges)
   children <- agraph_children(nodes, parent_edges)
-  admixture_probs <- agraph_weights(nodes, admixture_proportions)
+  admixture_probs <- agraph_weights(nodes, admixture_proportions, parents)
   structure(list(leaves = leaves, inner_nodes = inner_nodes,
                  nodes = nodes,
                  parents = parents,
