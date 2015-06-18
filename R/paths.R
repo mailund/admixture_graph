@@ -21,6 +21,9 @@ format_path <- function(graph, nodes) {
 #' @return A list containing all the paths from \code{src} to \code{dst}.
 #' @export
 all_paths <- function(graph, src, dst) {
+  if (!(src %in% graph$leaves)) stop(paste(src, "is not a leaf in the graph."))
+  if (!(dst %in% graph$leaves)) stop(paste(dst, "is not a leaf in the graph."))
+  
   src_idx <- which(src == rownames(graph$parents))
   dst_idx <- which(dst == rownames(graph$parents))
   PATHS <- list()
