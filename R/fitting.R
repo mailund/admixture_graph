@@ -164,3 +164,20 @@ residuals.agraph_fit <- function(object, ...) {
   with(object$fit_data, D - graph_f4)
 }
 
+#' Predict statistics on new data.
+#' 
+#' Predict expected f4 statistics. If \code{newdata} is not specified this function just
+#' returns the predicted values on the original data.
+#' 
+#' @param object  The fitted object.
+#' @param newdata New data frame to predict values for.
+#' @param ...     Additional arguments.
+#' 
+#' @export
+predict.agraph_fit <- function(object, newdata = NULL, ...) {
+  if (is.null(newdata)) {
+    fitted(object, full = TRUE)
+  } else {
+    add_graph_f4(newdata, object$graph, object$fit_env)
+  }
+}
