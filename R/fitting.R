@@ -77,7 +77,7 @@ fit_graph <- function(data, graph, optimisation_options = NULL) {
                               xmax = rep(1, length(x0)),
                               options = optimisation_options)
 
-  best_fit <- neldermead.get(opti, "xopt")
+  best_fit <- neldermead::neldermead.get(opti, "xopt")
   best_fit_env <- unpack_environment(params, best_fit)
   best_fit_data <- add_graph_f4(data, graph, best_fit_env)
   
