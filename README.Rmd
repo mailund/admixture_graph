@@ -203,3 +203,5 @@ You can make a plot of the fit against the data using the *plot* function.
 ```{r fitted_data}
 plot(fit)
 ```
+
+The result of this is a ggplot2 object that you can modify by adding ggplot2 commands in the usual way.
