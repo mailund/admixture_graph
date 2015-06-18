@@ -18,13 +18,14 @@ suppressPackageStartupMessages(library(dplyr, quietly = TRUE))
 suppressPackageStartupMessages(library(ggplot2, quietly = TRUE))
 suppressPackageStartupMessages(library(ggthemes, quietly = TRUE))
 suppressPackageStartupMessages(library(knitr, quietly = TRUE))
+suppressPackageStartupMessages(library(neldermead, quietly = TRUE))
 ```
 
 # admixturegraph: Admixture Graph Manipulation and Fitting
 
 The package provides functionality to analyse and test admixture graphs against the f statisticsdescribed in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson *et al.*, Genetics, Vol. 192, 1065--1093, 2012.
 
-The f statistics --- $f_2$, $f_3$, and $f_4$ --- extract information about correlations between gene frequencies in different populations (or single diploid genome samples), which can be informative about patterns of gene flow between these populations in form of admixture events. If a graph is constructed as a hypothesis for the relationship between the populations, equations for the expected values of the f statistics can be extracted, as functions of edge lenghs — representing genetic drift — and admixture proportions.
+The f statistics --- f2, f3, and f4 --- extract information about correlations between gene frequencies in different populations (or single diploid genome samples), which can be informative about patterns of gene flow between these populations in form of admixture events. If a graph is constructed as a hypothesis for the relationship between the populations, equations for the expected values of the f statistics can be extracted, as functions of edge lenghs — representing genetic drift — and admixture proportions.
 
 This package provides functions for extracting these equations and for fitting them against computed f statistics. It does not currently provide functions for computing the f statistics — for that we refer to the [ADMIXTOOLS](https://github.com/DReichLab/AdmixTools) software package.
 
@@ -37,7 +38,7 @@ are brown bears. There are two populations of so-called ABC bears, ABC_A and
 ABC_BC, a population of Yellow Stone bears, YB, and a population of European
 brown bears, EBB.
 
-Using ADMIXTOOLS I have computed $f_4$ statistics --- there called $D$ statistics
+Using ADMIXTOOLS I have computed f4 statistics --- there called D statistics
 --- and have the results:
 
 ```{r}
@@ -45,7 +46,7 @@ data(bears)
 bears
 ```
 
-The $D$ column is the $f_4(W,X;Y,Z)$ statistic and the $Z$ column is the Z-values
+The D column is the f4(W,X;Y,Z) statistic and the Z column is the Z-values
 obtained from a blocked jacknife (see Patterson *et al.* for details).
 
 From the statistics we can see that the ABC bears are closer related to the
@@ -89,8 +90,8 @@ bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
 plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 ```
 
-The graph makes predictions on how the $f_4$ statistics should look, in particular
-it allows us to predict the signs of the $f_4$ statistics.
+The graph makes predictions on how the f4 statistics should look, in particular
+it allows us to predict the signs of the f4 statistics.
 
 ```{r}
 add_graph_f4_sign(bears, bears_graph)
@@ -140,9 +141,9 @@ Which now predicts the signs better.
 add_graph_f4_sign(bears, bears_graph)
 ```
 
-The way the signs are predicted is by extracting the equations for the $f_4$
+The way the signs are predicted is by extracting the equations for the f4
 statistics that the graph implies: For each quartet of leaves we can extract
-an equation for the corresponding $f_4$ statistics --- an equation in the
+an equation for the corresponding f4 statistics --- an equation in the
 edge lenghts and admixture proportions --- and if this equation only have positive
 values we know that the sign must be positive, if it only has negative values we
 know that it must be negative, and if it constant zero we know it must be zero.
@@ -156,12 +157,27 @@ sf4(bears_graph, "BLK", "PB", "ABC_A", "EBB")
 only has negative terms so we know it must be negative.
 
 In general we will not always have only positive or negative terms, in which case
-we cannot this simply predict the sign for $f_4$ statistics. If this is the case
+we cannot this simply predict the sign for f4 statistics. If this is the case
 we need to set the parameters of the graph --- the edge lengths and admixture 
 proportions --- to get the sign, and in that case we can also predict the
-numerical value of the $f_4$ statistics from the graph.
+numerical value of the f4 statistics from the graph.
 
-The package also has functionality for computing $f_4$ statistics when knowing
-the graph parameters and for fitting the graph parameters to data.
 
+## Fitting a graph to data
+
+If you have the *neldermead* package installed you can also fit graph parameters to data.
+This is done using the *fit_graph* function
+
+```{r, warning=FALSE}
+fitted <- fit_graph(bears, bears_graph)
+```
+
+The object it returns contains an environment that contains the fitted parameters and a data
+frame containing the original data together with an extra column, graph_f4, containing the fitted
+values.
+
+```{r}
+names(fitted)
+head(fitted$fit_data)
+```
 
