@@ -84,10 +84,17 @@ plot.agraph <- function(x,
       segments(break_x_right, break_y, xpos[node], ypos[node], col = "red")
       
       if (show_admixture_labels) {
-        text(break_x_left, break_y, graph$probs[parents[[1]], node],
-             cex = 0.5, pos = 1, col = "red", offset = 0.1)
-        text(break_x_right, break_y, graph$probs[parents[[2]], node],
-             cex = 0.5, pos = 1, col = "red", offset = 0.1)
+        if (xpos[parents[1]] < xpos[parents[2]]) {
+          text(break_x_left, break_y, graph$probs[parents[[1]], node],
+               cex = 0.5, pos = 1, col = "red", offset = 0.1)
+          text(break_x_right, break_y, graph$probs[parents[[2]], node],
+               cex = 0.5, pos = 1, col = "red", offset = 0.1)
+        } else {
+          text(break_x_left, break_y, graph$probs[parents[[2]], node],
+               cex = 0.5, pos = 1, col = "red", offset = 0.1)
+          text(break_x_right, break_y, graph$probs[parents[[1]], node],
+               cex = 0.5, pos = 1, col = "red", offset = 0.1)          
+        }
       }
     }
   }
