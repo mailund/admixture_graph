@@ -5,6 +5,7 @@
  * Added bears to data/
  * Added syntactic suggar to graph construction
  * Fix plotting bug (Issue #4)
+ * Wrote an interface to fitted data objects using the generic functions usually used for fitted models.
+ * Added code for plotting fitted data
 
- 
  
