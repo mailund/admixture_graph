@@ -313,3 +313,7 @@ plot(fit)
 ```
 
 ![](README-fitted_data-1.png)
+
+The plot shows the data f4 statistics with error bars (in black) plus the predicted values from the graph.
+
+The result of this is a ggplot2 object that you can modify by adding ggplot2 commands in the usual way.
