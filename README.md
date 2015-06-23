@@ -11,204 +11,117 @@ This package provides functions for extracting these equations and for fitting t
 Example
 -------
 
-Below is a quick example of how the package can be used. The example uses data from polar bears and brown bears with a black bear as outgroup. The BLK sample is the black bear, the PB and AK populations are polar bears, and the rest are brown bears. There are two populations of so-called ABC bears, ABC\_A and ABC\_BC, a population of Yellow Stone bears, YB, and a population of European brown bears, EBB.
+Below is a quick example of how the package can be used. The example uses data from polar bears and brown bears with a black bear as outgroup and is taken from [Genomic evidence of geographically widespread effect of gene flow from polar bears into brown bears](http://onlinelibrary.wiley.com/doi/10.1111/mec.13038/abstract).
 
-Using ADMIXTOOLS I have computed f4 statistics --- there called D statistics --- and have the results:
+The BLK sample is the black bear, the PB sample is a polar bear, and the rest are brown bears.
+
+I have taken the D statistics from Table 1 in the paper and have the statistics:
 
 ``` r
 data(bears)
 bears
-#>      W      X      Y      Z       D Z.value
-#> 1  BLK     AK  ABC_A    EBB -0.1543 -29.149
-#> 2  BLK     PB  ABC_A    EBB -0.1524 -28.918
-#> 3  BLK     PB ABC_BC    EBB -0.1322 -26.263
-#> 4  BLK     AK ABC_BC    EBB -0.1327 -26.054
-#> 5  BLK     PB     YB    EBB -0.0865 -18.835
-#> 6  BLK     AK     YB    EBB -0.0872 -18.687
-#> 7  BLK     AK  ABC_A     YB -0.0796 -12.338
-#> 8  BLK     PB  ABC_A     YB -0.0781 -12.091
-#> 9  BLK     PB ABC_BC     YB -0.0554  -8.945
-#> 10 BLK     AK ABC_BC     YB -0.0554  -8.902
-#> 11 BLK     AK  ABC_A ABC_BC -0.0275  -4.784
-#> 12 BLK     PB  ABC_A ABC_BC -0.0255  -4.519
-#> 13 BLK ABC_BC     PB     AK  0.0011   0.213
-#> 14 BLK    EBB     PB     AK  0.0106   2.155
-#> 15 BLK  ABC_A     PB     AK  0.0175   3.148
-#> 16 BLK     YB     PB     AK  0.0195   3.397
-#> 17 BLK     PB ABC_BC  ABC_A  0.0255   4.519
-#> 18 BLK     AK ABC_BC  ABC_A  0.0275   4.784
-#> 19 BLK     AK     YB ABC_BC  0.0554   8.902
-#> 20 BLK     PB     YB ABC_BC  0.0554   8.945
-#> 21 BLK     PB     YB  ABC_A  0.0781  12.091
-#> 22 BLK     AK     YB  ABC_A  0.0796  12.338
-#> 23 BLK     AK    EBB     YB  0.0872  18.687
-#> 24 BLK     PB    EBB     YB  0.0865  18.835
-#> 25 BLK     AK    EBB ABC_BC  0.1327  26.054
-#> 26 BLK     PB    EBB ABC_BC  0.1322  26.263
-#> 27 BLK     PB    EBB  ABC_A  0.1524  28.918
-#> 28 BLK     AK    EBB  ABC_A  0.1543  29.149
+#>      W  X      Y      Z       D Z.value
+#> 1  BLK PB Sweden   Adm1  0.1258    12.8
+#> 2  BLK PB  Kenai   Adm1  0.0685     5.9
+#> 3  BLK PB Denali   Adm1  0.0160     1.3
+#> 4  BLK PB Sweden   Adm2  0.1231    12.2
+#> 5  BLK PB  Kenai   Adm2  0.0669     6.1
+#> 6  BLK PB Denali   Adm2  0.0139     1.1
+#> 7  BLK PB Sweden    Bar  0.1613    14.7
+#> 8  BLK PB  Kenai    Bar  0.1091     8.9
+#> 9  BLK PB Denali    Bar  0.0573     4.3
+#> 10 BLK PB Sweden   Chi1  0.1786    17.7
+#> 11 BLK PB  Kenai   Chi1  0.1278    11.3
+#> 12 BLK PB Denali   Chi1  0.0777     6.4
+#> 13 BLK PB Sweden   Chi2  0.1819    18.3
+#> 14 BLK PB  Kenai   Chi2  0.1323    12.1
+#> 15 BLK PB Denali   Chi2  0.0819     6.7
+#> 16 BLK PB Sweden Denali  0.1267    14.3
+#> 17 BLK PB  Kenai Denali  0.0571     5.6
+#> 18 BLK PB Sweden  Kenai  0.0719     9.6
+#> 19 BLK PB Denali  Kenai -0.0571     5.6
 ```
 
 The D column is the f4(W,X;Y,Z) statistic and the Z column is the Z-values obtained from a blocked jacknife (see Patterson *et al.* for details).
 
-From the statistics we can see that the ABC bears are closer related to the polar bears compared to the other brown bears and that the Yellow Stone bears are closer to the polar bears than the European bears, and also that the two populations of ABC bears are not equally pulled towards the polar bears.
-
-We can explain this by several waves of admixture from ancestral polar bears into brown bears, so a first attempt of a graph can be constructed as this:
+From the statistics we can see that the ABC bears (Adm, Bar and Chi) are closer related to the polar bears compared to the other brown bears. The paper explains this with gene flow from polar bears into the ABC bears and going further out from there, but we can also explain this by several waves of admixture from ancestral polar bears into brown bears:
 
 ``` r
-leaves <- c("BLK", "PB", "AK", "ABC_BC", "ABC_A", "YB", "EBB") 
-inner_nodes <- c("R", "a", "b", "c", "d", "e", "f", "g", "h",
-                 "abc_bc", "G", "E")
+leaves <- c("BLK", "PB",
+            "Bar", "Chi1", "Chi2", "Adm1", "Adm2",
+            "Denali", "Kenai", "Sweden") 
+inner_nodes <- c("R", "PBBB",
+                 "Adm", "Chi", "BC", "ABC",
+                 "x", "y", "z",
+                 "bc_a1", "pb_a1", "abc_a2", "pb_a2")
 
 edges <- parent_edges(c(edge("BLK", "R"),
-                        edge("PB", "h"),
-                        edge("AK", "h"),
-                        edge("ABC_BC", "abc_bc"),
-                        admixture_edge("abc_bc", "f", "g"),
-                        edge("ABC_A", "g"), 
-                        edge("YB", "e"),
-                        edge("EBB", "c"),
-                        edge("h", "f"),
-                        edge("f", "d"),
-                        edge("g", "G"),
-                        admixture_edge("G", "d", "e"),
-                        edge("d", "b"),
-                        edge("e", "E"),
-                        admixture_edge("E", "b", "c"),
-                        edge("b", "a"),
-                        edge("c", "a"),
-                        edge("a", "R")))
+                        edge("PB", "pb_a1"),
+                        edge("pb_a1", "pb_a2"),
+                        edge("pb_a2", "PBBB"),
+                        
+                        edge("Chi1", "Chi"),
+                        edge("Chi2", "Chi"),
+                        edge("Chi", "BC"),
+                        edge("Bar", "BC"),
+                        edge("BC", "bc_a1"),
+                        
+                        edge("Adm1", "Adm"),
+                        edge("Adm2", "Adm"),
+                        
+                        admixture_edge("bc_a1", "pb_a1", "ABC"),
+                        edge("Adm", "ABC"),
+                        
+                        edge("ABC", "abc_a2"),
+                        admixture_edge("abc_a2", "pb_a2", "x"),
+                        edge("Denali", "x"),
+                        
+                        edge("x", "y"),
+                        edge("Kenai", "y"),
+                        
+                        edge("y", "z"),
+                        edge("Sweden", "z"),
+                        
+                        edge("z", "PBBB"),
+                        edge("PBBB", "R")))
  
 
-admixtures <- admixture_proportions(c(admix_props("abc_bc", "f", "g", "alpha"),
-                                      admix_props("G", "d", "e", "beta"),
-                                      admix_props("E", "b", "c", "gamma")))
+admixtures <- admixture_proportions(c(admix_props("bc_a1", "pb_a1", "ABC", "a"),
+                                      admix_props("abc_a2", "pb_a2", "x", "b")))
                                 
 bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
 plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 ```
 
-![](README-first_graph-1.png)
+![](README-graph-1.png)
 
 The graph makes predictions on how the f4 statistics should look, in particular it allows us to predict the signs of the f4 statistics.
 
 ``` r
 add_graph_f4_sign(bears, bears_graph)
-#>      W      X      Y      Z       D Z.value graph_f4_sign
-#> 1  BLK     AK  ABC_A    EBB -0.1543 -29.149            -1
-#> 2  BLK     PB  ABC_A    EBB -0.1524 -28.918            -1
-#> 3  BLK     PB ABC_BC    EBB -0.1322 -26.263            -1
-#> 4  BLK     AK ABC_BC    EBB -0.1327 -26.054            -1
-#> 5  BLK     PB     YB    EBB -0.0865 -18.835            -1
-#> 6  BLK     AK     YB    EBB -0.0872 -18.687            -1
-#> 7  BLK     AK  ABC_A     YB -0.0796 -12.338            -1
-#> 8  BLK     PB  ABC_A     YB -0.0781 -12.091            -1
-#> 9  BLK     PB ABC_BC     YB -0.0554  -8.945            -1
-#> 10 BLK     AK ABC_BC     YB -0.0554  -8.902            -1
-#> 11 BLK     AK  ABC_A ABC_BC -0.0275  -4.784             1
-#> 12 BLK     PB  ABC_A ABC_BC -0.0255  -4.519             1
-#> 13 BLK ABC_BC     PB     AK  0.0011   0.213             0
-#> 14 BLK    EBB     PB     AK  0.0106   2.155             0
-#> 15 BLK  ABC_A     PB     AK  0.0175   3.148             0
-#> 16 BLK     YB     PB     AK  0.0195   3.397             0
-#> 17 BLK     PB ABC_BC  ABC_A  0.0255   4.519            -1
-#> 18 BLK     AK ABC_BC  ABC_A  0.0275   4.784            -1
-#> 19 BLK     AK     YB ABC_BC  0.0554   8.902             1
-#> 20 BLK     PB     YB ABC_BC  0.0554   8.945             1
-#> 21 BLK     PB     YB  ABC_A  0.0781  12.091             1
-#> 22 BLK     AK     YB  ABC_A  0.0796  12.338             1
-#> 23 BLK     AK    EBB     YB  0.0872  18.687             1
-#> 24 BLK     PB    EBB     YB  0.0865  18.835             1
-#> 25 BLK     AK    EBB ABC_BC  0.1327  26.054             1
-#> 26 BLK     PB    EBB ABC_BC  0.1322  26.263             1
-#> 27 BLK     PB    EBB  ABC_A  0.1524  28.918             1
-#> 28 BLK     AK    EBB  ABC_A  0.1543  29.149             1
-```
-
-Here we see that it generally predicts the signs well, but I made a mistake in the structure of the ABC bears --- the A versus BC statistics compared to polar bears have the wrong sign --- so we can try to update the graph.
-
-``` r
-leaves <- c("BLK", "PB", "AK", "ABC_A", "ABC_BC", "YB", "EBB") 
-inner_nodes <- c("R", "a", "b", "c", "d", "e", "f", "g", "h",
-                 "abc_a", "G", "E")
-
-edges <- parent_edges(c(edge("BLK", "R"),
-                        edge("PB", "h"),
-                        edge("AK", "h"),
-                        edge("ABC_A", "abc_a"),
-                        admixture_edge("abc_a", "f", "g"),
-                        edge("ABC_BC", "g"), 
-                        edge("YB", "e"),
-                        edge("EBB", "c"),
-                        edge("h", "f"),
-                        edge("f", "d"),
-                        edge("g", "G"),
-                        admixture_edge("G", "d", "e"),
-                        edge("d", "b"),
-                        edge("e", "E"),
-                        admixture_edge("E", "b", "c"),
-                        edge("b", "a"),
-                        edge("c", "a"),
-                        edge("a", "R")))
- 
-
-admixtures <- admixture_proportions(c(admix_props("abc_a", "f", "g", "alpha"),
-                                      admix_props("G", "d", "e", "beta"),
-                                      admix_props("E", "b", "c", "gamma")))
-                                
-bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
-plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
-```
-
-![](README-second_graph-1.png)
-
-Which now predicts the signs better.
-
-``` r
-add_graph_f4_sign(bears, bears_graph)
-#>      W      X      Y      Z       D Z.value graph_f4_sign
-#> 1  BLK     AK  ABC_A    EBB -0.1543 -29.149            -1
-#> 2  BLK     PB  ABC_A    EBB -0.1524 -28.918            -1
-#> 3  BLK     PB ABC_BC    EBB -0.1322 -26.263            -1
-#> 4  BLK     AK ABC_BC    EBB -0.1327 -26.054            -1
-#> 5  BLK     PB     YB    EBB -0.0865 -18.835            -1
-#> 6  BLK     AK     YB    EBB -0.0872 -18.687            -1
-#> 7  BLK     AK  ABC_A     YB -0.0796 -12.338            -1
-#> 8  BLK     PB  ABC_A     YB -0.0781 -12.091            -1
-#> 9  BLK     PB ABC_BC     YB -0.0554  -8.945            -1
-#> 10 BLK     AK ABC_BC     YB -0.0554  -8.902            -1
-#> 11 BLK     AK  ABC_A ABC_BC -0.0275  -4.784            -1
-#> 12 BLK     PB  ABC_A ABC_BC -0.0255  -4.519            -1
-#> 13 BLK ABC_BC     PB     AK  0.0011   0.213             0
-#> 14 BLK    EBB     PB     AK  0.0106   2.155             0
-#> 15 BLK  ABC_A     PB     AK  0.0175   3.148             0
-#> 16 BLK     YB     PB     AK  0.0195   3.397             0
-#> 17 BLK     PB ABC_BC  ABC_A  0.0255   4.519             1
-#> 18 BLK     AK ABC_BC  ABC_A  0.0275   4.784             1
-#> 19 BLK     AK     YB ABC_BC  0.0554   8.902             1
-#> 20 BLK     PB     YB ABC_BC  0.0554   8.945             1
-#> 21 BLK     PB     YB  ABC_A  0.0781  12.091             1
-#> 22 BLK     AK     YB  ABC_A  0.0796  12.338             1
-#> 23 BLK     AK    EBB     YB  0.0872  18.687             1
-#> 24 BLK     PB    EBB     YB  0.0865  18.835             1
-#> 25 BLK     AK    EBB ABC_BC  0.1327  26.054             1
-#> 26 BLK     PB    EBB ABC_BC  0.1322  26.263             1
-#> 27 BLK     PB    EBB  ABC_A  0.1524  28.918             1
-#> 28 BLK     AK    EBB  ABC_A  0.1543  29.149             1
+#>      W  X      Y      Z       D Z.value graph_f4_sign
+#> 1  BLK PB Sweden   Adm1  0.1258    12.8             1
+#> 2  BLK PB  Kenai   Adm1  0.0685     5.9             1
+#> 3  BLK PB Denali   Adm1  0.0160     1.3             1
+#> 4  BLK PB Sweden   Adm2  0.1231    12.2             1
+#> 5  BLK PB  Kenai   Adm2  0.0669     6.1             1
+#> 6  BLK PB Denali   Adm2  0.0139     1.1             1
+#> 7  BLK PB Sweden    Bar  0.1613    14.7             1
+#> 8  BLK PB  Kenai    Bar  0.1091     8.9             1
+#> 9  BLK PB Denali    Bar  0.0573     4.3             1
+#> 10 BLK PB Sweden   Chi1  0.1786    17.7             1
+#> 11 BLK PB  Kenai   Chi1  0.1278    11.3             1
+#> 12 BLK PB Denali   Chi1  0.0777     6.4             1
+#> 13 BLK PB Sweden   Chi2  0.1819    18.3             1
+#> 14 BLK PB  Kenai   Chi2  0.1323    12.1             1
+#> 15 BLK PB Denali   Chi2  0.0819     6.7             1
+#> 16 BLK PB Sweden Denali  0.1267    14.3             0
+#> 17 BLK PB  Kenai Denali  0.0571     5.6             0
+#> 18 BLK PB Sweden  Kenai  0.0719     9.6             0
+#> 19 BLK PB Denali  Kenai -0.0571     5.6             0
 ```
 
 The way the signs are predicted is by extracting the equations for the f4 statistics that the graph implies: For each quartet of leaves we can extract an equation for the corresponding f4 statistics --- an equation in the edge lenghts and admixture proportions --- and if this equation only have positive values we know that the sign must be positive, if it only has negative values we know that it must be negative, and if it constant zero we know it must be zero.
-
-For example
-
-``` r
-sf4(bears_graph, "BLK", "PB", "ABC_A", "EBB")
-#> expression(alpha * (-edge_a_b - edge_b_d - edge_d_f) + (1 - alpha) * 
-#>     beta * (-edge_a_b - edge_b_d) + (1 - alpha) * (1 - beta) * 
-#>     gamma * (-edge_a_b))
-```
-
-only has negative terms so we know it must be negative.
 
 In general we will not always have only positive or negative terms, in which case we cannot this simply predict the sign for f4 statistics. If this is the case we need to set the parameters of the graph --- the edge lengths and admixture proportions --- to get the sign, and in that case we can also predict the numerical value of the f4 statistics from the graph.
 
@@ -223,7 +136,7 @@ fit
 #> Call:
 #> fit_graph(bears, bears_graph)
 #> 
-#> Sum of squared error: 0.001134975
+#> Sum of squared error: 0.05613698
 ```
 
 The object it returns contains an environment that contains the fitted parameters and a data frame containing the original data together with an extra column, graph\_f4, containing the fitted values.
@@ -233,22 +146,22 @@ You can get the fitted values by calling the *summary* function.
 ``` r
 summary(fit)
 #> $edges
-#>       edge_R_BLK         edge_R_a         edge_a_b         edge_a_c 
-#>       0.68117967       0.26526787       0.18740620       0.26444942 
-#>         edge_b_d         edge_b_E       edge_c_EBB         edge_c_E 
-#>       0.05968526       0.34289929       0.43290371       0.19634459 
-#>         edge_d_f         edge_d_G        edge_e_YB         edge_e_G 
-#>       0.10745427       0.36928696       0.28469597       0.08088090 
-#>         edge_f_h     edge_f_abc_a    edge_g_ABC_BC     edge_g_abc_a 
-#>       0.27944911       0.32810094       0.55008189       0.28469400 
-#>        edge_h_PB        edge_h_AK edge_abc_a_ABC_A         edge_G_g 
-#>       0.27629373       0.56812516       0.42011167       0.68400405 
-#>         edge_E_e 
-#>       0.31200231 
+#>        edge_R_BLK       edge_R_PBBB       edge_PBBB_z   edge_PBBB_pb_a2 
+#>        0.49035276        0.70493167        0.40322823        0.13623929 
+#>     edge_Adm_Adm1     edge_Adm_Adm2     edge_Chi_Chi1     edge_Chi_Chi2 
+#>        0.66642345        0.48174151        0.50247939        0.56730140 
+#>       edge_BC_Bar       edge_BC_Chi      edge_ABC_Adm    edge_ABC_bc_a1 
+#>        0.37419765        0.76690037        0.56066474        0.45346225 
+#>     edge_x_Denali     edge_x_abc_a2      edge_y_Kenai          edge_y_x 
+#>        0.69589923        0.42555291        0.75785322        0.56116480 
+#>     edge_z_Sweden          edge_z_y     edge_bc_a1_BC     edge_pb_a1_PB 
+#>        0.33220555        0.48978226        0.59180243        0.42512616 
+#>  edge_pb_a1_bc_a1   edge_abc_a2_ABC  edge_pb_a2_pb_a1 edge_pb_a2_abc_a2 
+#>        0.66277187        0.84939703        0.03585828        0.62672033 
 #> 
 #> $admixture_proportions
-#>     gamma      beta     alpha 
-#> 0.4363610 0.3207230 0.1014637
+#>         a         b 
+#> 0.5187580 0.5070216
 ```
 
 This function also returns the fitted values as a list, so you can assign the result to an object if you need to access it later.
@@ -257,53 +170,46 @@ You can also get the fitted parameters using the generic *coef* or *coefficients
 
 ``` r
 coef(fit)
-#>       edge_R_BLK         edge_R_a         edge_a_b         edge_a_c 
-#>       0.68117967       0.26526787       0.18740620       0.26444942 
-#>         edge_b_d         edge_b_E       edge_c_EBB         edge_c_E 
-#>       0.05968526       0.34289929       0.43290371       0.19634459 
-#>         edge_d_f         edge_d_G        edge_e_YB         edge_e_G 
-#>       0.10745427       0.36928696       0.28469597       0.08088090 
-#>         edge_f_h     edge_f_abc_a    edge_g_ABC_BC     edge_g_abc_a 
-#>       0.27944911       0.32810094       0.55008189       0.28469400 
-#>        edge_h_PB        edge_h_AK edge_abc_a_ABC_A         edge_G_g 
-#>       0.27629373       0.56812516       0.42011167       0.68400405 
-#>         edge_E_e            gamma             beta            alpha 
-#>       0.31200231       0.43636098       0.32072301       0.10146372
+#>        edge_R_BLK       edge_R_PBBB       edge_PBBB_z   edge_PBBB_pb_a2 
+#>        0.49035276        0.70493167        0.40322823        0.13623929 
+#>     edge_Adm_Adm1     edge_Adm_Adm2     edge_Chi_Chi1     edge_Chi_Chi2 
+#>        0.66642345        0.48174151        0.50247939        0.56730140 
+#>       edge_BC_Bar       edge_BC_Chi      edge_ABC_Adm    edge_ABC_bc_a1 
+#>        0.37419765        0.76690037        0.56066474        0.45346225 
+#>     edge_x_Denali     edge_x_abc_a2      edge_y_Kenai          edge_y_x 
+#>        0.69589923        0.42555291        0.75785322        0.56116480 
+#>     edge_z_Sweden          edge_z_y     edge_bc_a1_BC     edge_pb_a1_PB 
+#>        0.33220555        0.48978226        0.59180243        0.42512616 
+#>  edge_pb_a1_bc_a1   edge_abc_a2_ABC  edge_pb_a2_pb_a1 edge_pb_a2_abc_a2 
+#>        0.66277187        0.84939703        0.03585828        0.62672033 
+#>                 a                 b 
+#>        0.51875802        0.50702161
 ```
 
 To get the fitted predictions, together with the data used for fitting, use the *fitted* function.
 
 ``` r
 fitted(fit)
-#>      W      X      Y      Z       D Z.value    graph_f4
-#> 1  BLK     AK  ABC_A    EBB -0.1543 -29.149 -0.15709351
-#> 2  BLK     PB  ABC_A    EBB -0.1524 -28.918 -0.15709351
-#> 3  BLK     PB ABC_BC    EBB -0.1322 -26.263 -0.13479698
-#> 4  BLK     AK ABC_BC    EBB -0.1327 -26.054 -0.13479698
-#> 5  BLK     PB     YB    EBB -0.0865 -18.835 -0.08177675
-#> 6  BLK     AK     YB    EBB -0.0872 -18.687 -0.08177675
-#> 7  BLK     AK  ABC_A     YB -0.0796 -12.338 -0.07531675
-#> 8  BLK     PB  ABC_A     YB -0.0781 -12.091 -0.07531675
-#> 9  BLK     PB ABC_BC     YB -0.0554  -8.945 -0.05302023
-#> 10 BLK     AK ABC_BC     YB -0.0554  -8.902 -0.05302023
-#> 11 BLK     AK  ABC_A ABC_BC -0.0275  -4.784 -0.02229653
-#> 12 BLK     PB  ABC_A ABC_BC -0.0255  -4.519 -0.02229653
-#> 13 BLK ABC_BC     PB     AK  0.0011   0.213  0.00000000
-#> 14 BLK    EBB     PB     AK  0.0106   2.155  0.00000000
-#> 15 BLK  ABC_A     PB     AK  0.0175   3.148  0.00000000
-#> 16 BLK     YB     PB     AK  0.0195   3.397  0.00000000
-#> 17 BLK     PB ABC_BC  ABC_A  0.0255   4.519  0.02229653
-#> 18 BLK     AK ABC_BC  ABC_A  0.0275   4.784  0.02229653
-#> 19 BLK     AK     YB ABC_BC  0.0554   8.902  0.05302023
-#> 20 BLK     PB     YB ABC_BC  0.0554   8.945  0.05302023
-#> 21 BLK     PB     YB  ABC_A  0.0781  12.091  0.07531675
-#> 22 BLK     AK     YB  ABC_A  0.0796  12.338  0.07531675
-#> 23 BLK     AK    EBB     YB  0.0872  18.687  0.08177675
-#> 24 BLK     PB    EBB     YB  0.0865  18.835  0.08177675
-#> 25 BLK     AK    EBB ABC_BC  0.1327  26.054  0.13479698
-#> 26 BLK     PB    EBB ABC_BC  0.1322  26.263  0.13479698
-#> 27 BLK     PB    EBB  ABC_A  0.1524  28.918  0.15709351
-#> 28 BLK     AK    EBB  ABC_A  0.1543  29.149  0.15709351
+#>      W  X      Y      Z       D Z.value   graph_f4
+#> 1  BLK PB Sweden   Adm1  0.1258    12.8 0.06907627
+#> 2  BLK PB  Kenai   Adm1  0.0685     5.9 0.06907627
+#> 3  BLK PB Denali   Adm1  0.0160     1.3 0.06907627
+#> 4  BLK PB Sweden   Adm2  0.1231    12.2 0.06907627
+#> 5  BLK PB  Kenai   Adm2  0.0669     6.1 0.06907627
+#> 6  BLK PB Denali   Adm2  0.0139     1.1 0.06907627
+#> 7  BLK PB Sweden    Bar  0.1613    14.7 0.12251940
+#> 8  BLK PB  Kenai    Bar  0.1091     8.9 0.12251940
+#> 9  BLK PB Denali    Bar  0.0573     4.3 0.12251940
+#> 10 BLK PB Sweden   Chi1  0.1786    17.7 0.12251940
+#> 11 BLK PB  Kenai   Chi1  0.1278    11.3 0.12251940
+#> 12 BLK PB Denali   Chi1  0.0777     6.4 0.12251940
+#> 13 BLK PB Sweden   Chi2  0.1819    18.3 0.12251940
+#> 14 BLK PB  Kenai   Chi2  0.1323    12.1 0.12251940
+#> 15 BLK PB Denali   Chi2  0.0819     6.7 0.12251940
+#> 16 BLK PB Sweden Denali  0.1267    14.3 0.00000000
+#> 17 BLK PB  Kenai Denali  0.0571     5.6 0.00000000
+#> 18 BLK PB Sweden  Kenai  0.0719     9.6 0.00000000
+#> 19 BLK PB Denali  Kenai -0.0571     5.6 0.00000000
 ```
 
 You can make a plot of the fit against the data using the *plot* function.
