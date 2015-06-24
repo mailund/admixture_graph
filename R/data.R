@@ -2,7 +2,7 @@
 #' 
 #' Computed $f_4(W,X;Y,Z)$ statistics for different populations of bears.
 #' 
-#' @format A data frame with 28 rows and 6 variables:
+#' @format A data frame with 19 rows and 6 variables:
 #' \describe{
 #'  \item{W}{The W population}
 #'  \item{X}{The X population}
@@ -12,6 +12,7 @@
 #'  \item{Z.value}{The blocked jacknife Z values}
 #' }
 #' 
+#' @source \url{http://onlinelibrary.wiley.com/doi/10.1111/mec.13038/abstract}
 #' @name bears
 #' @docType data
 #' @keywords data

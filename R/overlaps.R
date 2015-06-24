@@ -10,7 +10,7 @@ path_overlap <- function(path1, path2) {
   rev_path2 <- data.frame(from = path2$to, to = path2$from, prob = path2$prob)
   list(prob = c(path_probability(path1), path_probability(path2)),
        positive = merge(path1, path2)[,1:2],
-       negative = merge(path1, rev_path2)[,1:2])
+       negative = merge(path1, rev_path2)[,1:2])  
 }
 
 #' Get the list of overlaps of all paths.
@@ -24,6 +24,9 @@ path_overlap <- function(path1, path2) {
 all_path_overlaps <- function(paths1, paths2) {
   n1 <- length(paths1)
   n2 <- length(paths2)
+  
+  if (n1 == 0 || n2 == 0) return(list())
+  
   overlaps <- list(rep(NA, n1 * n2))
 
   idx <- 1
