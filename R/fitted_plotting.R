@@ -31,7 +31,7 @@ plot.agraph_fit <- function(x, sigma = 5, ...) {
     coord_flip() +
     theme_classic() +
     theme(legend.position="none") +
-    theme(axis.text.y = element_text(size = 4))
+    theme(axis.text.y = element_text(size = 4)) +
     theme(axis.line = element_blank(),
           axis.text.x = element_blank(),
           axis.ticks = element_blank()) +
