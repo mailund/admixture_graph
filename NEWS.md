@@ -7,6 +7,7 @@
  * Fix plotting bug (Issue #4)
  * Wrote an interface to fitted data objects using the generic functions usually used for fitted models.
  * Added code for plotting fitted data
- * added predict() function.
+ * Added predict() function.
+ * Added function for filtering data based on the leaves in a tree and for mapping between samples and populations (leaves).
  
  

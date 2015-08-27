@@ -26,10 +26,12 @@ plot.agraph_fit <- function(x, sigma = 5, ...) {
     geom_errorbar(aes_string(x = 'test', ymin = 'error_bar_start', ymax = 'error_bar_end'), color='black') +
     geom_point(aes_string(x = 'test', y = 'D'), color='black') +
     geom_point(aes_string(x = 'test', y = 'graph_f4', color = 'hit')) +
+    scale_color_manual(values = c("red", "green")) +
     xlab('') + ylab('') + 
     coord_flip() +
     theme_classic() +
     theme(legend.position="none") +
+    theme(axis.text.y = element_text(size = 4)) +
     theme(axis.line = element_blank(),
           axis.text.x = element_blank(),
           axis.ticks = element_blank()) +

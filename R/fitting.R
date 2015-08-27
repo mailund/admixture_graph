@@ -1,4 +1,6 @@
 
+## Packing and unpacking variables for optimisation code #######
+
 pack_environment <- function(parameters, env) {
   n_edges <- length(parameters$edges)
   n_admix_prop <- length(parameters$admix_prop)
@@ -35,6 +37,8 @@ make_cost_function <- function(data, graph,
     sum( (goal - predictions) ** 2)
   }
 }
+
+## Graph fitting ##################################################################
 
 #' Fit the graph parameters to a data set.
 #' 
@@ -82,11 +86,14 @@ fit_graph <- function(data, graph, optimisation_options = NULL) {
       call = sys.call(),
       graph = graph,
       params = params,
+      cfunc = cfunc,
       error = with(best_fit_data, sum((D-graph_f4)**2)),
       fit_env = best_fit_env, 
       fit_data = best_fit_data),
     class = "agraph_fit")
 }
+
+## Interface for accessing fitted data ############################################
 
 #' Print function for a fitted graph.
 #' 
@@ -181,3 +188,4 @@ predict.agraph_fit <- function(object, newdata = NULL, ...) {
     add_graph_f4(newdata, object$graph, object$fit_env)
   }
 }
+
