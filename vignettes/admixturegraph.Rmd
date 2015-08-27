@@ -1,0 +1,19 @@
+---
+title: "Constructing and fitting admixture graphs to D statistics"
+author: "Thomas Mailund"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Constructing and fitting admixture graphs to D statistics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+# Building admixture graphs
+
+# Extracting drift equations for expected $f$ statistics
+
+# Fitting admixture graphs to D statistics
+
