@@ -2,6 +2,7 @@
 title: "Constructing and fitting admixture graphs to D statistics"
 author: "Thomas Mailund"
 date: "`r Sys.Date()`"
+bibliography: bibliography.bib
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Constructing and fitting admixture graphs to D statistics}
@@ -9,6 +10,45 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r preamble, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(admixturegraph)
+```
+
+This document describes the `admixturegraph` package, a package for fitting admixture graphs to genetic data.
+
+The package enables you to specify admixture graphs, extract the implied equations a given graph makes for predicting correlations of genetic drift as specified by the expected $f_2$, $f_3$ and $f_4$ statistics, or fit a graph to data summarized as $D$ statistics and test the goodness of fit.
+
+The package does not (yet) support graph inference or functionality for exploring the graph space over a set of populations.
+
+
+
+# Admixture graphs and genetic drift
+
+Gene frequencies in related populations are correlated. If two populations split apart a certain time in the past, all gene frequencies were the same at that split time---where the populations were one and the same---and has since drifted apart in the time since---where the populations have evolved independently.
+
+With three related populations where one branched off a common ancestor early and the other two later in time the two closest related populations will, all else being equal, have more correlated gene frequencies than they have with the third population. 
+
+All else being equal here means that the populations should have evolved at roughly the same speed---the gene frequency changes should not be more dramatic in one population than another. If we consider populations A, B and C, with A and B closest relatives but where population A has changed very rapidly since it split from population B, then gene frequencies in A and B could be less correlated than between B and C (but A and C would be even less correlated).
+
+```{r, echo=FALSE}
+leaves <- c("A", "B", "C")
+inner_nodes <- c("AB", "ABC")
+edges <- parent_edges(c(edge("A", "AB"),
+                        edge("B", "AB"),
+                        edge("AB", "ABC"),
+                        edge("C", "ABC")))
+graph <- agraph(leaves, inner_nodes, edges, NULL)
+plot(graph)  
+```
+
+The way gene frequencies change over time as a population evolve is called genetic drift and the way gene frequencies are correlated between populations is determined by how they are related. These relationships can be simple trees with ancestral populations split into descendant populations or be more complex with gene flow between diverged populations.
+
+Assuming that populations evolve by either splitting into descendant populations or merging in admixture events---but do not experience periods of continuous gene flow---their relationship can be described as a so-called *admixture graph* [@Patterson:ADMIXTOOLS]. Such a graph not only describes the history of the populations but can also be seen as a specification of how gene frequencies in the populations will be correlated. Different summary statistics can capture the correlations in gene frequencies between populations, extracting different aspects of this correlation, and the expected values of these statistics can be computed as polynomials over branch lengths and admixture proportions in the admixture graph.
 
 
 # Building admixture graphs
@@ -17,3 +57,4 @@ vignette: >
 
 # Fitting admixture graphs to D statistics
 
+# References
