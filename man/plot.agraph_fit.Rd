@@ -4,7 +4,7 @@
 \alias{plot.agraph_fit}
 \title{Plot the fit of a graph to data.}
 \usage{
-\method{plot}{agraph_fit}(x, sigma = 5, ...)
+\method{plot}{agraph_fit}(x, sigma = 6, ...)
 }
 \arguments{
 \item{x}{Fitted graph object.}
