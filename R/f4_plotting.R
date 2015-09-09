@@ -1,34 +1,39 @@
+#' Make a data frame an f4 statistics object.
+#' 
+#' This is mostly just a convinience function to set the class of a data frame such that 
+#' we plot data as error bars in a meaningful way for statistics for admixture graphs.
+#' 
+#' @param x       Data frame with observed D (f4) statistics
+#' 
+#' @export
+f4stats <- function(x) {
+  class(x) <- c("f4stats", class(x))
+  x
+}
+
 #' Plot the fit of a graph to data.
 #' 
-#' @param x       Fitted graph object.
+#' @param x       Data frame with observed D (f4) statistics
 #' @param sigma   How many sigmas the error bars should be wide.
 #' @param ...     Additional parameters.
 #' 
 #' @import dplyr
 #' @import ggplot2
 #' @export
-plot.agraph_fit <- function(x, sigma = 6, ...) {
+plot.f4stats <- function(x, sigma = 6, ...) {
   
   # I know this is not the 'dplyr' way of doing it, but package check doesn't like
   # non standard evaluation, so this is what is needed.
-  fit <- x$fit_data
-  fit$stderr <- with(fit, D / Z.value)
-  fit$error_bar_start <- with(fit, D - sigma/2*stderr)
-  fit$error_bar_end   <- with(fit, D + sigma/2*stderr)
-  fit$test <- with(fit, paste("D(",W,",",X,";",Y,",",Z,")"))
-  fit$test <- factor(fit$test, levels=arrange(fit, D)$test)
-  fit$hit <- with(fit, Vectorize(between)(graph_f4, error_bar_start, error_bar_end))
-
-  ggplot(fit) +
+  x$stderr <- with(x, D / Z.value)
+  x$error_bar_start <- with(x, D - sigma/2*stderr)
+  x$error_bar_end   <- with(x, D + sigma/2*stderr)
+  x$test <- with(x, paste("D(",W,",",X,";",Y,",",Z,")"))
+  x$test <- factor(x$test, levels=arrange(x, D)$test)
+  
+  ggplot(x) +
     geom_hline(yintersect = 0, linetype = 'dashed', color = 'gray') +
-    geom_segment(aes_string(x = 'test', xend = 'test', y = 'D', yend = 'graph_f4', color = 'hit'), 
-                 linetype = 'dashed') +
     geom_errorbar(aes_string(x = 'test', ymin = 'error_bar_start', ymax = 'error_bar_end'), color='black') +
     geom_point(aes_string(x = 'test', y = 'D'), color='black') +
-    geom_point(aes_string(x = 'test', y = 'graph_f4', color = 'hit')) +
-    (if (all(fit$hit))        scale_color_manual(values = c("green"))
-     else if (all (!fit$hit)) scale_color_manual(values = c("red"))
-     else                     scale_color_manual(values = c("red", "green"))) +
     xlab('') + ylab('') + 
     coord_flip() +
     theme_classic() +
