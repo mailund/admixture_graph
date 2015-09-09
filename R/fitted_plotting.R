@@ -26,7 +26,9 @@ plot.agraph_fit <- function(x, sigma = 6, ...) {
     geom_errorbar(aes_string(x = 'test', ymin = 'error_bar_start', ymax = 'error_bar_end'), color='black') +
     geom_point(aes_string(x = 'test', y = 'D'), color='black') +
     geom_point(aes_string(x = 'test', y = 'graph_f4', color = 'hit')) +
-    scale_color_manual(values = c("red", "green")) +
+    (if (all(fit$hit))        scale_color_manual(values = c("green"))
+     else if (all (!fit$hit)) scale_color_manual(values = c("red"))
+     else                     scale_color_manual(values = c("red", "green"))) +
     xlab('') + ylab('') + 
     coord_flip() +
     theme_classic() +

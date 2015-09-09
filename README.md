@@ -136,7 +136,7 @@ fit
 #> Call:
 #> fit_graph(bears, bears_graph)
 #> 
-#> Sum of squared error: 0.05616389
+#> Sum of squared error: 0.05615466
 ```
 
 The object it returns contains an environment that contains the fitted parameters and a data frame containing the original data together with an extra column, graph\_f4, containing the fitted values.
@@ -147,21 +147,21 @@ You can get the fitted values by calling the *summary* function.
 summary(fit)
 #> $edges
 #>        edge_R_BLK       edge_R_PBBB       edge_PBBB_z   edge_PBBB_pb_a2 
-#>         0.1374472         0.6189445         0.5677139         0.1911302 
+#>         0.5539167         0.1963250         0.1608795         0.1424080 
 #>     edge_Adm_Adm1     edge_Adm_Adm2     edge_Chi_Chi1     edge_Chi_Chi2 
-#>         0.4159387         0.4492377         0.5569757         0.4682324 
+#>         0.6185878         0.3357848         0.7696293         0.5050755 
 #>       edge_BC_Bar       edge_BC_Chi      edge_ABC_Adm    edge_ABC_bc_a1 
-#>         0.2611194         0.5625199         0.3962664         0.3634435 
+#>         0.5504637         0.6593099         0.4986724         0.5622732 
 #>     edge_x_Denali     edge_x_abc_a2      edge_y_Kenai          edge_y_x 
-#>         0.3819050         0.3557575         0.2013584         0.3127119 
+#>         0.3544563         0.3903505         0.5804542         0.4153093 
 #>     edge_z_Sweden          edge_z_y     edge_bc_a1_BC     edge_pb_a1_PB 
-#>         0.3727864         0.5984228         0.4063723         0.4333713 
+#>         0.4497233         0.3581726         0.3330481         0.3114385 
 #>  edge_pb_a1_bc_a1   edge_abc_a2_ABC  edge_pb_a2_pb_a1 edge_pb_a2_abc_a2 
-#>         0.4185179         0.5575059         0.2521746         0.3125842 
+#>         0.3208878         0.4422588         0.2124461         0.3300489 
 #> 
 #> $admixture_proportions
 #>         a         b 
-#> 0.1410708 0.3581707
+#> 0.1958904 0.4724908
 ```
 
 This function also returns the fitted values as a list, so you can assign the result to an object if you need to access it later.
@@ -171,19 +171,19 @@ You can also get the fitted parameters using the generic *coef* or *coefficients
 ``` r
 coef(fit)
 #>        edge_R_BLK       edge_R_PBBB       edge_PBBB_z   edge_PBBB_pb_a2 
-#>         0.1374472         0.6189445         0.5677139         0.1911302 
+#>         0.5539167         0.1963250         0.1608795         0.1424080 
 #>     edge_Adm_Adm1     edge_Adm_Adm2     edge_Chi_Chi1     edge_Chi_Chi2 
-#>         0.4159387         0.4492377         0.5569757         0.4682324 
+#>         0.6185878         0.3357848         0.7696293         0.5050755 
 #>       edge_BC_Bar       edge_BC_Chi      edge_ABC_Adm    edge_ABC_bc_a1 
-#>         0.2611194         0.5625199         0.3962664         0.3634435 
+#>         0.5504637         0.6593099         0.4986724         0.5622732 
 #>     edge_x_Denali     edge_x_abc_a2      edge_y_Kenai          edge_y_x 
-#>         0.3819050         0.3557575         0.2013584         0.3127119 
+#>         0.3544563         0.3903505         0.5804542         0.4153093 
 #>     edge_z_Sweden          edge_z_y     edge_bc_a1_BC     edge_pb_a1_PB 
-#>         0.3727864         0.5984228         0.4063723         0.4333713 
+#>         0.4497233         0.3581726         0.3330481         0.3114385 
 #>  edge_pb_a1_bc_a1   edge_abc_a2_ABC  edge_pb_a2_pb_a1 edge_pb_a2_abc_a2 
-#>         0.4185179         0.5575059         0.2521746         0.3125842 
+#>         0.3208878         0.4422588         0.2124461         0.3300489 
 #>                 a                 b 
-#>         0.1410708         0.3581707
+#>         0.1958904         0.4724908
 ```
 
 To get the fitted predictions, together with the data used for fitting, use the *fitted* function.
@@ -191,21 +191,21 @@ To get the fitted predictions, together with the data used for fitting, use the 
 ``` r
 fitted(fit)
 #>      W  X      Y      Z       D Z.value   graph_f4
-#> 1  BLK PB Sweden   Adm1  0.1258    12.8 0.06845723
-#> 2  BLK PB  Kenai   Adm1  0.0685     5.9 0.06845723
-#> 3  BLK PB Denali   Adm1  0.0160     1.3 0.06845723
-#> 4  BLK PB Sweden   Adm2  0.1231    12.2 0.06845723
-#> 5  BLK PB  Kenai   Adm2  0.0669     6.1 0.06845723
-#> 6  BLK PB Denali   Adm2  0.0139     1.1 0.06845723
-#> 7  BLK PB Sweden    Bar  0.1613    14.7 0.12133730
-#> 8  BLK PB  Kenai    Bar  0.1091     8.9 0.12133730
-#> 9  BLK PB Denali    Bar  0.0573     4.3 0.12133730
-#> 10 BLK PB Sweden   Chi1  0.1786    17.7 0.12133730
-#> 11 BLK PB  Kenai   Chi1  0.1278    11.3 0.12133730
-#> 12 BLK PB Denali   Chi1  0.0777     6.4 0.12133730
-#> 13 BLK PB Sweden   Chi2  0.1819    18.3 0.12133730
-#> 14 BLK PB  Kenai   Chi2  0.1323    12.1 0.12133730
-#> 15 BLK PB Denali   Chi2  0.0819     6.7 0.12133730
+#> 1  BLK PB Sweden   Adm1  0.1258    12.8 0.06728645
+#> 2  BLK PB  Kenai   Adm1  0.0685     5.9 0.06728645
+#> 3  BLK PB Denali   Adm1  0.0160     1.3 0.06728645
+#> 4  BLK PB Sweden   Adm2  0.1231    12.2 0.06728645
+#> 5  BLK PB  Kenai   Adm2  0.0669     6.1 0.06728645
+#> 6  BLK PB Denali   Adm2  0.0139     1.1 0.06728645
+#> 7  BLK PB Sweden    Bar  0.1613    14.7 0.12361816
+#> 8  BLK PB  Kenai    Bar  0.1091     8.9 0.12361816
+#> 9  BLK PB Denali    Bar  0.0573     4.3 0.12361816
+#> 10 BLK PB Sweden   Chi1  0.1786    17.7 0.12361816
+#> 11 BLK PB  Kenai   Chi1  0.1278    11.3 0.12361816
+#> 12 BLK PB Denali   Chi1  0.0777     6.4 0.12361816
+#> 13 BLK PB Sweden   Chi2  0.1819    18.3 0.12361816
+#> 14 BLK PB  Kenai   Chi2  0.1323    12.1 0.12361816
+#> 15 BLK PB Denali   Chi2  0.0819     6.7 0.12361816
 #> 16 BLK PB Sweden Denali  0.1267    14.3 0.00000000
 #> 17 BLK PB  Kenai Denali  0.0571     5.6 0.00000000
 #> 18 BLK PB Sweden  Kenai  0.0719     9.6 0.00000000

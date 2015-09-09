@@ -10,13 +10,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r preamble, echo = FALSE}
+```{r preamble, echo = FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
 library(admixturegraph)
+library(neldermead)
 ```
 
 This document describes the `admixturegraph` package, a package for fitting admixture graphs to genetic data.
@@ -133,10 +134,76 @@ plot(graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 
 ## A more complex example
 
+As a somewhat more complex example we can build a graph for samples of polar and brown bears described in [@Cahill:2014fo]. Although the model suggested there for the relationship between polar bears and brown bears is more along the lines of gene flow from polar bears into one population of brown bears and then spread from there, we can also model the different levels of relatedness between the polar and brown bears by direct gene flow from polar bears into the ancestors of the different samples of brown bears with more and more such events in the ancestry of those that are closer related to polar bears.
 
+A graph constructed to capture this could look like:
+
+```{r bears_graph, fig.width=6, fig.height=5, cache=TRUE}
+leaves <- c("BLK", "PB",
+            "Bar", "Chi1", "Chi2", "Adm1", "Adm2",
+            "Denali", "Kenai", "Sweden") 
+inner_nodes <- c("R", "PBBB",
+                 "Adm", "Chi", "BC", "ABC",
+                 "x", "y", "z",
+                 "pb_a1", "pb_a2", "pb_a3", "pb_a4",
+                 "bc_a1", "abc_a2", "x_a3", "y_a4")
+
+edges <- parent_edges(c(edge("BLK", "R"),
+                        edge("PB", "pb_a1"),
+                        edge("pb_a1", "pb_a2"),
+                        edge("pb_a2", "pb_a3"),
+                        edge("pb_a3", "pb_a4"),
+                        edge("pb_a4", "PBBB"),
+                        
+                        edge("Chi1", "Chi"),
+                        edge("Chi2", "Chi"),
+                        edge("Chi", "BC"),
+                        edge("Bar", "BC"),
+                        edge("BC", "bc_a1"),
+                        
+                        edge("Adm1", "Adm"),
+                        edge("Adm2", "Adm"),
+                        
+                        admixture_edge("bc_a1", "pb_a1", "ABC"),
+                        edge("Adm", "ABC"),
+                        
+                        edge("ABC", "abc_a2"),
+                        admixture_edge("abc_a2", "pb_a2", "x"),
+                        
+                        edge("Denali", "x"),
+                        edge("x", "x_a3"),
+                        admixture_edge("x_a3", "pb_a3", "y"),
+                      
+                        edge("Kenai", "y"),
+                        edge("y", "y_a4"),                        
+                        admixture_edge("y_a4", "pb_a4", "z"),
+                        
+                        edge("Sweden", "z"),
+                        
+                        edge("z", "PBBB"),
+                        edge("PBBB", "R")))
+ 
+
+admixtures <- admixture_proportions(c(admix_props("bc_a1", "pb_a1", "ABC", "a"),
+                                      admix_props("abc_a2", "pb_a2", "x", "b"),
+                                      admix_props("x_a3", "pb_a3", "y", "c"),
+                                      admix_props("y_a4", "pb_a4", "z", "d")))
+                                
+bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
+plot(bears_graph, show_admixture_labels = TRUE)
+```
 
 # Extracting drift equations for expected $f$ statistics
 
 # Fitting admixture graphs to D statistics
+
+```{r, warning=FALSE, cache=TRUE, dependson="bears_graph", fig.height=5, fig.width=5}
+data(bears)
+
+bears_fit <- fit_graph(bears, bears_graph, optimset(MaxFunEvals = 100000, MaxIter = 100000))
+plot(bears_fit)
+```
+
+
 
 # References
