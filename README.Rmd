@@ -62,12 +62,15 @@ leaves <- c("BLK", "PB",
 inner_nodes <- c("R", "PBBB",
                  "Adm", "Chi", "BC", "ABC",
                  "x", "y", "z",
-                 "bc_a1", "pb_a1", "abc_a2", "pb_a2")
+                 "pb_a1", "pb_a2", "pb_a3", "pb_a4",
+                 "bc_a1", "abc_a2", "x_a3", "y_a4")
 
 edges <- parent_edges(c(edge("BLK", "R"),
                         edge("PB", "pb_a1"),
                         edge("pb_a1", "pb_a2"),
-                        edge("pb_a2", "PBBB"),
+                        edge("pb_a2", "pb_a3"),
+                        edge("pb_a3", "pb_a4"),
+                        edge("pb_a4", "PBBB"),
                         
                         edge("Chi1", "Chi"),
                         edge("Chi2", "Chi"),
@@ -83,12 +86,15 @@ edges <- parent_edges(c(edge("BLK", "R"),
                         
                         edge("ABC", "abc_a2"),
                         admixture_edge("abc_a2", "pb_a2", "x"),
+                        
                         edge("Denali", "x"),
-                        
-                        edge("x", "y"),
+                        edge("x", "x_a3"),
+                        admixture_edge("x_a3", "pb_a3", "y"),
+                      
                         edge("Kenai", "y"),
+                        edge("y", "y_a4"),                        
+                        admixture_edge("y_a4", "pb_a4", "z"),
                         
-                        edge("y", "z"),
                         edge("Sweden", "z"),
                         
                         edge("z", "PBBB"),
@@ -96,41 +102,22 @@ edges <- parent_edges(c(edge("BLK", "R"),
  
 
 admixtures <- admixture_proportions(c(admix_props("bc_a1", "pb_a1", "ABC", "a"),
-                                      admix_props("abc_a2", "pb_a2", "x", "b")))
+                                      admix_props("abc_a2", "pb_a2", "x", "b"),
+                                      admix_props("x_a3", "pb_a3", "y", "c"),
+                                      admix_props("y_a4", "pb_a4", "z", "d")))
                                 
 bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
 plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 ```
 
-The graph makes predictions on how the f4 statistics should look, in particular
-it allows us to predict the signs of the f4 statistics.
-
-```{r}
-add_graph_f4_sign(bears, bears_graph)
-```
-
-
-The way the signs are predicted is by extracting the equations for the f4
-statistics that the graph implies: For each quartet of leaves we can extract
-an equation for the corresponding f4 statistics --- an equation in the
-edge lenghts and admixture proportions --- and if this equation only have positive
-values we know that the sign must be positive, if it only has negative values we
-know that it must be negative, and if it constant zero we know it must be zero.
-
-In general we will not always have only positive or negative terms, in which case
-we cannot this simply predict the sign for f4 statistics. If this is the case
-we need to set the parameters of the graph --- the edge lengths and admixture 
-proportions --- to get the sign, and in that case we can also predict the
-numerical value of the f4 statistics from the graph.
 
 
 ## Fitting a graph to data
 
-If you have the *neldermead* package installed you can also fit graph parameters to data.
-This is done using the *fit_graph* function
+The graph makes predictions on how the f4 statistics should look. If you have the *neldermead* package installed you can fit graph parameters to observed D statistics. This is done using the *fit_graph* function
 
-```{r, warning=FALSE}
-fit <- fit_graph(bears, bears_graph)
+```{r, warning=FALSE, cache=TRUE, dependson="graph"}
+fit <- fit_graph(bears, bears_graph, optimset(MaxFunEvals=100000))
 fit
 ```
 

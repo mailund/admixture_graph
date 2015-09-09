@@ -5,3 +5,5 @@
 ^NEWS\.md$
 ^\.travis\.yml
 ^test\.R
+^README_cache/*$
+^vignettes/admixturegraph_cache/*$
