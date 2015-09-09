@@ -103,51 +103,18 @@ plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 
 ![](README-graph-1.png)
 
-The graph makes predictions on how the f4 statistics should look, in particular it allows us to predict the signs of the f4 statistics.
-
-``` r
-add_graph_f4_sign(bears, bears_graph)
-#>      W  X      Y      Z       D Z.value graph_f4_sign
-#> 1  BLK PB Sweden   Adm1  0.1258    12.8             1
-#> 2  BLK PB  Kenai   Adm1  0.0685     5.9             1
-#> 3  BLK PB Denali   Adm1  0.0160     1.3             1
-#> 4  BLK PB Sweden   Adm2  0.1231    12.2             1
-#> 5  BLK PB  Kenai   Adm2  0.0669     6.1             1
-#> 6  BLK PB Denali   Adm2  0.0139     1.1             1
-#> 7  BLK PB Sweden    Bar  0.1613    14.7             1
-#> 8  BLK PB  Kenai    Bar  0.1091     8.9             1
-#> 9  BLK PB Denali    Bar  0.0573     4.3             1
-#> 10 BLK PB Sweden   Chi1  0.1786    17.7             1
-#> 11 BLK PB  Kenai   Chi1  0.1278    11.3             1
-#> 12 BLK PB Denali   Chi1  0.0777     6.4             1
-#> 13 BLK PB Sweden   Chi2  0.1819    18.3             1
-#> 14 BLK PB  Kenai   Chi2  0.1323    12.1             1
-#> 15 BLK PB Denali   Chi2  0.0819     6.7             1
-#> 16 BLK PB Sweden Denali  0.1267    14.3             1
-#> 17 BLK PB  Kenai Denali  0.0571     5.6             1
-#> 18 BLK PB Sweden  Kenai  0.0719     9.6             1
-#> 19 BLK PB Denali  Kenai -0.0571    -5.6            -1
-```
-
-The way the signs are predicted is by extracting the equations for the f4 statistics that the graph implies: For each quartet of leaves we can extract an equation for the corresponding f4 statistics --- an equation in the edge lenghts and admixture proportions --- and if this equation only have positive values we know that the sign must be positive, if it only has negative values we know that it must be negative, and if it constant zero we know it must be zero.
-
-In general we will not always have only positive or negative terms, in which case we cannot this simply predict the sign for f4 statistics. If this is the case we need to set the parameters of the graph --- the edge lengths and admixture proportions --- to get the sign, and in that case we can also predict the numerical value of the f4 statistics from the graph.
-
 Fitting a graph to data
 -----------------------
 
-If you have the *neldermead* package installed you can also fit graph parameters to data. This is done using the *fit\_graph* function
+The graph makes predictions on how the f4 statistics should look. If you have the *neldermead* package installed you can fit graph parameters to observed D statistics. This is done using the *fit\_graph* function
 
 ``` r
-fit <- fit_graph(bears, bears_graph, optimset(MaxFunEvals=10000))
-#> fminbnd:  Exiting: Maximum number of function evaluations has been exceeded
-#>          - increase MaxFunEvals option.
-#>          Current function value: 0.00295657755132507
+fit <- fit_graph(bears, bears_graph, optimset(MaxFunEvals=100000))
 fit
 #> Call:
-#> fit_graph(bears, bears_graph, optimset(MaxFunEvals = 10000))
+#> fit_graph(bears, bears_graph, optimset(MaxFunEvals = 1e+05))
 #> 
-#> Sum of squared error: 0.002956578
+#> Sum of squared error: 0.00152768
 ```
 
 The object it returns contains an environment that contains the fitted parameters and a data frame containing the original data together with an extra column, graph\_f4, containing the fitted values.
@@ -158,25 +125,25 @@ You can get the fitted values by calling the *summary* function.
 summary(fit)
 #> $edges
 #>        edge_R_BLK       edge_R_PBBB       edge_PBBB_z   edge_PBBB_pb_a4 
-#>        0.19057921        0.00000100        0.71193890        0.12445339 
+#>        0.48280400        0.35334025        0.20544148        0.09400681 
 #>     edge_Adm_Adm1     edge_Adm_Adm2     edge_Chi_Chi1     edge_Chi_Chi2 
-#>        0.83561262        0.12008785        0.73746522        0.10110172 
+#>        0.43927435        0.61508755        0.57871199        0.41215334 
 #>       edge_BC_Bar       edge_BC_Chi      edge_ABC_Adm    edge_ABC_bc_a1 
-#>        0.99999900        0.47150452        0.00000100        0.00000100 
+#>        0.56786089        0.15152401        0.32464937        0.36194069 
 #>     edge_x_Denali     edge_x_abc_a2      edge_y_Kenai       edge_y_x_a3 
-#>        0.40288193        0.86128120        0.25411597        0.00000100 
+#>        0.55402436        0.25665913        0.28996419        0.27422166 
 #>     edge_z_Sweden       edge_z_y_a4     edge_pb_a1_PB  edge_pb_a1_bc_a1 
-#>        0.35447815        0.98815364        0.74276859        0.73857230 
+#>        0.21095794        0.22471392        0.47904766        0.17697982 
 #>  edge_pb_a2_pb_a1 edge_pb_a2_abc_a2  edge_pb_a3_pb_a2   edge_pb_a3_x_a3 
-#>        0.02048059        0.53348206        0.09907696        0.84540469 
+#>        0.06448725        0.47719996        0.06344493        0.30438053 
 #>  edge_pb_a4_pb_a3   edge_pb_a4_y_a4     edge_bc_a1_BC   edge_abc_a2_ABC 
-#>        0.00000100        0.49357293        0.45251097        0.90377890 
+#>        0.07438701        0.42705823        0.49725335        0.42610375 
 #>       edge_x_a3_x       edge_y_a4_y 
-#>        0.00000100        0.09023466 
+#>        0.45304760        0.26846672 
 #> 
 #> $admixture_proportions
 #>         a         b         c         d 
-#> 0.5405489 0.1558058 0.7111461 0.4715302
+#> 0.3078550 0.1166945 0.5109548 0.6357136
 ```
 
 This function also returns the fitted values as a list, so you can assign the result to an object if you need to access it later.
@@ -186,23 +153,23 @@ You can also get the fitted parameters using the generic *coef* or *coefficients
 ``` r
 coef(fit)
 #>        edge_R_BLK       edge_R_PBBB       edge_PBBB_z   edge_PBBB_pb_a4 
-#>        0.19057921        0.00000100        0.71193890        0.12445339 
+#>        0.48280400        0.35334025        0.20544148        0.09400681 
 #>     edge_Adm_Adm1     edge_Adm_Adm2     edge_Chi_Chi1     edge_Chi_Chi2 
-#>        0.83561262        0.12008785        0.73746522        0.10110172 
+#>        0.43927435        0.61508755        0.57871199        0.41215334 
 #>       edge_BC_Bar       edge_BC_Chi      edge_ABC_Adm    edge_ABC_bc_a1 
-#>        0.99999900        0.47150452        0.00000100        0.00000100 
+#>        0.56786089        0.15152401        0.32464937        0.36194069 
 #>     edge_x_Denali     edge_x_abc_a2      edge_y_Kenai       edge_y_x_a3 
-#>        0.40288193        0.86128120        0.25411597        0.00000100 
+#>        0.55402436        0.25665913        0.28996419        0.27422166 
 #>     edge_z_Sweden       edge_z_y_a4     edge_pb_a1_PB  edge_pb_a1_bc_a1 
-#>        0.35447815        0.98815364        0.74276859        0.73857230 
+#>        0.21095794        0.22471392        0.47904766        0.17697982 
 #>  edge_pb_a2_pb_a1 edge_pb_a2_abc_a2  edge_pb_a3_pb_a2   edge_pb_a3_x_a3 
-#>        0.02048059        0.53348206        0.09907696        0.84540469 
+#>        0.06448725        0.47719996        0.06344493        0.30438053 
 #>  edge_pb_a4_pb_a3   edge_pb_a4_y_a4     edge_bc_a1_BC   edge_abc_a2_ABC 
-#>        0.00000100        0.49357293        0.45251097        0.90377890 
+#>        0.07438701        0.42705823        0.49725335        0.42610375 
 #>       edge_x_a3_x       edge_y_a4_y                 a                 b 
-#>        0.00000100        0.09023466        0.54054887        0.15580580 
+#>        0.45304760        0.26846672        0.30785495        0.11669447 
 #>                 c                 d 
-#>        0.71114614        0.47153019
+#>        0.51095484        0.63571360
 ```
 
 To get the fitted predictions, together with the data used for fitting, use the *fitted* function.
@@ -210,25 +177,25 @@ To get the fitted predictions, together with the data used for fitting, use the 
 ``` r
 fitted(fit)
 #>      W  X      Y      Z       D Z.value    graph_f4
-#> 1  BLK PB Sweden   Adm1  0.1258    12.8  0.12385302
-#> 2  BLK PB  Kenai   Adm1  0.0685     5.9  0.06516948
-#> 3  BLK PB Denali   Adm1  0.0160     1.3  0.01839679
-#> 4  BLK PB Sweden   Adm2  0.1231    12.2  0.12385302
-#> 5  BLK PB  Kenai   Adm2  0.0669     6.1  0.06516948
-#> 6  BLK PB Denali   Adm2  0.0139     1.1  0.01839679
-#> 7  BLK PB Sweden    Bar  0.1613    14.7  0.18880479
-#> 8  BLK PB  Kenai    Bar  0.1091     8.9  0.13012126
-#> 9  BLK PB Denali    Bar  0.0573     4.3  0.08334856
-#> 10 BLK PB Sweden   Chi1  0.1786    17.7  0.18880479
-#> 11 BLK PB  Kenai   Chi1  0.1278    11.3  0.13012126
-#> 12 BLK PB Denali   Chi1  0.0777     6.4  0.08334856
-#> 13 BLK PB Sweden   Chi2  0.1819    18.3  0.18880479
-#> 14 BLK PB  Kenai   Chi2  0.1323    12.1  0.13012126
-#> 15 BLK PB Denali   Chi2  0.0819     6.7  0.08334856
-#> 16 BLK PB Sweden Denali  0.1267    14.3  0.10545623
-#> 17 BLK PB  Kenai Denali  0.0571     5.6  0.04677269
-#> 18 BLK PB Sweden  Kenai  0.0719     9.6  0.05868353
-#> 19 BLK PB Denali  Kenai -0.0571    -5.6 -0.04677269
+#> 1  BLK PB Sweden   Adm1  0.1258    12.8  0.12887086
+#> 2  BLK PB  Kenai   Adm1  0.0685     5.9  0.06910946
+#> 3  BLK PB Denali   Adm1  0.0160     1.3  0.01360320
+#> 4  BLK PB Sweden   Adm2  0.1231    12.2  0.12887086
+#> 5  BLK PB  Kenai   Adm2  0.0669     6.1  0.06910946
+#> 6  BLK PB Denali   Adm2  0.0139     1.1  0.01360320
+#> 7  BLK PB Sweden    Bar  0.1613    14.7  0.18042276
+#> 8  BLK PB  Kenai    Bar  0.1091     8.9  0.12066135
+#> 9  BLK PB Denali    Bar  0.0573     4.3  0.06515509
+#> 10 BLK PB Sweden   Chi1  0.1786    17.7  0.18042276
+#> 11 BLK PB  Kenai   Chi1  0.1278    11.3  0.12066135
+#> 12 BLK PB Denali   Chi1  0.0777     6.4  0.06515509
+#> 13 BLK PB Sweden   Chi2  0.1819    18.3  0.18042276
+#> 14 BLK PB  Kenai   Chi2  0.1323    12.1  0.12066135
+#> 15 BLK PB Denali   Chi2  0.0819     6.7  0.06515509
+#> 16 BLK PB Sweden Denali  0.1267    14.3  0.11526766
+#> 17 BLK PB  Kenai Denali  0.0571     5.6  0.05550626
+#> 18 BLK PB Sweden  Kenai  0.0719     9.6  0.05976141
+#> 19 BLK PB Denali  Kenai -0.0571    -5.6 -0.05550626
 ```
 
 You can make a plot of the fit against the data using the *plot* function.

@@ -195,15 +195,59 @@ plot(bears_graph, show_admixture_labels = TRUE)
 
 # Extracting drift equations for expected $f$ statistics
 
+The expectation of $f_2$, $f_3$, and $f_4$ statistics can be expressed in terms of admixture proportions and edge lengths of an admixture graph [@Patterson:ADMIXTOOLS]. In the `admixturegraph` package these can be extracted from a graph using the functions `sf2`, `sf3` and `sf4` (where the "s" stands for "symbolic").
+
+The expected values are computed from weighted overlapping paths between pairs of edges such that $f_4(A,B;C,D)$ is the sum of overlapping paths from $A$ to $B$ with paths from $C$ to $D$, weighted by the probability of lineages taking each path.  The $f_2$ and $f_3$ statistics can be seen as special cases of $f_4$ statistics: $f_3(A;B,C)=f_4(A,B;A,C)$ and $f_2(A,B)=f_4(A,B;A,B)$.
+
+The expressions extracted using the `sf2`, `sf3`, and `sf4` functions are in the form of R expressions.
+
+```{r}
+sf4(bears_graph, "BLK", "PB", "Adm1", "Adm2")
+sf2(bears_graph, "Bar", "Chi1")
+sf3(bears_graph, "Bar", "Chi1", "Chi2")
+sf4(bears_graph, "BLK", "PB", "Bar", "Adm2")
+```
+
 # Fitting admixture graphs to D statistics
 
-```{r, warning=FALSE, cache=TRUE, dependson="bears_graph", fig.height=5, fig.width=5}
-data(bears)
+Given a data set summarized as $f_4$ (or $D$) statistics `admixturegraph` can fit the edge lengths and admixture proportions of a graph to the data.
 
-bears_fit <- fit_graph(bears, bears_graph, optimset(MaxFunEvals = 100000, MaxIter = 100000))
+For fitting data the package expects the observed statistics in a data frame with at least the following columns: `W`, `X`, `Y`, and `Z` -- the samples in the statistics $f_4(W,X,Y,Z)$ -- and `D` (the actual $f_4$ statistics; called $D$ since that is the header used if these are computed with Patterson et al.s ADMIXTOOLS package) and `Z.values` (the statistics divided by the standard error).
+
+For the bear samples we have the following statistics [@Cahill:2014fo]:
+
+```{r}
+data(bears)
+bears
+```
+
+```{r, fig.height=5, fig.width=6}
+plot(f4stats(bears))
+```
+
+We can fit this to the graph from above, like this:
+
+```{r fitting_data, eval=FALSE}
+bears_fit <- fit_graph(bears, bears_graph)
+```
+
+```{r load_fitted_data, echo=FALSE}
+data(bears_fit)
+```
+
+```{r}
+summary(bears_fit)
+```
+
+```{r, fig.height=5, fig.width=6}
 plot(bears_fit)
 ```
 
+The fitted parameters can be extracted using the `coef` function and the predictions by the `fitted` function:
 
+```{r}
+coef(bears_fit)
+fitted(bears_fit)
+```
 
 # References

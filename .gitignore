@@ -9,5 +9,8 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
+vignettes/admixturegraph_cache
 .Rproj.user
 inst/doc
+
+README_cache/*$
