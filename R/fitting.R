@@ -36,6 +36,7 @@ make_cost_function <- function(data, graph,
     predictions <- unlist(Map(function(expression) eval(expression, env), expressions), use.names = FALSE)
     sum( (goal - predictions) ** 2)
   }
+  # This comment is to see how GitHub desktop interface reacts to changing something.
 }
 
 ## Graph fitting ##################################################################
