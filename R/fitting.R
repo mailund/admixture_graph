@@ -1,31 +1,43 @@
 # Kalle's suggestions to improve the model:
 #
-# 1) Now the bear example for instance basically has 2 equations and 2 edge
-#    variables for any pair of admix variables. This means that the square sum
-#    error is usually the same, unless the admix variables are such that optimal
-#    edges would be negative (in principle we could have also a singularity with
-#    like probability 0). So we at best get some bounds for the admix proportions,
-#    the suggestions nelder mead gives are arbitrary. Thos bounds correspond to
-#    cases where some edges are zero, which I assume is often nonsensical, so one
-#    improvement could be setting lower bounds to edge lenghts based on someting
-#    we know about drift?
-# 2) Actually we're just missing some data. The system would be trurly 
-#    underdetermined if we had f4(BLK, PB; A, B/C) statistics too. I either case,
-#    trurly underdetermined system or not, we want to make sure the program
-#    recognizes when the admix solution is really optimal and when many, possibly
-#    all admixes perform equally well. A simple contour plot could be in order.
-# 3) We know that the expected values of f4:s can be calculated from the graph
-#    overlaps, but what about the standard deviations? They should really be
-#    taken into account as weights for each equation in the system.
-# 4) Really the whole model could in fact be a Bayesian model giving equal a 
+# 1) Take the standard deviations into account. One way is imposing weight
+#    coefficients into the distance function. Maybe even think what is the effect
+#    of assuming the data is normally distributed.
+# 4) Really the whole model could perhaps be a Bayesian model giving equal a 
 #    priori weight to all admix proportions and then conditioning with reality
 #    to pick the favourite candidate. Could be also that we do not know enough
-#    about the random variables, right now only expected values.
+#    about the random variables?
 
-build_edge_optimisation_matrix <- function(data, graph, parameters = extract_graph_parameters(graph)) {
-  m <- nrow(data) # No. of equations is the no. of f4-statistics.
+## Graph fitting #################################################################
+
+#' Build a matrix coding the linear system of edges once the admix variables
+#' have been fixed.
+#' 
+#' The elements are characters containing numerals, admix variable names,
+#' parenthesis and arithmetical operations. (Transform into expressions with
+#' \code(parse) and then evaluate with \code(eval)). The column names are the
+#' edge names from \code(extract_graph_parameter$edges), the rows have no names.
+#' 
+#' If the essential number of equations is not higher than the essential number of
+#' edge variables, the quality of edge optimisation will not depend on the admix
+#' variables (expect in a very special cases), and a complaint will be given.
+#' 
+#' @param data  The data set.
+#' @param graph  The admixture graph.
+#' @param parameters  In case one wants to tweak something in the graph.
+#'   
+#' @return A list containing the full matrix (\code($full)), a version with zero
+#'         columns removed (\code($column_reduced)), a version with zero rows and
+#'         repeated rows also removed (\code($double_reduced)), and an indicator
+#'         of warning (\code($complaint)).
+#'   
+#' @export
+build_edge_optimisation_matrix <- function(data, graph, parameters 
+                                           = extract_graph_parameters(graph)) {
+  m <- nrow(data) # Number of equations is the number of f4-statistics.
   n <- length(parameters$edges) # Variables are the edges.
   edge_optimisation_matrix <- matrix("0", m, n)
+  colnames(edge_optimisation_matrix) <- parameters$edges
   # Let's fill the matrix with polynomials of admix proportions.
   for (i in seq(1, m)) {
     statistic <- f4(graph, data[i, 1], data[i, 2], data[i, 3], data[i, 4])
@@ -39,95 +51,224 @@ build_edge_optimisation_matrix <- function(data, graph, parameters = extract_gra
         # Yeah I know this is a bit silly but the matrix is only created once.
         if (nrow(statistic[[j]]$positive) > 0) { # Insert the positive stuff
           for (k in seq(1, nrow(statistic[[j]]$positive))) {
-            edge_name <- paste("edge", statistic[[j]]$positive[k, 1], statistic[[j]]$positive[k, 2], sep = "_")
-            edge_number <- match(edge_name, parameters$edges)
-            edge_optimisation_matrix[i, edge_number] <- paste(edge_optimisation_matrix[i, edge_number], admix_product, sep = "+")
+            edge_name <- paste("edge", statistic[[j]]$positive[k, 1],
+                               statistic[[j]]$positive[k, 2], sep = "_")
+            edge_optimisation_matrix[i, edge_name] <- 
+              paste(edge_optimisation_matrix[i, edge_name],
+                     admix_product, sep = " + ")
           }
         }
         if (nrow(statistic[[j]]$negative) > 0) { # Insert the negative stuff
           for (k in seq(1, nrow(statistic[[j]]$negative))) {
-            edge_name <- paste("edge", statistic[[j]]$negative[k, 1], statistic[[j]]$negative[k, 2], sep = "_")
-            edge_number <- match(edge_name, parameters$edges)
-            edge_optimisation_matrix[i, edge_number] <- paste(edge_optimisation_matrix[i, edge_number], admix_product, sep = "-")
+            edge_name <- paste("edge", statistic[[j]]$negative[k, 1], 
+                               statistic[[j]]$negative[k, 2], sep = "_")
+            edge_optimisation_matrix[i, edge_name] <- 
+              paste(edge_optimisation_matrix[i, edge_name], 
+                     admix_product, sep = " - ")
           }
         }
       }
     }
   }
-  # To prevent the unnecessary "0+":s and "0":s from slowing down evaluation later 
-  # (don't know if serious actually), the final cleaning:
+  # To prevent the unnecessary "0 +":s and "0":s from slowing down evaluation
+  # later (don't know if serious actually), perform some cleaning:
   for (i in seq(1,m)) {
     for (j in seq(1,n)) {
       if (edge_optimisation_matrix[i, j] != "0") {
-        edge_optimisation_matrix[i, j] <- substring(edge_optimisation_matrix[i, j], 2)
+        edge_optimisation_matrix[i, j] <- 
+          substring(edge_optimisation_matrix[i, j], 3)
         if (substring(edge_optimisation_matrix[i, j], 1, 1) == "+") {
-          edge_optimisation_matrix[i, j] <- substring(edge_optimisation_matrix[i, j], 2)
+          edge_optimisation_matrix[i, j] <- 
+            substring(edge_optimisation_matrix[i, j], 3)
         }
       }
     }
   }
-  edge_optimisation_matrix
+  # Make a version with zero columns removed.
+  column_reduced <- edge_optimisation_matrix
+  j <- 1
+  while (j <= ncol(column_reduced)) {
+    for (i in seq(1, m)) {
+      if (column_reduced[i, j] != "0") {
+        j <- j + 1
+        break
+      }
+      if (i == m) {
+        column_reduced <- column_reduced[, -j]
+      }
+    }
+  }
+  # Make a version with repeated rows and zero rows removed.
+  double_reduced <- column_reduced
+  i <- 1
+  while (i <= nrow(double_reduced)) {
+    for (j in seq(ncol(double_reduced))) {
+      if (double_reduced[i, j] != "0") {
+        i <- i + 1
+        break
+      }
+      if (j == ncol(double_reduced)) {
+        double_reduced <- double_reduced[-i,]
+      }
+    }
+  }
+  double_reduced <- unique(double_reduced)
+  # Make a complaint if the double reduced matrix is not high.
+  complaint <- FALSE
+  if (nrow(double_reduced) <= ncol(double_reduced)) {
+    complaint <- TRUE
+  }
+  list(full = edge_optimisation_matrix, column_reduced = column_reduced, 
+       double_reduced = double_reduced, complaint = complaint)
 }
 
-edge_optimisation_function <- function(data, matrix, graph, parameters = extract_graph_parameters(graph)) {
+#' The cost function fed to nelder mead.
+#' 
+#' We want nelder mead to run fast so the cost function operates with the column
+#' rduced edge optimisation matrix and does not give any extar information about 
+#' the fit. For the details, use \code(edge_optimisation_function) instead.
+#' 
+#' @param data  The data set.
+#' @param matrix  A column reduced edge optimisation matrix (typically given by 
+#'                the function \code(edge_optimisation_matrix$column_reduced)).
+#' @param graph  The admixture graph.
+#' @param parameters  In case one wants to tweak something in the graph.
+#'   
+#' @return  Given an input vector of admix variables, returns the smallest error 
+#'          regarding the edge variables.
+#'   
+#' @export
+cost_function <- function(data, matrix, graph, 
+                          parameters = extract_graph_parameters(graph)) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
     stop("This function requires pracma to be installed.")
   }
-  force(data)
-  force(matrix) # Don't know what this does but it sounds pretty cool.
-  force(parameters)
   goal <- data$D
   function(x) {
-    # First we evaluate the edge otimisation matrix at (admix-proportions) x
+    # Evaluate the column reduced edge optimisation matrix at x.
     evaluated_matrix <- matrix(0, nrow(matrix), ncol(matrix))
     for (i in seq(1, length(parameters$admix_prop))) {
       assign(parameters$admix_prop[i], x[i])
     }
     for (i in seq(1, nrow(matrix))) {
       for (j in seq(1, ncol(matrix))) {
-        evaluated_matrix[i,j] <- eval(parse(text = matrix[i, j]))
+        evaluated_matrix[i, j] <- eval(parse(text = matrix[i, j]))
       }
     }
-    # It's useful to know which edge lengths are in fact free variables and
-    # what edge lengths depend on one another, as the following least square
-    # function just gives one exaple of an optimal solution. This takes O(n^3)
-    # like the current implementation of the least squares algorithm, so making
-    # this extra effort doesn't matter much. Except it's done every time and we
-    # only need it for the final answer. TODO FIX
-    homogeneous_matrix <- rref(evaluated_matrix)
     # Now just use a ready-made function to find the best non-negative solution
     # in the Euclidian norm. Apparently this is "slow" in the sense it takes 
     # (n^3) steps and not ~O(n^2.3) steps as it coud in principle.
     lsq_solution <- lsqnonneg(evaluated_matrix, goal)
-    list(lsq_norm = lsq_solution$resid.norm, lsq_x = lsq_solution$x, homogeneous = homogeneous_matrix)
+    lsq_solution$resid.norm
   }
 }
 
-cost_function <- function(data, matrix, graph, parameters = extract_graph_parameters(graph)) {
+#' More detailed edge fitting that mere \code(cost_function).
+#' 
+#' Returning the cost, an example edge solution of an optimal fit, and linear 
+#' relations describing the set of all edge solutions. Operating with the full
+#' edge optimisation matrix.
+#' 
+#' @param data  The data set.
+#' @param matrix  A full  edge optimisation matrix (typically given by the 
+#'                function \code(edge_optimisation_matrix$full)).
+#' @param graph  The admixture graph.
+#' @param parameters  In case one wants to tweak something in the graph.
+#'   
+#' @return  Given an input vector of admix variables, returns a list containing
+#'          the minimal error (\code($cost)), the graph-f4-statistics 
+#'          (\code$approximation), an example solution (\code($edge_fit)), linear
+#'          relations describing all the solutions (\code($homogeneous)) and one 
+#'          way to choose the free (\code($free_edges)) and bounded 
+#'          (\code($bounded_edges)) edge variables.
+#'   
+#' @export
+edge_optimisation_function <- function(data, matrix, graph, 
+                              parameters = extract_graph_parameters(graph)) {
+  if (!requireNamespace("pracma", quietly = TRUE)) {
+    stop("This function requires pracma to be installed.")
+  }
+  goal <- data$D
   function(x) {
-    edge_optimisation_function(data, matrix, graph, parameters)(x)$lsq_norm
+    # Evaluate the full edge otimisation matrix at x.
+    evaluated_matrix <- matrix(0, nrow(matrix), ncol(matrix))
+    for (i in seq(1, length(parameters$admix_prop))) {
+      assign(parameters$admix_prop[i], x[i])
+    }
+    for (i in seq(1, nrow(matrix))) {
+      for (j in seq(1, ncol(matrix))) {
+        evaluated_matrix[i, j] <- eval(parse(text = matrix[i, j]))
+      }
+    }
+    # Record the (or an example of an) optimal solution and error.
+    lsq_solution <- lsqnonneg(evaluated_matrix, goal)
+    edge_fit <- lsq_solution$x
+    names(edge_fit) <- parameters$edges
+    approximation <- evaluated_matrix %*% edge_fit
+    approximation <- approximation[, 1]
+    # It's useful to know which edge lengths are in fact free variables and what
+    # edge lengths depend on one another, as the least square function only gave
+    # one exaple of an optimal solution. This information is visible after
+    # manipulating the optimisation matrix into reduced row echelon form.
+    homogeneous_matrix <- rref(evaluated_matrix)
+    # Make a list of (one choice of) free edges.
+    free_edges <- c()
+    i <- 1
+    j <- 1
+    while (j <= ncol(matrix)) {
+      if (homogeneous_matrix[i, j] != 0) {
+        if (i == nrow(matrix) && j < ncol(matrix)) {
+          for (k in seq(j + 1, ncol(matrix))) {
+            free_edges <- c(free_edges, parameters$edges[k])
+          }
+          break
+        }
+        i <- i + 1
+        j <- j + 1
+      }
+      else {
+        free_edges <- c(free_edges, parameters$edges[j])
+        j <- j + 1
+      }
+    }
+    # Explain the relationship between the remaining edges and the free edges.
+    h <- nrow(unique(rbind(homogeneous_matrix, 0))) - 1
+    bounded_edges <- rep("", h)
+    for (i in seq(1, h)) {
+      for (j in seq(1, ncol(matrix))) {
+        if (homogeneous_matrix[i, j] != 0) {
+          if (bounded_edges[i] == "") {
+            bounded_edges[i] <- paste(bounded_edges[i], parameters$edges[j], " =",
+                                      sep = "")
+          }
+          else {
+            if (homogeneous_matrix[i, j] > 0) {
+              bounded_edges[i] <- paste(bounded_edges[i], " - ",
+                                        homogeneous_matrix[i, j], "*",
+                                        parameters$edges[j], sep = "")
+            }
+            if (homogeneous_matrix[i, j] < 0) {
+              if (substring(bounded_edges[i], nchar(bounded_edges[i])) == "=") {
+                bounded_edges[i] <- paste(bounded_edges[i], " ", sep = "")
+              }
+              else {
+                bounded_edges[i] <- paste(bounded_edges[i], " + ", sep = "")
+              }
+              bounded_edges[i] <- paste(bounded_edges[i], homogeneous_matrix[i, j],
+                                        "*", parameters$edges[j], sep = "")
+            }
+          }
+        }
+      }
+      if (substring(bounded_edges[i], nchar(bounded_edges[i])) == "=") {
+        bounded_edges[i] <- paste(bounded_edges[i], " 0", sep = "")
+      }
+    }
+    list(cost = lsq_solution$resid.norm, approximation = approximation,
+         edge_fit = edge_fit, homogeneous = homogeneous_matrix, 
+         free_edges = free_edges, bounded_edges = bounded_edges)
   }
 }
-
-# For testing purposes, should work whenever there's exactly 2 admix proportions.
-# With more than 2 admix proportions drawing a graph becomes hard anyways.
-contour_plot <- function(data, matrix, graph, parameters = extract_graph_parameters(graph)) {
-  resolution <- 10
-  x <- seq(0, resolution)
-  y <- seq(0, resolution)
-  z <- matrix(0, resolution, resolution)
-  for (i in seq (1, resolution)) {
-    for (j in seq(1, resolution)) {
-      z[i, j] <- cost_function(data, matrix, graph, parameters)(c(i/resolution, j/resolution))
-    }  
-  }
-  x <- 10*1:nrow(z)
-  y <- 10*1:ncol(z)
-  require(grDevices) # for colours
-  filled.contour(x, y, z, color = heat.colors)
-}
-
-## Graph fitting ##################################################################
 
 #' Fit the graph parameters to a data set.
 #' 
@@ -144,67 +285,118 @@ contour_plot <- function(data, matrix, graph, parameters = extract_graph_paramet
 #' the distance from this column and the predictions made by the graph.
 #' 
 #' @param data  The data set.
-#' @param graph The admixture graph.
-#' @param parameters In case one wants to tweak something in the graph.
-#' @param optimisation_options Options to the optimisation algorithm.
+#' @param graph  The admixture graph.
+#' @param parameters  In case one wants to tweak something in the graph.
+#' @param optimisation_options  Options to the optimisation algorithm.
 #'   
-#' @return A list containing the best fitted values (in an environment) and the 
-#'   data extended with a column containing the graph predictions.
+#' @return A list containing everything about the fit.
 #'   
 #' @seealso \code{\link[neldermead]{optimset}}
 #'   
 #' @export
-fit_graph <- function(data, graph, parameters = extract_graph_parameters(graph), optimisation_options = NULL) {
+fit_graph <- function(data, graph, parameters = extract_graph_parameters(graph),
+                      optimisation_options = NULL) {
   if (!requireNamespace("neldermead", quietly = TRUE)) {
     stop("This function requires neldermead to be installed.")
   }
   x0 <- rep(0.5, length(parameters$admix_prop))
   matrix <- build_edge_optimisation_matrix(data, graph, parameters)
-  cfunc <- cost_function(data, matrix, graph, parameters)
+  full_matrix <- matrix$full
+  reduced_matrix <- matrix$column_reduced
+  cfunc <- cost_function(data, reduced_matrix, graph, parameters)
   opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = rep(0, length(x0)),
-                               xmax = rep(1, length(x0)),
-                               options = optimisation_options)
+                              xmax = rep(1, length(x0)),
+                              options = optimisation_options)
   # The value opti is a class "neldermead" object.
-  best_fit <- neldermead::neldermead.get(opti, "xopt") # Optimal parameters.
-# The thing is, I'm confused with the environment object adn how to use it so at
-# the moment the function just returns a list. I promise to fix back to the
-# environment system if that is the true way.
-  list(
-    data = data,
-    graph = graph,
-    params = parameters,
-    best_fit = best_fit,
-    best_edge_fit = edge_optimisation_function(data, matrix, graph, parameters)(best_fit)$lsq_x,
-    best_error = edge_optimisation_function(data, matrix, graph, parameters)(best_fit)$lsq_norm,
-    homogeneous = edge_optimisation_function(data, matrix, graph, parameters)(best_fit)$homogeneous
-  )  
+  best_fit <- neldermead::neldermead.get(opti, "xopt") # Optimal admix values.
+  best_fit <- best_fit[, 1]
+  names(best_fit) <- parameters$admix_prop
+  detailed_fit <- 
+    edge_optimisation_function(data, full_matrix, graph, parameters)(best_fit)
+  data$graph_f4 <- detailed_fit$approximation
+  # The output is a list with "agraph_fit" -mystery property.
+  structure(list(
+      call = sys.call(),
+      data = data,
+      graph = graph,
+      params = parameters,
+      matrix = matrix,
+      complaint = matrix$complaint,
+      best_fit = best_fit,
+      best_edge_fit = detailed_fit$edge_fit,
+      homogeneous = detailed_fit$homogeneous,
+      free_edges = detailed_fit$free_edges,
+      bounded_edges = detailed_fit$bounded_edges,
+      best_error = detailed_fit$cost,
+      approximation = detailed_fit$approximation,
+      parameters = parameters
+    ),  
+    class = "agraph_fit"
+  )
 }
 
-# Did not intentionally break anything below this, of course nothing will work
-# since I destroyed the environment.
-
 ## Interface for accessing fitted data ############################################
+
+# All of this is supposed to be used after the user defines fit as an output of
+# fit_graph.
+
+# TODO: This function should maybe be like the rest of the interface functions,
+# having something to do with class.
+#' A contour plot of the cost function around the best fit with respect to 2
+#' admix variables specified by the user.
+#' 
+#' Returning the cost, an example edge solution of an optimal fit, and linear 
+#' relations describing the set of all edge solutions. Operating with the full
+#' edge optimisation matrix.
+#' 
+#' @param object  The fitted object.
+#' @param X  An admix variable name (remember quotation marks) or number.
+#' @param Y  An admix variable name (remember quotation marks) or number.
+#' @param resolution  How densely is the function evaluated.
+#'   
+#' @return  Just a contour plot with FIERY colours.
+#'   
+#' @export
+contour_plot <- function(object, X, Y, resolution = 10) {
+  if (!requireNamespace("grDevices", quietly = TRUE)) {
+    stop("This function requires grDevices to be installed.")
+  }
+  x <- seq(0, resolution)
+  y <- seq(0, resolution)
+  z <- matrix(0, resolution, resolution)
+  point <- object$best_fit
+  for (i in seq (1, resolution)) {
+    for (j in seq(1, resolution)) {
+      point[X] <- i/resolution
+      point[Y] <- j/resolution
+      z[i, j] <- cost_function(object$data, object$matrix$column_reduced,
+                               object$graph, object$parameters)(point)
+    }  
+  }
+  x <- 1:nrow(z)/resolution
+  y <- 1:ncol(z)/resolution
+  require(grDevices) # for colours
+  filled.contour(x, y, z, xlab = X, ylab = Y, color = heat.colors)
+}
 
 #' Print function for a fitted graph.
 #' 
 #' Print summary of the result of a fit.
 #' 
-#' @param x  The fitted object.
-#' @param ...     Additional arguments.
+#' @param object  The fitted object.
 #'  
 #' @export
-print.agraph_fit <- function(x, ...) {
-  cat("Call:\n")
-  print(x$call)
+print.agraph_fit <- function(object) {
   cat("\n")
-  cat("Sum of squared error:", x$error, "\n")
-  invisible(x)
-}
-
-fitted_parameters <- function(object) {
-  edges <- unlist(Map(function(param) get(param, object$fit_env), object$param$edges))
-  admixture_proportions <- unlist(Map(function(param) get(param, object$fit_env), object$param$admix_prop))
-  list(edges = edges, admixture_proportions = admixture_proportions)
+  cat("Call:")
+  cat("\n")
+  print(object$call)
+  if (object$complaint == TRUE) {
+    cat("\n")
+    cat("The data is not sufficient to give a meaningful fit for this topology!")
+    cat("\n")
+  }
+  cat("Minimal error:", object$best_error)
 }
 
 #' Get fitted parameters for a fitted graph.
@@ -212,41 +404,67 @@ fitted_parameters <- function(object) {
 #' Extract the graph parameters for a graph fitted to data.
 #' 
 #' @param object  The fitted object.
-#' @param ...     Additional arguments.
 #' 
 #' @export
-coef.agraph_fit <- function(object, ...) {
-  parameters <- fitted_parameters(object)
-  c(parameters$edges, parameters$admixture_proportions)
+coef.agraph_fit <- function(object) {
+  list(object$complaint, object$best_fit, object$best_edge_fit, object$free_edges,
+       object$bounded_edges)
 }
 
 #' Print function for a fitted graph.
-#' 
+#'   
 #' Print summary of the result of a fit.
 #' 
 #' @param object  The fitted object.
-#' @param ...     Additional arguments.
 #' 
 #' @export
-summary.agraph_fit <- function(object, ...) {
-  result <- fitted_parameters(object)
-  print(result)
-  invisible(result)
+summary.agraph_fit <- function(object) {
+cat("\n")
+cat("Call:")
+cat("\n")
+print(object$call)
+if (object$complaint == TRUE) {
+  cat("\n")
+  cat("The data is not sufficient to give a meaningful fit for this topology!")
+  cat("\n")
 }
-
+cat("\n")
+cat("Optimal admix variables:")
+cat("\n")
+print(object$best_fit)
+cat("\n")
+cat("Optimal edge variables:")
+cat("\n")
+print(object$best_edge_fit)
+cat("\n")
+cat("Solution to a homogeneous system of edges with the optimal admix variables:")
+cat("\n")
+cat("(Adding any such solution to the optimal one will not affect the error.)")
+cat("\n")
+cat("\n")
+cat("Free edge variables:")
+cat("\n")
+cat(object$free_edges, sep = "\n")
+cat("\n")
+cat("Bounded edge variables:")
+cat("\n")
+cat(object$bounded_edges, sep = "\n")
+cat("\n")
+cat("Minimal error:")
+cat("\n")
+cat(object$best_error)
+}
 
 #' Extract fitted data for a fitted graph.
 #' 
 #' Get the predicted f4 statistics for a fitted graph.
 #' 
 #' @param object  The fitted object.
-#' @param full    Should the fitted values include the full data used for fitting?
-#' @param ...     Additional arguments.
+#' @param full  Should the fitted values include the full data used for fitting?
 #' 
 #' @export
-fitted.agraph_fit <- function(object, full = TRUE, ...) {
-  if (full) object$fit_data
-  else      object$fit_data$graph_f4
+fitted.agraph_fit <- function(object) {
+  object$data
 }
 
 #' Extract the individual errors in a fitted graph.
@@ -254,28 +472,8 @@ fitted.agraph_fit <- function(object, full = TRUE, ...) {
 #' Get D - graph_f4 for each data point used in the fit.
 #' 
 #' @param object  The fitted object.
-#' @param ...     Additional arguments.
 #' 
 #' @export
-residuals.agraph_fit <- function(object, ...) {
-  with(object$fit_data, D - graph_f4)
+residuals.agraph_fit <- function(object) {
+  object$data$D - object$data$graph_f4
 }
-
-#' Predict statistics on new data.
-#' 
-#' Predict expected f4 statistics. If \code{newdata} is not specified this function just
-#' returns the predicted values on the original data.
-#' 
-#' @param object  The fitted object.
-#' @param newdata New data frame to predict values for.
-#' @param ...     Additional arguments.
-#' 
-#' @export
-predict.agraph_fit <- function(object, newdata = NULL, ...) {
-  if (is.null(newdata)) {
-    fitted(object, full = TRUE)
-  } else {
-    add_graph_f4(newdata, object$graph, object$fit_env)
-  }
-}
-

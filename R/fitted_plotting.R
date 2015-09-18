@@ -11,7 +11,7 @@ plot.agraph_fit <- function(x, sigma = 5, ...) {
   
   # I know this is not the 'dplyr' way of doing it, but package check doesn't like
   # non standard evaluation, so this is what is needed.
-  fit <- x$fit_data
+  fit <- fitted(x)
   fit$stderr <- with(fit, D / Z.value)
   fit$error_bar_start <- with(fit, D - sigma/2*stderr)
   fit$error_bar_end   <- with(fit, D + sigma/2*stderr)

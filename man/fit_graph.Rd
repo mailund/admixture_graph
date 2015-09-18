@@ -4,12 +4,15 @@
 \alias{fit_graph}
 \title{Fit the graph parameters to a data set.}
 \usage{
-fit_graph(data, graph, optimisation_options = NULL)
+fit_graph(data, graph, parameters = extract_graph_parameters(graph),
+  optimisation_options = NULL)
 }
 \arguments{
 \item{data}{The data set.}
 
 \item{graph}{The admixture graph.}
+
+\item{parameters}{In case one wants to tweak something in the graph.}
 
 \item{optimisation_options}{Options to the optimisation algorithm.}
 }
