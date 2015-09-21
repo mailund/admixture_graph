@@ -4,12 +4,10 @@
 \alias{residuals.agraph_fit}
 \title{Extract the individual errors in a fitted graph.}
 \usage{
-\method{residuals}{agraph_fit}(object, ...)
+\method{residuals}{agraph_fit}(object)
 }
 \arguments{
 \item{object}{The fitted object.}
-
-\item{...}{Additional arguments.}
 }
 \description{
 Get D - graph_f4 for each data point used in the fit.

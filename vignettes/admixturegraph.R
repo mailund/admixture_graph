@@ -134,11 +134,8 @@ bears
 ## ---- fig.height=5, fig.width=6------------------------------------------
 plot(f4stats(bears))
 
-## ----fitting_data, eval=FALSE--------------------------------------------
-#  bears_fit <- fit_graph(bears, bears_graph)
-
-## ----load_fitted_data, echo=FALSE----------------------------------------
-data(bears_fit)
+## ----fitting_data--------------------------------------------------------
+bears_fit <- fit_graph(bears, bears_graph)
 
 ## ------------------------------------------------------------------------
 summary(bears_fit)

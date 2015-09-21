@@ -158,7 +158,7 @@ cost_function <- function(data, matrix, graph,
     # Now just use a ready-made function to find the best non-negative solution
     # in the Euclidian norm. Apparently this is "slow" in the sense it takes 
     # (n^3) steps and not ~O(n^2.3) steps as it coud in principle.
-    lsq_solution <- lsqnonneg(evaluated_matrix, goal)
+    lsq_solution <- pracma::lsqnonneg(evaluated_matrix, goal)
     lsq_solution$resid.norm
   }
 }
@@ -175,12 +175,12 @@ cost_function <- function(data, matrix, graph,
 #' @param graph  The admixture graph.
 #' @param parameters  In case one wants to tweak something in the graph.
 #'   
-#' @return  Given an input vector of admix variables, returns a list containing
-#'          the minimal error (\code($cost)), the graph-f4-statistics 
-#'          (\code$approximation), an example solution (\code($edge_fit)), linear
-#'          relations describing all the solutions (\code($homogeneous)) and one 
-#'          way to choose the free (\code($free_edges)) and bounded 
-#'          (\code($bounded_edges)) edge variables.
+#' @return  Given an input vector of admix variables, returns a list \code{x} containing
+#'          the minimal error (\code{x$cost}), the graph-f4-statistics 
+#'          (\code{x$approximation}), an example solution (\code({x$edge_fit})), linear
+#'          relations describing all the solutions (\code{x$homogeneous}) and one 
+#'          way to choose the free (\code{x$free_edges}) and bounded 
+#'          (\code{x$bounded_edges}) edge variables.
 #'   
 #' @export
 edge_optimisation_function <- function(data, matrix, graph, 
@@ -201,7 +201,7 @@ edge_optimisation_function <- function(data, matrix, graph,
       }
     }
     # Record the (or an example of an) optimal solution and error.
-    lsq_solution <- lsqnonneg(evaluated_matrix, goal)
+    lsq_solution <- pracma::lsqnonneg(evaluated_matrix, goal)
     edge_fit <- lsq_solution$x
     names(edge_fit) <- parameters$edges
     approximation <- evaluated_matrix %*% edge_fit
@@ -210,7 +210,7 @@ edge_optimisation_function <- function(data, matrix, graph,
     # edge lengths depend on one another, as the least square function only gave
     # one exaple of an optimal solution. This information is visible after
     # manipulating the optimisation matrix into reduced row echelon form.
-    homogeneous_matrix <- rref(evaluated_matrix)
+    homogeneous_matrix <- pracma::rref(evaluated_matrix)
     # Make a list of (one choice of) free edges.
     free_edges <- c()
     i <- 1

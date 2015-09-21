@@ -4,12 +4,10 @@
 \alias{summary.agraph_fit}
 \title{Print function for a fitted graph.}
 \usage{
-\method{summary}{agraph_fit}(object, ...)
+\method{summary}{agraph_fit}(object)
 }
 \arguments{
 \item{object}{The fitted object.}
-
-\item{...}{Additional arguments.}
 }
 \description{
 Print summary of the result of a fit.

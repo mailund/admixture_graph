@@ -17,8 +17,7 @@ fit_graph(data, graph, parameters = extract_graph_parameters(graph),
 \item{optimisation_options}{Options to the optimisation algorithm.}
 }
 \value{
-A list containing the best fitted values (in an environment) and the
-  data extended with a column containing the graph predictions.
+A list containing everything about the fit.
 }
 \description{
 Tries to minimize the squared distance between statistics in \code{data} and

@@ -4,12 +4,10 @@
 \alias{coef.agraph_fit}
 \title{Get fitted parameters for a fitted graph.}
 \usage{
-\method{coef}{agraph_fit}(object, ...)
+\method{coef}{agraph_fit}(object)
 }
 \arguments{
 \item{object}{The fitted object.}
-
-\item{...}{Additional arguments.}
 }
 \description{
 Extract the graph parameters for a graph fitted to data.
