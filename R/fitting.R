@@ -369,8 +369,7 @@ print.agraph_fit <- function(x, ...) {
 #' 
 #' @export
 coef.agraph_fit <- function(object, ...) {
-  list(object$complaint, object$best_fit, object$best_edge_fit, object$free_edges,
-       object$bounded_edges)
+  c(object$best_fit, object$best_edge_fit)
 }
 
 #' Print function for a fitted graph.
