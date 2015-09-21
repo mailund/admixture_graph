@@ -286,16 +286,16 @@ edge_optimisation_function <- function(data, matrix, graph,
 #' 
 #' @param data  The data set.
 #' @param graph  The admixture graph.
-#' @param parameters  In case one wants to tweak something in the graph.
 #' @param optimisation_options  Options to the optimisation algorithm.
+#' @param parameters  In case one wants to tweak something in the graph.
 #'   
 #' @return A list containing everything about the fit.
 #'   
 #' @seealso \code{\link[neldermead]{optimset}}
 #'   
 #' @export
-fit_graph <- function(data, graph, parameters = extract_graph_parameters(graph),
-                      optimisation_options = NULL) {
+fit_graph <- function(data, graph, optimisation_options = NULL,
+                      parameters = extract_graph_parameters(graph)) {
   if (!requireNamespace("neldermead", quietly = TRUE)) {
     stop("This function requires neldermead to be installed.")
   }

@@ -117,7 +117,7 @@ plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 The graph makes predictions on how the f4 statistics should look. If you have the *neldermead* package installed you can fit graph parameters to observed D statistics. This is done using the *fit_graph* function
 
 ```{r, warning=FALSE, cache=TRUE, dependson="graph"}
-fit <- fit_graph(bears, bears_graph, optimset(MaxFunEvals=100000))
+fit <- fit_graph(bears, bears_graph)
 fit
 ```
 
