@@ -15,8 +15,8 @@
 #' 
 #' The elements are characters containing numerals, admix variable names,
 #' parenthesis and arithmetical operations. (Transform into expressions with
-#' \code(parse) and then evaluate with \code(eval)). The column names are the
-#' edge names from \code(extract_graph_parameter$edges), the rows have no names.
+#' \code{parse} and then evaluate with \code{eval}). The column names are the
+#' edge names from \code{extract_graph_parameter$edges}, the rows have no names.
 #' 
 #' If the essential number of equations is not higher than the essential number of
 #' edge variables, the quality of edge optimisation will not depend on the admix
@@ -26,10 +26,10 @@
 #' @param graph  The admixture graph.
 #' @param parameters  In case one wants to tweak something in the graph.
 #'   
-#' @return A list containing the full matrix (\code($full)), a version with zero
-#'         columns removed (\code($column_reduced)), a version with zero rows and
-#'         repeated rows also removed (\code($double_reduced)), and an indicator
-#'         of warning (\code($complaint)).
+#' @return A list containing the full matrix (\code{$full}), a version with zero
+#'         columns removed (\code{$column_reduced}), a version with zero rows and
+#'         repeated rows also removed (\code{$double_reduced}), and an indicator
+#'         of warning (\code{$complaint}).
 #'   
 #' @export
 build_edge_optimisation_matrix <- function(data, graph, parameters 
@@ -126,11 +126,11 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
 #' 
 #' We want nelder mead to run fast so the cost function operates with the column
 #' rduced edge optimisation matrix and does not give any extar information about 
-#' the fit. For the details, use \code(edge_optimisation_function) instead.
+#' the fit. For the details, use \code{edge_optimisation_function} instead.
 #' 
 #' @param data  The data set.
 #' @param matrix  A column reduced edge optimisation matrix (typically given by 
-#'                the function \code(edge_optimisation_matrix$column_reduced)).
+#'                the function \code{edge_optimisation_matrix$column_reduced}).
 #' @param graph  The admixture graph.
 #' @param parameters  In case one wants to tweak something in the graph.
 #'   
@@ -163,7 +163,7 @@ cost_function <- function(data, matrix, graph,
   }
 }
 
-#' More detailed edge fitting that mere \code(cost_function).
+#' More detailed edge fitting that mere \code{cost_function}.
 #' 
 #' Returning the cost, an example edge solution of an optimal fit, and linear 
 #' relations describing the set of all edge solutions. Operating with the full
@@ -171,13 +171,13 @@ cost_function <- function(data, matrix, graph,
 #' 
 #' @param data  The data set.
 #' @param matrix  A full  edge optimisation matrix (typically given by the 
-#'                function \code(edge_optimisation_matrix$full)).
+#'                function \code{edge_optimisation_matrix$full}).
 #' @param graph  The admixture graph.
 #' @param parameters  In case one wants to tweak something in the graph.
 #'   
 #' @return  Given an input vector of admix variables, returns a list \code{x} containing
 #'          the minimal error (\code{x$cost}), the graph-f4-statistics 
-#'          (\code{x$approximation}), an example solution (\code({x$edge_fit})), linear
+#'          (\code{x$approximation}), an example solution (\code{x$edge_fit}), linear
 #'          relations describing all the solutions (\code{x$homogeneous}) and one 
 #'          way to choose the free (\code{x$free_edges}) and bounded 
 #'          (\code{x$bounded_edges}) edge variables.
@@ -375,28 +375,31 @@ contour_plot <- function(object, X, Y, resolution = 10) {
   }
   x <- 1:nrow(z)/resolution
   y <- 1:ncol(z)/resolution
-  require(grDevices) # for colours
-  filled.contour(x, y, z, xlab = X, ylab = Y, color = heat.colors)
+  
+  filled.contour(x, y, z, xlab = X, ylab = Y, color.palette = grDevices::heat.colors)
 }
 
 #' Print function for a fitted graph.
 #' 
 #' Print summary of the result of a fit.
 #' 
-#' @param object  The fitted object.
+#' @param x       The fitted object.
+#' @param ...     Additional parameters.
 #'  
 #' @export
-print.agraph_fit <- function(object) {
+print.agraph_fit <- function(x, ...) {
   cat("\n")
   cat("Call:")
   cat("\n")
-  print(object$call)
-  if (object$complaint == TRUE) {
+  print(x$call)
+  
+  if (x$complaint == TRUE) {
     cat("\n")
     cat("The data is not sufficient to give a meaningful fit for this topology!")
     cat("\n")
   }
-  cat("Minimal error:", object$best_error)
+  
+  cat("Minimal error:", x$best_error)
 }
 
 #' Get fitted parameters for a fitted graph.
@@ -404,9 +407,10 @@ print.agraph_fit <- function(object) {
 #' Extract the graph parameters for a graph fitted to data.
 #' 
 #' @param object  The fitted object.
+#' @param ...     Additional parameters.
 #' 
 #' @export
-coef.agraph_fit <- function(object) {
+coef.agraph_fit <- function(object, ...) {
   list(object$complaint, object$best_fit, object$best_edge_fit, object$free_edges,
        object$bounded_edges)
 }
@@ -416,9 +420,10 @@ coef.agraph_fit <- function(object) {
 #' Print summary of the result of a fit.
 #' 
 #' @param object  The fitted object.
+#' @param ...     Additional parameters.
 #' 
 #' @export
-summary.agraph_fit <- function(object) {
+summary.agraph_fit <- function(object, ...) {
 cat("\n")
 cat("Call:")
 cat("\n")
@@ -460,10 +465,10 @@ cat(object$best_error)
 #' Get the predicted f4 statistics for a fitted graph.
 #' 
 #' @param object  The fitted object.
-#' @param full  Should the fitted values include the full data used for fitting?
+#' @param ...     Additional parameters.
 #' 
 #' @export
-fitted.agraph_fit <- function(object) {
+fitted.agraph_fit <- function(object, ...) {
   object$data
 }
 
@@ -472,8 +477,9 @@ fitted.agraph_fit <- function(object) {
 #' Get D - graph_f4 for each data point used in the fit.
 #' 
 #' @param object  The fitted object.
+#' @param ...     Additional parameters.
 #' 
 #' @export
-residuals.agraph_fit <- function(object) {
+residuals.agraph_fit <- function(object, ...) {
   object$data$D - object$data$graph_f4
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{edge_optimisation_function}
 \alias{edge_optimisation_function}
-\title{More detailed edge fitting that mere \code(cost_function).}
+\title{More detailed edge fitting that mere \code{cost_function}.}
 \usage{
 edge_optimisation_function(data, matrix, graph,
   parameters = extract_graph_parameters(graph))
@@ -11,7 +11,7 @@ edge_optimisation_function(data, matrix, graph,
 \item{data}{The data set.}
 
 \item{matrix}{A full  edge optimisation matrix (typically given by the
-function \code(edge_optimisation_matrix$full)).}
+function \code{edge_optimisation_matrix$full}).}
 
 \item{graph}{The admixture graph.}
 
@@ -20,7 +20,7 @@ function \code(edge_optimisation_matrix$full)).}
 \value{
 Given an input vector of admix variables, returns a list \code{x} containing
          the minimal error (\code{x$cost}), the graph-f4-statistics
-         (\code{x$approximation}), an example solution (\code({x$edge_fit})), linear
+         (\code{x$approximation}), an example solution (\code{x$edge_fit}), linear
          relations describing all the solutions (\code{x$homogeneous}) and one
          way to choose the free (\code{x$free_edges}) and bounded
          (\code{x$bounded_edges}) edge variables.

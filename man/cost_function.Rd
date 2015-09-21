@@ -11,7 +11,7 @@ cost_function(data, matrix, graph,
 \item{data}{The data set.}
 
 \item{matrix}{A column reduced edge optimisation matrix (typically given by
-the function \code(edge_optimisation_matrix$column_reduced)).}
+the function \code{edge_optimisation_matrix$column_reduced}).}
 
 \item{graph}{The admixture graph.}
 
@@ -24,6 +24,6 @@ Given an input vector of admix variables, returns the smallest error
 \description{
 We want nelder mead to run fast so the cost function operates with the column
 rduced edge optimisation matrix and does not give any extar information about
-the fit. For the details, use \code(edge_optimisation_function) instead.
+the fit. For the details, use \code{edge_optimisation_function} instead.
 }
 
