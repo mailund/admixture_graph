@@ -22,16 +22,14 @@
 #' edge variables, the quality of edge optimisation will not depend on the admix
 #' variables (expect in a very special cases), and a complaint will be given.
 #' 
-#' @param data  The data set.
-#' @param graph  The admixture graph.
+#' @param data        The data set.
+#' @param graph       The admixture graph.
 #' @param parameters  In case one wants to tweak something in the graph.
 #'   
 #' @return A list containing the full matrix (\code{$full}), a version with zero
 #'         columns removed (\code{$column_reduced}), a version with zero rows and
 #'         repeated rows also removed (\code{$double_reduced}), and an indicator
 #'         of warning (\code{$complaint}).
-#'   
-#' @export
 build_edge_optimisation_matrix <- function(data, graph, parameters 
                                            = extract_graph_parameters(graph)) {
   m <- nrow(data) # Number of equations is the number of f4-statistics.
@@ -136,8 +134,6 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
 #'   
 #' @return  Given an input vector of admix variables, returns the smallest error 
 #'          regarding the edge variables.
-#'   
-#' @export
 cost_function <- function(data, matrix, graph, 
                           parameters = extract_graph_parameters(graph)) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
@@ -157,13 +153,13 @@ cost_function <- function(data, matrix, graph,
     }
     # Now just use a ready-made function to find the best non-negative solution
     # in the Euclidian norm. Apparently this is "slow" in the sense it takes 
-    # (n^3) steps and not ~O(n^2.3) steps as it coud in principle.
+    # O(n^3) steps and not O(n^2.3) steps as it could in principle.
     lsq_solution <- pracma::lsqnonneg(evaluated_matrix, goal)
     lsq_solution$resid.norm
   }
 }
 
-#' More detailed edge fitting that mere \code{cost_function}.
+#' More detailed edge fitting than mere \code{cost_function}.
 #' 
 #' Returning the cost, an example edge solution of an optimal fit, and linear 
 #' relations describing the set of all edge solutions. Operating with the full
@@ -181,8 +177,6 @@ cost_function <- function(data, matrix, graph,
 #'          relations describing all the solutions (\code{x$homogeneous}) and one 
 #'          way to choose the free (\code{x$free_edges}) and bounded 
 #'          (\code{x$bounded_edges}) edge variables.
-#'   
-#' @export
 edge_optimisation_function <- function(data, matrix, graph, 
                               parameters = extract_graph_parameters(graph)) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
