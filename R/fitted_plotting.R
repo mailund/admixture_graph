@@ -39,8 +39,6 @@ plot.agraph_fit <- function(x, sigma = 6, ...) {
           panel.grid.major.y = element_line(color = '#eeeeee'))
 }
 
-# TODO: This function should maybe be like the rest of the interface functions,
-# having something to do with class.
 #' A contour plot of the cost function around the best fit with respect to 2
 #' admix variables specified by the user.
 #' 
@@ -48,18 +46,25 @@ plot.agraph_fit <- function(x, sigma = 6, ...) {
 #' relations describing the set of all edge solutions. Operating with the full
 #' edge optimisation matrix.
 #' 
-#' @param object  The fitted object.
-#' @param X  An admix variable name (remember quotation marks) or number.
-#' @param Y  An admix variable name (remember quotation marks) or number.
+#' @param object      The fitted object.
+#' @param X           An admix variable name (remember quotation marks) or number.
+#' @param Y           An admix variable name (remember quotation marks) or number.
 #' @param resolution  How densely is the function evaluated.
+#' @param ...         Additional parameters passed to the plotting function filled.contour
 #'   
 #' @return  Just a contour plot with FIERY colours.
 #'   
 #' @export
-contour_plot <- function(object, X, Y, resolution = 10) {
+contour_plot <- function(object, X, Y, resolution = 10, ...) {
   if (!requireNamespace("grDevices", quietly = TRUE)) {
     stop("This function requires grDevices to be installed.")
   }
+  
+  fitted_parameters <- coef(object)
+  if (! X %in% names(fitted_parameters)) {
+    stop(paste(X, "is not a parameter of the fitted graph."))
+  }
+  
   x <- seq(0, resolution)
   y <- seq(0, resolution)
   z <- matrix(0, resolution, resolution)
@@ -75,7 +80,7 @@ contour_plot <- function(object, X, Y, resolution = 10) {
   x <- 1:nrow(z)/resolution
   y <- 1:ncol(z)/resolution
   
-  filled.contour(x, y, z, xlab = X, ylab = Y, color.palette = grDevices::heat.colors)
+  filled.contour(x, y, z, xlab = X, ylab = Y, color.palette = grDevices::heat.colors, ...)
 }
 
 

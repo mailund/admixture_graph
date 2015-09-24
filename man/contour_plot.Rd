@@ -5,7 +5,7 @@
 \title{A contour plot of the cost function around the best fit with respect to 2
 admix variables specified by the user.}
 \usage{
-contour_plot(object, X, Y, resolution = 10)
+contour_plot(object, X, Y, resolution = 10, ...)
 }
 \arguments{
 \item{object}{The fitted object.}
@@ -15,6 +15,8 @@ contour_plot(object, X, Y, resolution = 10)
 \item{Y}{An admix variable name (remember quotation marks) or number.}
 
 \item{resolution}{How densely is the function evaluated.}
+
+\item{...}{Additional parameters passed to the plotting function filled.contour}
 }
 \value{
 Just a contour plot with FIERY colours.
