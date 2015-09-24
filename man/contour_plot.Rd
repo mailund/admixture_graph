@@ -5,7 +5,8 @@
 \title{A contour plot of the cost function around the best fit with respect to 2
 admix variables specified by the user.}
 \usage{
-contour_plot(object, X, Y, resolution = 10, ...)
+contour_plot(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 6,
+  ...)
 }
 \arguments{
 \item{object}{The fitted object.}
@@ -16,10 +17,16 @@ contour_plot(object, X, Y, resolution = 10, ...)
 
 \item{resolution}{How densely is the function evaluated.}
 
+\item{show_fit}{Should the function plot the number of tests where the graph fits
+the data instead of the sum of squared errors?}
+
+\item{sigma}{If the function plots the fit, it is considered a hit if the difference
+between a prediction and the observed statistics is no more than sigma/2.}
+
 \item{...}{Additional parameters passed to the plotting function filled.contour}
 }
 \value{
-Just a contour plot with FIERY colours.
+The matrix of values computed and plotted.
 }
 \description{
 Returning the cost, an example edge solution of an optimal fit, and linear
