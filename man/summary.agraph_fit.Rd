@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{The fitted object.}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional parameters.}
 }
 \description{
 Print summary of the result of a fit.

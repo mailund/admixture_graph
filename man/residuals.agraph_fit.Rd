@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{The fitted object.}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional parameters.}
 }
 \description{
 Get D - graph_f4 for each data point used in the fit.
