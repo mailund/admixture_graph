@@ -134,6 +134,8 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
 #'   
 #' @return  Given an input vector of admix variables, returns the smallest error 
 #'          regarding the edge variables.
+#'          
+#' @export
 cost_function <- function(data, matrix, graph, 
                           parameters = extract_graph_parameters(graph)) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
