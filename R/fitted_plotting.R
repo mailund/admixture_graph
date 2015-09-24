@@ -68,6 +68,9 @@ contour_plot <- function(object, X, Y, resolution = 10, ...) {
     stop(paste("'", Y,"' is not a parameter of the fitted graph.", sep = ""))
   }
   
+  best_x <- fitted_parameters[X]
+  best_y <- fitted_parameters[Y]
+  
   x <- seq(0, resolution)
   y <- seq(0, resolution)
   z <- matrix(0, resolution, resolution)
@@ -84,6 +87,7 @@ contour_plot <- function(object, X, Y, resolution = 10, ...) {
   y <- 1:ncol(z)/resolution
   
   filled.contour(x, y, z, xlab = X, ylab = Y, color.palette = grDevices::heat.colors, ...)
+  points(best_x, best_y, pch=3)
 }
 
 
