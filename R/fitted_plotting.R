@@ -4,7 +4,6 @@
 #' @param sigma   How many sigmas the error bars should be wide.
 #' @param ...     Additional parameters.
 #' 
-#' @import dplyr
 #' @import ggplot2
 #' @export
 plot.agraph_fit <- function(x, sigma = 6, ...) {

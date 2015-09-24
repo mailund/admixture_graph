@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{edge_optimisation_function}
 \alias{edge_optimisation_function}
-\title{More detailed edge fitting that mere \code{cost_function}.}
+\title{More detailed edge fitting than mere \code{cost_function}.}
 \usage{
 edge_optimisation_function(data, matrix, graph,
   parameters = extract_graph_parameters(graph))
