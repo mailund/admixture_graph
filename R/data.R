@@ -17,12 +17,3 @@
 #' @docType data
 #' @keywords data
 NULL
-
-#' Graph fitted to bears data.
-#' 
-#' A fitted graph for the data in \code{bears}
-#' 
-#' @name bears_fit
-#' @docType data
-#' @keywords data
-NULL

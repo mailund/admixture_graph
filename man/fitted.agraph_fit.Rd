@@ -4,14 +4,12 @@
 \alias{fitted.agraph_fit}
 \title{Extract fitted data for a fitted graph.}
 \usage{
-\method{fitted}{agraph_fit}(object, full = TRUE, ...)
+\method{fitted}{agraph_fit}(object, ...)
 }
 \arguments{
 \item{object}{The fitted object.}
 
-\item{full}{Should the fitted values include the full data used for fitting?}
-
-\item{...}{Additional arguments.}
+\item{...}{Additional parameters.}
 }
 \description{
 Get the predicted f4 statistics for a fitted graph.

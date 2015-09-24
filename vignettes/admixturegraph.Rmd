@@ -227,12 +227,8 @@ plot(f4stats(bears))
 
 We can fit this to the graph from above, like this:
 
-```{r fitting_data, eval=FALSE}
+```{r fitting_data}
 bears_fit <- fit_graph(bears, bears_graph)
-```
-
-```{r load_fitted_data, echo=FALSE}
-data(bears_fit)
 ```
 
 ```{r}

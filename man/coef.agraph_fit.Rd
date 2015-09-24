@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{The fitted object.}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional parameters.}
 }
 \description{
 Extract the graph parameters for a graph fitted to data.

@@ -18,7 +18,7 @@ populations (or single diploid genome samples), which can be informative
 about patterns of gene flow between these populations in form of admixture
 events. If a graph is constructed as a hypothesis for the relationship
 between the populations, equations for the expected values of the \eqn{f}
-statistics can be extracted, as functions of edge lenghs --- representing
+statistics can be extracted, as functions of edge lengths --- representing
 genetic drift --- and admixture proportions.
 
 This package provides functions for extracting these equations and for
