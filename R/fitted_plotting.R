@@ -5,11 +5,10 @@
 #' @param ...     Additional parameters.
 #' 
 #' @import ggplot2
+#' @import dplyr
 #' @export
 plot.agraph_fit <- function(x, sigma = 6, ...) {
   
-  # I know this is not the 'dplyr' way of doing it, but package check doesn't like
-  # non standard evaluation, so this is what is needed.
   fit <- fitted(x)
   fit$stderr <- with(fit, D / Z.value)
   fit$error_bar_start <- with(fit, D - sigma/2*stderr)
