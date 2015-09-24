@@ -56,9 +56,6 @@ plot.agraph_fit <- function(x, sigma = 6, ...) {
 #'   
 #' @export
 contour_plot <- function(object, X, Y, resolution = 10, ...) {
-  if (!requireNamespace("grDevices", quietly = TRUE)) {
-    stop("This function requires grDevices to be installed.")
-  }
   
   fitted_parameters <- coef(object)
   if (! X %in% names(fitted_parameters)) {
@@ -86,8 +83,10 @@ contour_plot <- function(object, X, Y, resolution = 10, ...) {
   x <- 1:nrow(z)/resolution
   y <- 1:ncol(z)/resolution
   
-  filled.contour(x, y, z, xlab = X, ylab = Y, color.palette = grDevices::heat.colors, ...)
+  image(x, y, z, xlab = X, ylab = Y, col = rev(heat.colors(12)), ...)
+  contour(x, y, z, add = TRUE, ...)
   points(best_x, best_y, pch=3)
+  invisible(z)
 }
 
 
