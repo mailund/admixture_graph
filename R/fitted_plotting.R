@@ -62,7 +62,10 @@ contour_plot <- function(object, X, Y, resolution = 10, ...) {
   
   fitted_parameters <- coef(object)
   if (! X %in% names(fitted_parameters)) {
-    stop(paste(X, "is not a parameter of the fitted graph."))
+    stop(paste("'", X,"' is not a parameter of the fitted graph.", sep = ""))
+  }
+  if (! Y %in% names(fitted_parameters)) {
+    stop(paste("'", Y,"' is not a parameter of the fitted graph.", sep = ""))
   }
   
   x <- seq(0, resolution)
