@@ -129,25 +129,25 @@ summary(fit)
 #> 
 #> Optimal admix variables:
 #>          a          b          c          d 
-#> 0.02456094 0.18425666 0.65506255 0.72709146 
+#> 0.03985233 0.91958225 0.99999900 0.56905827 
 #> 
 #> Optimal edge variables:
 #>        edge_R_BLK       edge_R_PBBB       edge_PBBB_z   edge_PBBB_pb_a4 
-#>        0.00000000        0.00000000        0.00000000        0.08191886 
+#>       0.000000000       0.000000000       0.000000000       0.104668543 
 #>     edge_Adm_Adm1     edge_Adm_Adm2     edge_Chi_Chi1     edge_Chi_Chi2 
-#>        0.00000000        0.00000000        0.00000000        0.00000000 
+#>       0.000000000       0.000000000       0.000000000       0.000000000 
 #>       edge_BC_Bar       edge_BC_Chi      edge_ABC_Adm    edge_ABC_bc_a1 
-#>        0.00000000        0.00000000        0.00000000        0.00000000 
+#>       0.000000000       0.000000000       0.000000000       0.000000000 
 #>     edge_x_Denali     edge_x_abc_a2      edge_y_Kenai       edge_y_x_a3 
-#>        0.00000000        0.00000000        0.00000000        0.00000000 
+#>       0.000000000       0.000000000       0.000000000       0.000000000 
 #>     edge_z_Sweden       edge_z_y_a4     edge_pb_a1_PB  edge_pb_a1_bc_a1 
-#>        0.00000000        0.00000000        0.00000000        0.00000000 
+#>       0.000000000       0.000000000       0.000000000       0.000000000 
 #>  edge_pb_a2_pb_a1 edge_pb_a2_abc_a2  edge_pb_a3_pb_a2   edge_pb_a3_x_a3 
-#>        2.14327501        0.00000000        0.04267679        0.00000000 
+#>       1.355528458       0.000000000       0.014259138       0.000000000 
 #>  edge_pb_a4_pb_a3   edge_pb_a4_y_a4     edge_bc_a1_BC   edge_abc_a2_ABC 
-#>        0.06023118        0.00000000        0.00000000        0.00000000 
+#>       0.008994011       0.000000000       0.000000000       0.000000000 
 #>       edge_x_a3_x       edge_y_a4_y 
-#>        0.00000000        0.00000000 
+#>       0.000000000       0.000000000 
 #> 
 #> Solution to a homogeneous system of edges with the optimal admix variables:
 #> (Adding any such solution to the optimal one will not affect the error.)
@@ -196,45 +196,24 @@ You can also get the fitted parameters using the generic *coef* or *coefficients
 
 ``` r
 coef(fit)
-#> [[1]]
-#> [1] FALSE
-#> 
-#> [[2]]
-#>          a          b          c          d 
-#> 0.02456094 0.18425666 0.65506255 0.72709146 
-#> 
-#> [[3]]
+#>                 a                 b                 c                 d 
+#>       0.039852331       0.919582246       0.999999000       0.569058269 
 #>        edge_R_BLK       edge_R_PBBB       edge_PBBB_z   edge_PBBB_pb_a4 
-#>        0.00000000        0.00000000        0.00000000        0.08191886 
+#>       0.000000000       0.000000000       0.000000000       0.104668543 
 #>     edge_Adm_Adm1     edge_Adm_Adm2     edge_Chi_Chi1     edge_Chi_Chi2 
-#>        0.00000000        0.00000000        0.00000000        0.00000000 
+#>       0.000000000       0.000000000       0.000000000       0.000000000 
 #>       edge_BC_Bar       edge_BC_Chi      edge_ABC_Adm    edge_ABC_bc_a1 
-#>        0.00000000        0.00000000        0.00000000        0.00000000 
+#>       0.000000000       0.000000000       0.000000000       0.000000000 
 #>     edge_x_Denali     edge_x_abc_a2      edge_y_Kenai       edge_y_x_a3 
-#>        0.00000000        0.00000000        0.00000000        0.00000000 
+#>       0.000000000       0.000000000       0.000000000       0.000000000 
 #>     edge_z_Sweden       edge_z_y_a4     edge_pb_a1_PB  edge_pb_a1_bc_a1 
-#>        0.00000000        0.00000000        0.00000000        0.00000000 
+#>       0.000000000       0.000000000       0.000000000       0.000000000 
 #>  edge_pb_a2_pb_a1 edge_pb_a2_abc_a2  edge_pb_a3_pb_a2   edge_pb_a3_x_a3 
-#>        2.14327501        0.00000000        0.04267679        0.00000000 
+#>       1.355528458       0.000000000       0.014259138       0.000000000 
 #>  edge_pb_a4_pb_a3   edge_pb_a4_y_a4     edge_bc_a1_BC   edge_abc_a2_ABC 
-#>        0.06023118        0.00000000        0.00000000        0.00000000 
+#>       0.008994011       0.000000000       0.000000000       0.000000000 
 #>       edge_x_a3_x       edge_y_a4_y 
-#>        0.00000000        0.00000000 
-#> 
-#> [[4]]
-#>  [1] "edge_R_BLK"        "edge_R_PBBB"       "edge_PBBB_z"      
-#>  [4] "edge_Adm_Adm1"     "edge_Adm_Adm2"     "edge_Chi_Chi1"    
-#>  [7] "edge_Chi_Chi2"     "edge_BC_Bar"       "edge_BC_Chi"      
-#> [10] "edge_ABC_Adm"      "edge_ABC_bc_a1"    "edge_x_Denali"    
-#> [13] "edge_x_abc_a2"     "edge_y_Kenai"      "edge_y_x_a3"      
-#> [16] "edge_z_Sweden"     "edge_z_y_a4"       "edge_pb_a1_PB"    
-#> [19] "edge_pb_a1_bc_a1"  "edge_pb_a2_abc_a2" "edge_pb_a3_x_a3"  
-#> [22] "edge_pb_a4_y_a4"   "edge_bc_a1_BC"     "edge_abc_a2_ABC"  
-#> [25] "edge_x_a3_x"       "edge_y_a4_y"      
-#> 
-#> [[5]]
-#> [1] "edge_PBBB_pb_a4 = 0"  "edge_pb_a2_pb_a1 = 0" "edge_pb_a3_pb_a2 = 0"
-#> [4] "edge_pb_a4_pb_a3 = 0"
+#>       0.000000000       0.000000000
 ```
 
 To get the fitted predictions, together with the data used for fitting, use the *fitted* function.
