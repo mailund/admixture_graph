@@ -17,9 +17,8 @@ build_edge_optimisation_matrix(data, graph,
 }
 \value{
 A list containing the full matrix (\code{$full}), a version with zero
-        columns removed (\code{$column_reduced}), a version with zero rows and
-        repeated rows also removed (\code{$double_reduced}), and an indicator
-        of warning (\code{$complaint}).
+        columns removed (\code{$column_reduced}) and an indicator of warning
+        (\code{$complaint}).
 }
 \description{
 The elements are characters containing numerals, admix variable names,
