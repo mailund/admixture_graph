@@ -218,14 +218,14 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
     }
   }
   # Simplify by putting each non-zero element to a canonical form.
-  for (i in seq(1, m)) {
-    for (j in seq(1, n)) {
-      if (edge_optimisation_matrix[i, j] != "0") {
-        edge_optimisation_matrix[i,j] <-
-          canonise_expression(substring(edge_optimisation_matrix[i, j], 2))
-      }
-    }
-  }
+#   for (i in seq(1, m)) {
+#     for (j in seq(1, n)) {
+#       if (edge_optimisation_matrix[i, j] != "0") {
+#         edge_optimisation_matrix[i,j] <-
+#           canonise_expression(substring(edge_optimisation_matrix[i, j], 2))
+#       }
+#     }
+#   }
   # Make a version with zero columns removed.
   column_reduced <- edge_optimisation_matrix
   j <- 1
