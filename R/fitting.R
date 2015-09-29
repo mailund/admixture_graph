@@ -1,14 +1,162 @@
-# Kalle's suggestions to improve the model:
+# TODO:
 #
-# 1) Take the standard deviations into account. One way is imposing weight
-#    coefficients into the distance function. Maybe even think what is the effect
-#    of assuming the data is normally distributed.
-# 4) Really the whole model could perhaps be a Bayesian model giving equal a 
-#    priori weight to all admix proportions and then conditioning with reality
-#    to pick the favourite candidate. Could be also that we do not know enough
-#    about the random variables?
+# 1) Take the covariance matrix into account. When covariance matrix not given,
+#    assume independence and build one from data$Z.
+# 2) Find out how the f-statistics depend on one another. Find out hat subsets of
+#    the set of all statistics have no impied weight on some data. Preferably make
+#    a program to remove extra data from already sufficient data in some fair way.
+# 3) Try to algebraically simplify the edge optimisation matrix.    
+# 4) The compalaint condition might not do the row reducing right, since elements
+#    are not in an arbitrary form. Either put them in some canonical form or do a
+#    numerical complaint condition.
 
 ## Graph fitting #################################################################
+
+#' Used to recognize similar expressions and to possibly simplify them.
+#'
+#' This is not pretty but let's see if it speeds up the program.
+#' 
+#' @param x   Input is assumed to be a char containing numerals, variables and
+#'            clauses \code{(1 - variable)} (mind the spaces, this is how the 
+#'            \code{f4}-function outputs), separated by \code{+}, \code{-} or 
+#'            \code{*}, with no spaces. 
+#'            Everything is pretty much ruined if variable names contain forbidden
+#'            symbols \code{+, -, *, (, )} or are purely numerals.
+#'
+#' @return   A polynomial in a canonical form with no parenthesis or spaces and the
+#'           monomials in lexicographical order.
+#'              
+#' @export
+canonise_expression <- function(x) {
+  # First remove the symbols 1 and - from inside parenthesis to make things easier.
+  l <- nchar(x)
+  for (i in seq(0, l - 1)) {
+    if (substring(x, l - i, l - i) == "(") {
+      x <- paste(substring(x, 1, l - i), substring(x, l - i + 5), sep = "")
+    }
+  }
+  # Then copy each term to a list of terms.
+  terms_list <- list()
+  start <- 1
+  for (i in seq(2, nchar(x))) {
+    if (substring(x, i, i) == "+" || substring(x, i, i) == "-") {
+      terms_list <- c(terms_list, substring(x, start, i - 1))
+      start <- i
+    }
+  }
+  terms_list <- c(terms_list, substring(x, start, nchar(x)))
+  # Now recursively multiply the parentheses open collecting the resulting monomials
+  # to a list.
+  monomials_list <- list()
+  while (length(terms_list) > 0) {
+    term <- terms_list[1]
+    terms_list[1] <- NULL
+    left <- 0
+    right <- 0
+    for (i in seq(1, nchar(term))) {
+      if (substring(term, i, i) == "(") {
+        left <- i
+      }
+      if (substring(term, i, i) == ")") {
+        right <- i
+      }
+    }
+    if (left == 0) {
+      monomials_list <- c(monomials_list, term)
+    }
+    else {
+      newterm1 <- paste(substring(term, 1, left - 1), "1",
+                        substring(term, right + 1, nchar(term)), sep = "")
+      if (substring(term, 1, 1) == "+") {
+        newterm2 <- paste("-", substring(term, 2, left - 1),
+                          substring(term, left + 1, right - 1),
+                          substring(term, right + 1, nchar(term)), sep = "")
+      }
+      if (substring(term, 1, 1) == "-") {
+        newterm2 <- paste("+", substring(term, 2, left - 1),
+                          substring(term, left + 1, right - 1),
+                          substring(term, right + 1, nchar(term)), sep = "")
+      }
+      terms_list <- c(terms_list, newterm1, newterm2)
+    }
+  }
+  # It is time to recognize numerals and do the appropriate arithmetics. Save the
+  # monomials as pairs of a numerical coefficient and a product of variables. These
+  # can then be added together.
+  math_list <- list()
+  for (i in seq(1, length(monomials_list))) {
+    coefficient <- 1
+    variables <- ""
+    temp_vector <- numeric(0)
+    monomial <- monomials_list[i]
+    if (substring(monomial, 1, 1) == "-") {
+      coefficient <- - 1
+    }
+    start <- 2
+    for (j in seq(2, nchar(monomial))) {
+      if (substring(monomial, j, j) == "*") {
+        word <- substring(monomial, start, j - 1)
+        if (suppressWarnings(!is.na(as.numeric(word))) == TRUE) {
+          coefficient <- coefficient * suppressWarnings(as.numeric(word))
+        }
+        else {
+          temp_vector<- c(temp_vector, word)
+        }
+        start <- j + 1
+      }
+    }
+    word <- substring(monomial, start, nchar(monomial))
+    if (suppressWarnings(!is.na(as.numeric(word))) == TRUE) {
+      coefficient <- coefficient * suppressWarnings(as.numeric(word))
+    }
+    else {
+      temp_vector <- c(temp_vector, word)
+    }
+    temp_vector <- sort(temp_vector)
+    for (j in seq(1, length(temp_vector))) {
+      variables <- paste(variables, temp_vector[j], sep = "*")
+    }
+    variables <- substring(variables, 2)
+    pair <- list(num = coefficient, let = variables)
+    math_list[[i]] <- pair
+  }
+  i <- 1
+  while (i < length(math_list)) {
+    j <- i + 1
+    while (j <= length(math_list)) {
+      if (math_list[[i]]$let == math_list[[j]]$let) {
+        math_list[[i]]$num <- math_list[[i]]$num + math_list[[j]]$num
+        math_list[[j]] <- NULL
+      }
+      else {
+        j <- j + 1  
+      }
+    }
+    i <- i + 1
+  }
+  l <- length(math_list)
+  for (i in seq(0, l - 1)) {
+    if (math_list[[l - i]]$num == 0) {
+      math_list [[l - i]] <- NULL
+    }
+  }
+  # Put elements in lexicographic order.
+  nums <- sapply(math_list,"[[","num")
+  lets <- sapply(math_list,"[[","let")
+  numerals <- nums[order(lets)]
+  letters <- lets[order(lets)]
+  # And finally put everything together in a long string.
+  result <- ""
+  for (i in seq(1, length(math_list))) {
+    if (numerals[i] < 0) {
+      result <- paste(result, numerals[i], "*", letters[i], sep = "")
+    }
+    if (numerals[i] > 0) {
+      result <- paste(result, "+", numerals[i], "*", letters[i], sep = "")
+    }
+  }
+  result
+}
 
 #' Build a matrix coding the linear system of edges once the admix variables
 #' have been fixed.
@@ -27,9 +175,8 @@
 #' @param parameters  In case one wants to tweak something in the graph.
 #'   
 #' @return A list containing the full matrix (\code{$full}), a version with zero
-#'         columns removed (\code{$column_reduced}), a version with zero rows and
-#'         repeated rows also removed (\code{$double_reduced}), and an indicator
-#'         of warning (\code{$complaint}).
+#'         columns removed (\code{$column_reduced}) and an indicator of warning 
+#'         (\code{$complaint}).
 build_edge_optimisation_matrix <- function(data, graph, parameters 
                                            = extract_graph_parameters(graph)) {
   m <- nrow(data) # Number of equations is the number of f4-statistics.
@@ -38,47 +185,44 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
   colnames(edge_optimisation_matrix) <- parameters$edges
   # Let's fill the matrix with polynomials of admix proportions.
   for (i in seq(1, m)) {
-    statistic <- f4(graph, data[i, 1], data[i, 2], data[i, 3], data[i, 4])
-    for (j in seq(1, length(statistic))) {
-      if (length(statistic[[j]]$prob) != 0) {
-        admix_product <- ""
-        for (k in seq(1, length(statistic[[j]]$prob))) {
-          admix_product <- paste(admix_product, statistic[[j]]$prob[k], sep = "*")
-        }
-        admix_product <- substring(admix_product, 2)
-        # Yeah I know this is a bit silly but the matrix is only created once.
-        if (nrow(statistic[[j]]$positive) > 0) { # Insert the positive stuff
-          for (k in seq(1, nrow(statistic[[j]]$positive))) {
-            edge_name <- paste("edge", statistic[[j]]$positive[k, 1],
-                               statistic[[j]]$positive[k, 2], sep = "_")
-            edge_optimisation_matrix[i, edge_name] <- 
-              paste(edge_optimisation_matrix[i, edge_name],
-                     admix_product, sep = " + ")
+    statistic <- f4(graph, data$W[i], data$X[i], data$Y[i], data$Z[i])
+    if (length(statistic) != 0) {
+      for (j in seq(1, length(statistic))) {
+        if (length(statistic[[j]]$prob) != 0) {
+          admix_product <- ""
+          for (k in seq(1, length(statistic[[j]]$prob))) {
+            admix_product <- paste(admix_product, statistic[[j]]$prob[k], sep = "*")
           }
-        }
-        if (nrow(statistic[[j]]$negative) > 0) { # Insert the negative stuff
-          for (k in seq(1, nrow(statistic[[j]]$negative))) {
-            edge_name <- paste("edge", statistic[[j]]$negative[k, 1], 
-                               statistic[[j]]$negative[k, 2], sep = "_")
-            edge_optimisation_matrix[i, edge_name] <- 
-              paste(edge_optimisation_matrix[i, edge_name], 
-                     admix_product, sep = " - ")
+          admix_product <- substring(admix_product, 2)
+          # Yeah I know this is a bit silly but the matrix is only created once.
+          if (nrow(statistic[[j]]$positive) > 0) { # Insert the positive stuff
+            for (k in seq(1, nrow(statistic[[j]]$positive))) {
+              edge_name <- paste("edge", statistic[[j]]$positive[k, 1],
+                                 statistic[[j]]$positive[k, 2], sep = "_")
+              edge_optimisation_matrix[i, edge_name] <- 
+                paste(edge_optimisation_matrix[i, edge_name],
+                      admix_product, sep = "+")
+            }
+          }
+          if (nrow(statistic[[j]]$negative) > 0) { # Insert the negative stuff
+            for (k in seq(1, nrow(statistic[[j]]$negative))) {
+              edge_name <- paste("edge", statistic[[j]]$negative[k, 1], 
+                                 statistic[[j]]$negative[k, 2], sep = "_")
+              edge_optimisation_matrix[i, edge_name] <- 
+                paste(edge_optimisation_matrix[i, edge_name], 
+                      admix_product, sep = "-")
+            }
           }
         }
       }
     }
   }
-  # To prevent the unnecessary "0 +":s and "0":s from slowing down evaluation
-  # later (don't know if serious actually), perform some cleaning:
-  for (i in seq(1,m)) {
-    for (j in seq(1,n)) {
+  # Simplify by putting each non-zero element to a canonical form.
+  for (i in seq(1, m)) {
+    for (j in seq(1, n)) {
       if (edge_optimisation_matrix[i, j] != "0") {
-        edge_optimisation_matrix[i, j] <- 
-          substring(edge_optimisation_matrix[i, j], 3)
-        if (substring(edge_optimisation_matrix[i, j], 1, 1) == "+") {
-          edge_optimisation_matrix[i, j] <- 
-            substring(edge_optimisation_matrix[i, j], 3)
-        }
+        edge_optimisation_matrix[i,j] <-
+          canonise_expression(substring(edge_optimisation_matrix[i, j], 2))
       }
     }
   }
@@ -96,28 +240,14 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
       }
     }
   }
-  # Make a version with repeated rows and zero rows removed.
-  double_reduced <- column_reduced
-  i <- 1
-  while (i <= nrow(double_reduced)) {
-    for (j in seq(ncol(double_reduced))) {
-      if (double_reduced[i, j] != "0") {
-        i <- i + 1
-        break
-      }
-      if (j == ncol(double_reduced)) {
-        double_reduced <- double_reduced[-i,]
-      }
-    }
-  }
-  double_reduced <- unique(double_reduced)
-  # Make a complaint if the double reduced matrix is not high.
+  # Make a complaint if the number of linearly independent equations is not higher
+  # than the number of variables. The equations contain polynomials of admix 
+  # variables so we need to study a set of linear equations that has a variable for
+  # each row of column_reduced (polynomial) and an equation for every 
+  # (column, monomial) -pair of column_reduced (edge- or admix variable monomial). 
   complaint <- FALSE
-  if (nrow(double_reduced) <= ncol(double_reduced)) {
-    complaint <- TRUE
-  }
   list(full = edge_optimisation_matrix, column_reduced = column_reduced, 
-       double_reduced = double_reduced, complaint = complaint)
+       complaint = complaint)
 }
 
 #' The cost function fed to nelder mead.

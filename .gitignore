@@ -14,3 +14,4 @@ vignettes/admixturegraph_cache
 inst/doc
 
 README_cache/*$
+.RData
