@@ -46,7 +46,7 @@ data(bears)
 bears
 ```
 
-The D column is the f4(W,X;Y,Z) statistic and the Z column is the Z-values
+The D column is the f4(W,X;Y,Z) statistic and the Z.values column is the Z-values
 obtained from a blocked jacknife (see Patterson *et al.* for details).
 
 From the statistics we can see that the ABC bears (Adm, Bar and Chi) are closer
