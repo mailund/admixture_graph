@@ -5,10 +5,7 @@
 # 2) Find out how the f-statistics depend on one another. Find out hat subsets of
 #    the set of all statistics have no impied weight on some data. Preferably make
 #    a program to remove extra data from already sufficient data in some fair way.
-# 3) Try to algebraically simplify the edge optimisation matrix.    
-# 4) The compalaint condition might not do the row reducing right, since elements
-#    are not in an arbitrary form. Either put them in some canonical form or do a
-#    numerical complaint condition.
+# 3) The compalaint condition was a bit silly and is down right now.
 
 ## Graph fitting #################################################################
 
@@ -18,8 +15,8 @@
 #' 
 #' @param x   Input is assumed to be a char containing numerals, variables and
 #'            clauses \code{(1 - variable)} (mind the spaces, this is how the 
-#'            \code{f4}-function outputs), separated by \code{+}, \code{-} or 
-#'            \code{*}, with no spaces. 
+#'            f4-function outputs), separated by \code{+}, \code{-} or \code{*}, 
+#'            with no spaces. 
 #'            Everything is pretty much ruined if variable names contain forbidden
 #'            symbols \code{+, -, *, (, )} or are purely numerals.
 #'
@@ -112,11 +109,16 @@ canonise_expression <- function(x) {
     else {
       temp_vector <- c(temp_vector, word)
     }
-    temp_vector <- sort(temp_vector)
-    for (j in seq(1, length(temp_vector))) {
-      variables <- paste(variables, temp_vector[j], sep = "*")
+    if (length(temp_vector) > 0) {
+      temp_vector <- sort(temp_vector)
+      for (j in seq(1, length(temp_vector))) {
+        variables <- paste(variables, temp_vector[j], sep = "*")
+      }
+      variables <- substring(variables, 2)
     }
-    variables <- substring(variables, 2)
+    else {
+      variables <- "1"
+    }
     pair <- list(num = coefficient, let = variables)
     math_list[[i]] <- pair
   }
@@ -163,8 +165,8 @@ canonise_expression <- function(x) {
 #' 
 #' The elements are characters containing numerals, admix variable names,
 #' parenthesis and arithmetical operations. (Transform into expressions with
-#' \code{parse} and then evaluate with \code{eval}). The column names are the
-#' edge names from \code{extract_graph_parameter$edges}, the rows have no names.
+#' parse and then evaluate with eval). The column names are the edge names from 
+#' extract_graph_parameter$edges, the rows have no names.
 #' 
 #' If the essential number of equations is not higher than the essential number of
 #' edge variables, the quality of edge optimisation will not depend on the admix
@@ -174,9 +176,10 @@ canonise_expression <- function(x) {
 #' @param graph       The admixture graph.
 #' @param parameters  In case one wants to tweak something in the graph.
 #'   
-#' @return A list containing the full matrix (\code{$full}), a version with zero
-#'         columns removed (\code{$column_reduced}) and an indicator of warning 
-#'         (\code{$complaint}).
+#' @return A list containing the full matrix ($full), a version with zero columns 
+#'         removed ($column_reduced) and an indicator of warning ($complaint).
+#'         
+#' @export
 build_edge_optimisation_matrix <- function(data, graph, parameters 
                                            = extract_graph_parameters(graph)) {
   m <- nrow(data) # Number of equations is the number of f4-statistics.
@@ -244,10 +247,73 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
   # than the number of variables. The equations contain polynomials of admix 
   # variables so we need to study a set of linear equations that has a variable for
   # each row of column_reduced (polynomial) and an equation for every 
-  # (column, monomial) -pair of column_reduced (edge- or admix variable monomial). 
+  # (column, monomial) -pair of column_reduced (edge or admix variable monomial). 
   complaint <- FALSE
   list(full = edge_optimisation_matrix, column_reduced = column_reduced, 
        complaint = complaint)
+}
+
+#' Non negative least square solution.
+#' 
+#' This is lsqnonneg-function from the package pracma, just changed qr.solve into
+#' using Moore-Penrose inverse instead (ginv from MASS) as qr.solve crashes for
+#' some singular inputs. Now it won't crash but it's sometimes running for very long
+#' time (forever?), presumably with those problematic inputs. After too many steps
+#' the function halts and lies that the fit was terrible. I don't think this will
+#' cause problems.
+#' 
+#' @param C  The matrix.
+#' @param d  The vector.
+#'   
+#' @return A vector ($x) and the error ($resid.norm). 
+#'         
+#' @export
+mynonneg <- function(C, d) {
+  if (!requireNamespace("MASS", quietly = TRUE)) {
+    stop("This function requires MASS to be installed.")
+  }
+  stopifnot(is.numeric(C), is.numeric(d))
+  if (!is.matrix(C) || !is.vector(d))
+    stop("Argument 'C' must be a matrix, 'd' a vector.")
+  m <- nrow(C); n <- ncol(C)
+  if (m != length(d))
+    stop("Arguments 'C' and 'd' have nonconformable dimensions.")
+  tol <- 10 * 2.220446e-16 * norm(C, "F") * (max(n, m) + 1)
+  x  <- rep(0, n)             # initial point
+  P  <- logical(n); Z <- !P   # non-active / active columns
+  resid <- d - C %*% x
+  w <- t(C) %*% resid
+  wz <- numeric(n)
+  # iteration parameters
+  outeriter <- 0; it <- 0
+  itmax <- 3 * n; exitflag <- 1
+  while (any(Z) && any(w[Z] > tol)) {
+    outeriter <- outeriter + 1
+    z <- numeric(n)
+    wz <- rep(-Inf, n)
+    wz[Z] <- w[Z]
+    im <- which.max(wz)
+    P[im] <- TRUE; Z[im] <- FALSE
+    z[P] <- MASS::ginv(C[, P]) %*% d
+    while (any(z[P] <= 0)) {
+      it <- it + 1
+      if (it > itmax) {
+        warning("Iteration count exceeded.")
+        return(list(x = rep(0, n), resid.norm = Inf))
+      }
+      Q <- (z <= 0) & P
+      alpha <- min(x[Q] / (x[Q] - z[Q]))
+      x <- x + alpha*(z - x)
+      Z <- ((abs(x) < tol) & P) | Z
+      P <- !Z
+      z <- numeric(n)
+      z[P] <- MASS::ginv(C[, P]) %*% d
+    }
+    x <- z
+    resid <- d - C %*% x
+    w <- t(C) %*% resid
+  }
+  return(list(x = x, resid.norm = sum(resid*resid)))
 }
 
 #' The cost function fed to nelder mead.
@@ -264,6 +330,8 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
 #'   
 #' @return  Given an input vector of admix variables, returns the smallest error 
 #'          regarding the edge variables.
+#'
+#' @export
 cost_function <- function(data, matrix, graph, 
                           parameters = extract_graph_parameters(graph)) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
@@ -284,7 +352,7 @@ cost_function <- function(data, matrix, graph,
     # Now just use a ready-made function to find the best non-negative solution
     # in the Euclidian norm. Apparently this is "slow" in the sense it takes 
     # O(n^3) steps and not O(n^2.3) steps as it could in principle.
-    lsq_solution <- pracma::lsqnonneg(evaluated_matrix, goal)
+    lsq_solution <- mynonneg(evaluated_matrix, goal)
     lsq_solution$resid.norm
   }
 }
@@ -307,6 +375,8 @@ cost_function <- function(data, matrix, graph,
 #'          relations describing all the solutions (\code{x$homogeneous}) and one 
 #'          way to choose the free (\code{x$free_edges}) and bounded 
 #'          (\code{x$bounded_edges}) edge variables.
+#'
+#' @export
 edge_optimisation_function <- function(data, matrix, graph, 
                               parameters = extract_graph_parameters(graph)) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
@@ -325,7 +395,7 @@ edge_optimisation_function <- function(data, matrix, graph,
       }
     }
     # Record the (or an example of an) optimal solution and error.
-    lsq_solution <- pracma::lsqnonneg(evaluated_matrix, goal)
+    lsq_solution <- mynonneg(evaluated_matrix, goal)
     edge_fit <- lsq_solution$x
     names(edge_fit) <- parameters$edges
     approximation <- evaluated_matrix %*% edge_fit
@@ -334,7 +404,7 @@ edge_optimisation_function <- function(data, matrix, graph,
     # edge lengths depend on one another, as the least square function only gave
     # one exaple of an optimal solution. This information is visible after
     # manipulating the optimisation matrix into reduced row echelon form.
-    homogeneous_matrix <- pracma::rref(evaluated_matrix)
+    homogeneous_matrix <- evaluated_matrix # pracma::rref(evaluated_matrix)
     # Make a list of (one choice of) free edges.
     free_edges <- c()
     i <- 1

@@ -1,0 +1,570 @@
+---
+title: "Admixture Graphs"
+author: "Thomas Mailund"
+date: "8 Aug 2015"
+output: word_document
+---
+
+```{r preamble, echo=FALSE, warning=FALSE}
+suppressPackageStartupMessages(library(dplyr, quietly = TRUE))
+suppressPackageStartupMessages(library(magrittr, quietly = TRUE))
+suppressPackageStartupMessages(library(ggplot2, quietly = TRUE))
+suppressPackageStartupMessages(library(ggthemes, quietly = TRUE))
+suppressPackageStartupMessages(library(knitr, quietly = TRUE))
+suppressPackageStartupMessages(library(neldermead, quietly = TRUE))
+#library(devtools)
+#install_github("mailund/admixture_graph")
+suppressPackageStartupMessages(library(admixturegraph, quietly = TRUE))
+
+
+POP_MAP = list(HGDP00456 = "Mbuti",
+               HGDP00521 = "French",
+               HGDP00542 = "Papuan",
+               HGDP00665 = "Sardinian",
+               HGDP00778 = "Han",
+               HGDP00927 = "Yoruba",
+               HGDP00998 = "Karitiana",
+               HGDP01029 = "San",
+               HGDP01284 = "Mandenka",
+               HGDP01307 = "Dai",
+               SS6004467 = "Dai",
+               SS6004469 = "Han",
+               SS6004470 = "Mandenka",
+               SS6004471 = "Mbuti",
+               SS6004472 = "Papuan",
+               SS6004473 = "San",
+               SS6004475 = "Yoruba",
+               SS6004476 = "Karitiana",
+               SS6004477 = "Australian",
+               SS6004478 = "Australian",
+               SS6004479 = "Mixe",
+               SS6004480 = "Dinka",
+               SS6004468 = "French",
+               SS6004474 = "Sardinian",
+               NA0493  = "NewZealand",
+               AltaiNea = "Neanderthal",
+               DenisovanPinky = "Denisovan",
+               Denosivan = "Denisovan",
+               HG01583 = "Pakistani",
+               HG03642 = "Tamil",
+               DNK02 = "Dinka",
+               NA04932 = "MAO",
+               JHF05 = "Jehais",
+               JHM06 = "Jehais",
+               HG03006 = "Bengali",
+               HG03742 = "Telugu",
+               ID36 = "Jehais",
+               Manny = "Indian",
+               NA20845 = "Gujarati")
+
+
+population_map <- function(name) {
+  if (name %in% names(POP_MAP)) {
+    unlist(POP_MAP[name], use.names = FALSE)
+  } else if (nchar(name) == 5) {
+    substr(name, 1, 3)
+  } else {
+    name
+  }
+}
+
+D <- tbl_df(read.table('mailundV1_abbababaTab_super.txt',
+                       header = FALSE, col.names = c('H1', 'H2', 'H3', 'Diff', 'Total', 'Abbababa', 'Jack', 'stderr', 'Z.value'),
+                       stringsAsFactors = FALSE)) %>%
+  mutate(W = 'panTro2', 
+         Y = H1,
+         Z = H2,
+         X = H3,
+         D = Jack) %>%
+  select(W, X, Y, Z, D, Z.value, stderr)
+```
+
+Admixture graphs provide a framework for fitting a proposed history of populations to observed $D$ statistics. Given a graph of population relationships, including admixture events, the graph predicts expected $D$ statistics as a function of edge lengths and admixture proportions and such a graph can be fitted to the observed $D$ statistics by minimising the distance between the predicted statistics and the observed statistics. We have implemented this in an R package available at https://github.com/mailund/admixture_graph. The fitting to data is done using a Nelder-Mead numerical optimisation algorithm that minimizes the sum of squared distances between all observed statistics and the expectations from the graph.
+
+We have tested four graphs, shown below, two with two waves out of Africa and two without. The first two differ in whether there is a second admixture event that sends Neanderthal genes into Oceanians, the difference between the other two is whether the split between Oceanians and Eurasians happens before or after the Neanderthal admixture event.
+
+```{r two_ooa_graph_1, echo=FALSE, fig.width=14}
+leaves <- c("Denisovan", "Neanderthal", "Papuan", "WCD", "Han", "French", "Dinka", "Yoruba", "San",  "panTro2")
+inner_nodes <- c("R", "Hominin", "OOA1", "Archaeic", "den", "nea", "z", "v", "u", "x", "y", "Oceania",
+                 "OOA2", "Af", "w")
+
+edges <- parent_edges(c(
+  edge("San", "x"),
+  edge("x", "Hominin"),
+  edge("OOA2", "OOA1"),
+  edge("Dinka", "Af"), edge("Yoruba", "Af"), edge("Af", "OOA2"),
+  
+  edge("French", "w"),
+  edge("Han", "u"), edge("u", "w"),
+  edge("w", "y"),
+  admixture_edge("y", "nea", "OOA2"),
+  
+  edge("Papuan", "Oceania"),
+  edge("WCD", "Oceania"),
+  edge("Oceania", "v"),
+  admixture_edge("v", "z", "u"),
+  admixture_edge("z", "den", "OOA1"),
+  
+  edge("Neanderthal", "nea"), edge("nea", "Archaeic"),
+  edge("Denisovan", "den"), edge("den", "Archaeic"),
+  edge("Archaeic", "Hominin"),
+  edge("OOA1", "x"),
+  edge("Hominin","R"),
+  edge("panTro2","R")
+))
+
+admix <- admixture_proportions(c(
+  admix_props("y","nea","OOA2","a"),
+  admix_props("z","den","OOA1","b"),
+  admix_props("v", "z", "u", "c")
+))
+
+two_ooa_graph_1 <- agraph(leaves, inner_nodes, edges, admix)
+#pdf('two_ooa_graph_1.pdf')
+plot(two_ooa_graph_1, show_admixture_labels = TRUE, main = 'Two OOA')
+#dev.off()
+```
+
+```{r two_ooa_graph_2, echo=FALSE, fig.width=14}
+leaves <- c("Denisovan", "Neanderthal", "Papuan", "WCD", "Han", "French", "Dinka", "Yoruba", "San",  "panTro2")
+inner_nodes <- c("R", "Hominin", "OOA1", "Archaeic", "den", "nea", "nea2", "z", "v", "u", "x", "y", "Oceania",
+                 "OOA2", "Af", "w", "xx")
+
+edges <- parent_edges(c(
+  edge("San", "x"),
+  edge("x", "Hominin"),
+  edge("OOA2", "OOA1"),
+  edge("Dinka", "Af"), edge("Yoruba", "Af"), edge("Af", "OOA2"),
+  
+  edge("French", "w"),
+  edge("Han", "u"), edge("u", "w"),
+  edge("w", "y"),
+  admixture_edge("y", "nea", "OOA2"),
+  
+  edge("Papuan", "Oceania"),
+  edge("WCD", "Oceania"),
+  edge("Oceania", "v"),
+  admixture_edge("v", "z", "u"),
+  admixture_edge("z", "den", "xx"),
+  admixture_edge("xx", "nea2", "OOA1"),
+  
+  edge("Neanderthal", "nea2"), edge("nea2", "nea"), edge("nea", "Archaeic"),
+  edge("Denisovan", "den"), edge("den", "Archaeic"),
+  edge("Archaeic", "Hominin"),
+  edge("OOA1", "x"),
+  edge("Hominin","R"),
+  edge("panTro2","R")
+))
+
+admix <- admixture_proportions(c(
+  admix_props("y","nea","OOA2","a"),
+  admix_props("xx", "nea2", "OOA1", "b"),
+  admix_props("z","den","xx","c"),
+  admix_props("v", "z", "u", "d")
+))
+
+two_ooa_graph_2 <- agraph(leaves, inner_nodes, edges, admix)
+#pdf('two_ooa_graph_2.pdf')
+plot(two_ooa_graph_2, show_admixture_labels = TRUE, main = 'Two OOA / Two Neanderthal admixtures')
+#dev.off()
+```
+
+```{r one_ooa_graph_1, echo=FALSE, fig.width=14}
+leaves <- c("Denisovan", "Neanderthal", "Papuan", "WCD", "Han", "French", "Dinka", "Yoruba", "San",  "panTro2")
+inner_nodes <- c("R", "Hominin", "xx", "Archaeic", "den", "nea", "z", "v", "u", "x", "y", "Oceania",
+                 "OOA", "Af", "w")
+
+edges <- parent_edges(c(
+  edge("San", "x"),
+  edge("x", "Hominin"),
+  edge("OOA", "x"),
+  edge("Dinka", "Af"), edge("Yoruba", "Af"), edge("Af", "OOA"),
+  
+  edge("French", "w"),
+  edge("Han", "u"), edge("u", "w"),
+  edge("w", "y"),
+  admixture_edge("y", "nea", "xx"),
+  
+  edge("Papuan", "Oceania"),
+  edge("WCD", "Oceania"),
+  edge("Oceania", "v"),
+  admixture_edge("v", "z", "u"),
+  admixture_edge("z", "den", "xx"),
+  
+  edge("Neanderthal", "nea"), edge("nea", "Archaeic"),
+  edge("Denisovan", "den"), edge("den", "Archaeic"),
+  edge("Archaeic", "Hominin"),
+  edge("xx", "OOA"),
+  edge("Hominin","R"),
+  edge("panTro2","R")
+))
+
+admix <- admixture_proportions(c(
+  admix_props("y","nea","xx","a"),
+  admix_props("z","den","xx","b"),
+  admix_props("v", "z", "u", "c")
+))
+
+one_ooa_graph_1 <- agraph(leaves, inner_nodes, edges, admix)
+#pdf('one_ooa_graph_1.pdf')
+plot(one_ooa_graph_1, show_admixture_labels = TRUE, main = 'One OOA / Split before Neanderthal admixture')
+#dev.off()
+```
+
+```{r one_ooa_graph_2, echo=FALSE, fig.width=14}
+leaves <- c("Denisovan", "Neanderthal", "Papuan", "WCD", "Han", "French", "Dinka", "Yoruba", "San",  "panTro2")
+inner_nodes <- c("R", "Hominin", "xx", "Archaeic", "den", "nea", "z", "v", "u", "x", "y", "Oceania",
+                 "OOA", "Af", "w")
+
+edges <- parent_edges(c(
+  edge("San", "x"),
+  edge("x", "Hominin"),
+  edge("OOA", "x"),
+  edge("Dinka", "Af"), edge("Yoruba", "Af"), edge("Af", "OOA"),
+  
+  edge("French", "w"),
+  edge("Han", "u"), edge("u", "w"),
+  edge("w", "xx"),
+  admixture_edge("y", "nea", "OOA"),
+  
+  edge("Papuan", "Oceania"),
+  edge("WCD", "Oceania"),
+  edge("Oceania", "v"),
+  admixture_edge("v", "z", "u"),
+  admixture_edge("z", "den", "xx"),
+  
+  edge("Neanderthal", "nea"), edge("nea", "Archaeic"),
+  edge("Denisovan", "den"), edge("den", "Archaeic"),
+  edge("Archaeic", "Hominin"),
+  edge("xx", "y"),
+  edge("Hominin","R"),
+  edge("panTro2","R")
+))
+
+admix <- admixture_proportions(c(
+  admix_props("z","den","xx","a"),
+  admix_props("y","nea","OOA","b"),
+  admix_props("v", "z", "u", "c")
+))
+
+one_ooa_graph_2 <- agraph(leaves, inner_nodes, edges, admix)
+#pdf('one_ooa_graph_2.pdf')
+plot(one_ooa_graph_2, show_admixture_labels = TRUE, main = 'One OOA / Split after Neanderthal admixture')
+#dev.off()
+```
+
+
+```{r fitting, echo=FALSE}
+optioptions <- optimset(MaxFunEvals = 100000, MaxIter = 100000, Display = "iter")
+filtered_data <- D %>% project_to_population(population_map) %>% filter_on_leaves(two_ooa_graph_1)
+
+fit_two_ooa_graph_1 <- replicate(1, (filtered_data %>% fit_graph(two_ooa_graph_1, optioptions))$error)
+#save(fit_two_ooa_graph_1, file = "cached_data/fit_two_ooa_graph_1.Rdata")
+#load("cached_data/fit_two_ooa_graph_1.Rdata")
+
+fit_two_ooa_graph_2 <- replicate(1, (filtered_data %>% fit_graph(two_ooa_graph_2, optioptions))$error)
+#save(fit_two_ooa_graph_2, file = "cached_data/fit_two_ooa_graph_2.Rdata")
+#load("cached_data/fit_two_ooa_graph_2.Rdata")
+
+fit_one_ooa_graph_1 <- replicate(10, (filtered_data %>% fit_graph(one_ooa_graph_1, optioptions))$error)
+#save(fit_one_ooa_graph_1, file = "cached_data/fit_one_ooa_graph_1.Rdata")
+#load("cached_data/fit_one_ooa_graph_1.Rdata")
+
+fit_one_ooa_graph_2 <- replicate(10, (filtered_data %>% fit_graph(one_ooa_graph_2, optioptions))$error)
+#save(fit_one_ooa_graph_2, file = "cached_data/fit_one_ooa_graph_2.Rdata")
+#load("cached_data/fit_one_ooa_graph_2.Rdata")
+
+fits <- rbind(data.frame(graph='Graph 1', fit=fit_two_ooa_graph_1),
+              data.frame(graph='Graph 2', fit=fit_two_ooa_graph_2),
+              data.frame(graph='Graph 3', fit=fit_one_ooa_graph_1),
+              data.frame(graph='Graph 4', fit=fit_one_ooa_graph_2))
+
+fits <- rbind(data.frame(graph='Two OoA with\n1 Neandertal and\n1 Denisovan admixture',
+                             fit=fit_two_ooa_graph_1),
+                  data.frame(graph='Two OoA with\n2 Neanderthal and\n1 Denisovan admixture',
+                             fit=fit_two_ooa_graph_2),
+                  data.frame(graph='One OoA with\n1 Neanderthal before split and\n1 Denisovan admixture',
+                             fit=fit_one_ooa_graph_1),
+                  data.frame(graph='One OoA with\n1 Neanderthal after split and 1\nDenisovan admixture',
+                             fit=fit_one_ooa_graph_2))
+
+
+```
+
+Since the numerical optimisation is sensitive to start positions we ran the optimisation ten times for each graph, with random start points for the optimisation, and collected the sum of squared errors. In principle the smallest value should be prefered here but having all of them gives us an idea about how much the fits can vary in optimisations. If two graphs give us roughly the same numbers then we can't really know if another starting point could flip which will give us the smallest error, whereas if the fits never overlap in range we can probably safely pick the graph with the smallest error.
+
+```{r, echo=FALSE, fig.height=7}
+ggplot(fits, aes(x=graph, y=fit)) + geom_jitter(position = position_jitter(width=0.05)) + theme_bw()
+```
+
+The graph with the smallest error of all fits is graph number 2 but all of the graphs have similar distributions of errors. This graph, however, also have more admixture events (four versus three) and thus more parameters that can be fitted, so all else being equal we would expect a slightly better fit.
+
+Plotting the fitted $D$ statistics for a random fitted graph for each of the four topologies there is not much difference between them which explains why it is hard to distinguish between them here. The poorly fitted values are mostly the same in these four graphs; with this in mind and the similarity in the error scores in the optimisations we cannot with certainty pick one graph over the others.
+
+
+```{r fitting_one, echo=FALSE}
+optioptions <- NULL #optimset(MaxFunEvals = 100000, MaxIter = 100000, Display = "iter")
+filtered_data <- D %>% project_to_population(population_map) %>% filter_on_leaves(two_ooa_graph_1)
+
+fit_two_ooa_graph_1_case <- filtered_data %>% fit_graph(two_ooa_graph_1, optioptions)
+#save(fit_two_ooa_graph_1_case, file = "cached_data/fit_two_ooa_graph_1_case.Rdata")
+#load("cached_data/fit_two_ooa_graph_1_case.Rdata")
+
+fit_two_ooa_graph_2_case <- filtered_data %>% fit_graph(two_ooa_graph_2, optioptions)
+#save(fit_two_ooa_graph_2_case, file = "cached_data/fit_two_ooa_graph_2_case.Rdata")
+#load("cached_data/fit_two_ooa_graph_2_case.Rdata")
+
+fit_one_ooa_graph_1_case <- filtered_data %>% fit_graph(one_ooa_graph_1, optioptions)
+#save(fit_one_ooa_graph_1_case, file = "cached_data/fit_one_ooa_graph_1_case.Rdata")
+#load("cached_data/fit_one_ooa_graph_1_case.Rdata")
+
+fit_one_ooa_graph_2_case <- filtered_data %>% fit_graph(one_ooa_graph_2, optioptions)
+#save(fit_one_ooa_graph_2_case, file = "cached_data/fit_one_ooa_graph_2_case.Rdata")
+#load("cached_data/fit_one_ooa_graph_2_case.Rdata")
+
+```
+
+```{r, fig.height=18, fig.width=14, echo=FALSE}
+xx <- fit_two_ooa_graph_1_case
+xx$fit_data <- split_population(fitted(xx))
+(xx %>% plot) + ggtitle("Fit of graph 1")
+#ggsave('fit_two_ooa_graph_1.pdf')
+```
+
+```{r, fig.height=18, fig.width=14, echo=FALSE}
+xx <- fit_two_ooa_graph_2_case
+xx$fit_data <- split_population(fitted(xx))
+(xx %>% plot) + ggtitle("Fit of graph 2")
+#ggsave('fit_two_ooa_graph_2.pdf')
+```
+
+```{r, fig.height=18, fig.width=14, echo=FALSE}
+xx <- fit_one_ooa_graph_1_case
+xx$fit_data <- split_population(fitted(xx))
+(xx %>% plot) + ggtitle("Fit of graph 3")
+#ggsave('fit_one_ooa_graph_1.pdf')
+```
+
+```{r, fig.height=18, fig.width=14, echo=FALSE}
+xx <- fit_one_ooa_graph_2_case
+xx$fit_data <- split_population(fitted(xx))
+(xx %>% plot) + ggtitle("Fit of graph 4")
+#ggsave('fit_one_ooa_graph_2.pdf')
+```
+
+Interestingly, the pattern doesn't change if we remove the Denisovan admixture, although the fit gets somewhat worse.
+
+
+```{r two_ooa_graph_1_den, echo=FALSE, fig.width=14}
+leaves <- c("Denisovan", "Neanderthal", "Papuan", "WCD", "Han", "French", "Dinka", "Yoruba", "San",  "panTro2")
+inner_nodes <- c("R", "Hominin", "OOA1", "Archaeic", "nea", "z", "v", "u", "x", "y", "Oceania",
+                 "OOA2", "Af", "w")
+
+edges <- parent_edges(c(
+  edge("San", "x"),
+  edge("x", "Hominin"),
+  edge("OOA2", "OOA1"),
+  edge("Dinka", "Af"), edge("Yoruba", "Af"), edge("Af", "OOA2"),
+  
+  edge("French", "w"),
+  edge("Han", "u"), edge("u", "w"),
+  edge("w", "y"),
+  admixture_edge("y", "nea", "OOA2"),
+  
+  edge("Papuan", "Oceania"),
+  edge("WCD", "Oceania"),
+  edge("Oceania", "v"),
+  admixture_edge("v", "z", "u"),
+  edge("z", "OOA1"),
+  
+  edge("Neanderthal", "nea"), edge("nea", "Archaeic"),
+  edge("Denisovan", "Archaeic"),
+  edge("Archaeic", "Hominin"),
+  edge("OOA1", "x"),
+  edge("Hominin","R"),
+  edge("panTro2","R")
+))
+
+admix <- admixture_proportions(c(
+  admix_props("y","nea","OOA2","a"),
+  #admix_props("z","den","OOA1","b"),
+  admix_props("v", "z", "u", "c")
+))
+
+two_ooa_graph_1_den <- agraph(leaves, inner_nodes, edges, admix)
+#pdf("without-denisovan-flow-1.pdf")
+plot(two_ooa_graph_1_den, show_admixture_labels = TRUE, main = 'Two OOA')
+#dev.off()
+```
+
+```{r two_ooa_graph_2_den, echo=FALSE, fig.width=14}
+leaves <- c("Denisovan", "Neanderthal", "Papuan", "WCD", "Han", "French", "Dinka", "Yoruba", "San",  "panTro2")
+inner_nodes <- c("R", "Hominin", "OOA1", "Archaeic", "nea", "nea2", "z", "v", "u", "x", "y", "Oceania",
+                 "OOA2", "Af", "w", "xx")
+
+edges <- parent_edges(c(
+  edge("San", "x"),
+  edge("x", "Hominin"),
+  edge("OOA2", "OOA1"),
+  edge("Dinka", "Af"), edge("Yoruba", "Af"), edge("Af", "OOA2"),
+  
+  edge("French", "w"),
+  edge("Han", "u"), edge("u", "w"),
+  edge("w", "y"),
+  admixture_edge("y", "nea", "OOA2"),
+  
+  edge("Papuan", "Oceania"),
+  edge("WCD", "Oceania"),
+  edge("Oceania", "v"),
+  admixture_edge("v", "z", "u"),
+  edge("z", "xx"),
+  admixture_edge("xx", "nea2", "OOA1"),
+  
+  edge("Neanderthal", "nea2"), edge("nea2", "nea"), edge("nea", "Archaeic"),
+  edge("Denisovan", "Archaeic"),
+  edge("Archaeic", "Hominin"),
+  edge("OOA1", "x"),
+  edge("Hominin","R"),
+  edge("panTro2","R")
+))
+
+admix <- admixture_proportions(c(
+  admix_props("y","nea","OOA2","a"),
+  admix_props("xx", "nea2", "OOA1", "b"),
+  #admix_props("z","den","xx","c"),
+  admix_props("v", "z", "u", "d")
+))
+
+#pdf("without-denisovan-flow-2.pdf")
+two_ooa_graph_2_den <- agraph(leaves, inner_nodes, edges, admix)
+plot(two_ooa_graph_2_den, show_admixture_labels = TRUE, main = 'Two OOA / Two Neanderthal admixtures')
+#dev.off()
+```
+
+```{r one_ooa_graph_1_den, echo=FALSE, fig.width=14}
+leaves <- c("Denisovan", "Neanderthal", "Papuan", "WCD", "Han", "French", "Dinka", "Yoruba", "San",  "panTro2")
+inner_nodes <- c("R", "Hominin", "xx", "Archaeic", "nea", "z", "v", "u", "x", "y", "Oceania",
+                 "OOA", "Af", "w")
+
+edges <- parent_edges(c(
+  edge("San", "x"),
+  edge("x", "Hominin"),
+  edge("OOA", "x"),
+  edge("Dinka", "Af"), edge("Yoruba", "Af"), edge("Af", "OOA"),
+  
+  edge("French", "w"),
+  edge("Han", "u"), edge("u", "w"),
+  edge("w", "y"),
+  admixture_edge("y", "nea", "xx"),
+  
+  edge("Papuan", "Oceania"),
+  edge("WCD", "Oceania"),
+  edge("Oceania", "v"),
+  admixture_edge("v", "z", "u"),
+  edge("z", "xx"),
+  
+  edge("Neanderthal", "nea"), edge("nea", "Archaeic"),
+  edge("Denisovan", "Archaeic"),
+  edge("Archaeic", "Hominin"),
+  edge("xx", "OOA"),
+  edge("Hominin","R"),
+  edge("panTro2","R")
+))
+
+admix <- admixture_proportions(c(
+  admix_props("y","nea","xx","a"),
+  #admix_props("z","den","xx","b"),
+  admix_props("v", "z", "u", "c")
+))
+
+#pdf("without-denisovan-flow-3.pdf")
+one_ooa_graph_1_den <- agraph(leaves, inner_nodes, edges, admix)
+plot(one_ooa_graph_1_den, show_admixture_labels = TRUE, main = 'One OOA / Split before Neanderthal admixture')
+#dev.off()
+```
+
+```{r one_ooa_graph_2_den, echo=FALSE, fig.width=14}
+leaves <- c("Denisovan", "Neanderthal", "Papuan", "WCD", "Han", "French", "Dinka", "Yoruba", "San",  "panTro2")
+inner_nodes <- c("R", "Hominin", "xx", "Archaeic", "nea", "z", "v", "u", "x", "y", "Oceania",
+                 "OOA", "Af", "w")
+
+edges <- parent_edges(c(
+  edge("San", "x"),
+  edge("x", "Hominin"),
+  edge("OOA", "x"),
+  edge("Dinka", "Af"), edge("Yoruba", "Af"), edge("Af", "OOA"),
+  
+  edge("French", "w"),
+  edge("Han", "u"), edge("u", "w"),
+  edge("w", "xx"),
+  admixture_edge("y", "nea", "OOA"),
+  
+  edge("Papuan", "Oceania"),
+  edge("WCD", "Oceania"),
+  edge("Oceania", "v"),
+  admixture_edge("v", "z", "u"),
+  edge("z", "xx"),
+  
+  edge("Neanderthal", "nea"), edge("nea", "Archaeic"),
+  edge("Denisovan", "Archaeic"),
+  edge("Archaeic", "Hominin"),
+  edge("xx", "y"),
+  edge("Hominin","R"),
+  edge("panTro2","R")
+))
+
+admix <- admixture_proportions(c(
+  #admix_props("z","den","xx","a"),
+  admix_props("y","nea","OOA","b"),
+  admix_props("v", "z", "u", "c")
+))
+
+#pdf("without-denisovan-flow-4.pdf")
+one_ooa_graph_2_den <- agraph(leaves, inner_nodes, edges, admix)
+plot(one_ooa_graph_2_den, show_admixture_labels = TRUE, main = 'One OOA / Split after Neanderthal admixture')
+#dev.off()
+```
+
+```{r fitting_den, echo=FALSE}
+optioptions <- NULL #optimset(MaxFunEvals = 100000, MaxIter = 100000, Display = "iter")
+filtered_data <- D %>% project_to_population(population_map) %>% filter_on_leaves(two_ooa_graph_1_den)
+
+fit_two_ooa_graph_1_den <- replicate(10, (filtered_data %>% fit_graph(two_ooa_graph_1_den, optioptions))$error)
+#save(fit_two_ooa_graph_1_den, file = "cached_data/fit_two_ooa_graph_1_den.Rdata")
+#load("cached_data/fit_two_ooa_graph_1_den.Rdata")
+
+fit_two_ooa_graph_2_den <- replicate(10, (filtered_data %>% fit_graph(two_ooa_graph_2_den, optioptions))$error)
+#save(fit_two_ooa_graph_2_den, file = "cached_data/fit_two_ooa_graph_2_den.Rdata")
+#load("cached_data/fit_two_ooa_graph_2_den.Rdata")
+
+fit_one_ooa_graph_1_den <- replicate(10, (filtered_data %>% fit_graph(one_ooa_graph_1_den, optioptions))$error)
+#save(fit_one_ooa_graph_1_den, file = "cached_data/fit_one_ooa_graph_1_den.Rdata")
+#load("cached_data/fit_one_ooa_graph_1_den.Rdata")
+
+fit_one_ooa_graph_2_den <- replicate(10, (filtered_data %>% fit_graph(one_ooa_graph_2_den, optioptions))$error)
+#save(fit_one_ooa_graph_2_den, file = "cached_data/fit_one_ooa_graph_2_den.Rdata")
+#load("cached_data/fit_one_ooa_graph_2_den.Rdata")
+
+fits_den <- rbind(data.frame(graph='Two OoA with\n1 Neandertal and\n0 Denisovan admixture',
+                             fit=fit_two_ooa_graph_1_den),
+                  data.frame(graph='Two OoA with\n2 Neanderthal and\n0 Denisovan admixture',
+                             fit=fit_two_ooa_graph_2_den),
+                  data.frame(graph='One OoA with\n1 Neanderthal before split and\n0Denisovan admixture',
+                             fit=fit_one_ooa_graph_1_den),
+                  data.frame(graph='One OoA with\n1 Neanderthal after split and\n0 Denisovan admixture',
+                             fit=fit_one_ooa_graph_2_den))
+
+```
+
+Here, however, we see much stronger support for two waves out of Africa with two Neanderthal admixtures, suggesting that the reason it is hard to tell the one wave versus two waves out of Africa can party be explained by the Denisovan admixture; that admixture pulls the Oceanians away from the Eurasians and partly explains why they look like having split from Africans at an earlier time. While including this admixture might still give more support for a two wave out of Africa, it does make it less conclusing based on the admixture graph approach at least.
+
+```{r, echo=FALSE, fig.height=7, fig.width=10}
+#png("figure.png",height=45,width=85, units = "mm", res = 200)#, useDingbats=FALSE)
+ggplot(rbind(fits, fits_den), aes(x=graph, y=fit)) + 
+  xlab("") + ylab("Sum of Squared Errors") +
+  geom_jitter(position = position_jitter(width=0.1), size=0.9) + 
+  theme_classic(base_size = 5, base_family = "Helvetica") +
+  theme(axis.text.x = element_text(angle = 35, hjust = 1))
+#ggsave("figure.pdf", width=85, height=60, units="mm", useDingbats = FALSE)
+#dev.off()
+```

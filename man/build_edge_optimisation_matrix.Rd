@@ -16,16 +16,14 @@ build_edge_optimisation_matrix(data, graph,
 \item{parameters}{In case one wants to tweak something in the graph.}
 }
 \value{
-A list containing the full matrix (\code{$full}), a version with zero
-        columns removed (\code{$column_reduced}), a version with zero rows and
-        repeated rows also removed (\code{$double_reduced}), and an indicator
-        of warning (\code{$complaint}).
+A list containing the full matrix ($full), a version with zero columns
+        removed ($column_reduced) and an indicator of warning ($complaint).
 }
 \description{
 The elements are characters containing numerals, admix variable names,
 parenthesis and arithmetical operations. (Transform into expressions with
-\code{parse} and then evaluate with \code{eval}). The column names are the
-edge names from \code{extract_graph_parameter$edges}, the rows have no names.
+parse and then evaluate with eval). The column names are the edge names from
+extract_graph_parameter$edges, the rows have no names.
 }
 \details{
 If the essential number of equations is not higher than the essential number of
