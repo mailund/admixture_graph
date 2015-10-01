@@ -2,8 +2,8 @@
 #
 # 1) Take the covariance matrix into account. When covariance matrix not given,
 #    assume independence and build one from data$Z.
-# 2) Find out how the f-statistics depend on one another. Find out hat subsets of
-#    the set of all statistics have no impied weight on some data. Preferably make
+# 2) Find out how the f-statistics depend on one another. Find out what subsets of
+#    the set of all statistics have no implied weight on some data. Preferably make
 #    a program to remove extra data from already sufficient data in some fair way.
 # 3) The compalaint condition was a bit silly and is down right now.
 
@@ -182,6 +182,9 @@ canonise_expression <- function(x) {
 #' @export
 build_edge_optimisation_matrix <- function(data, graph, parameters 
                                            = extract_graph_parameters(graph)) {
+  if (!requireNamespace("pracma", quietly = TRUE)) {
+    stop("This function requires pracma to be installed.")
+  }
   m <- nrow(data) # Number of equations is the number of f4-statistics.
   n <- length(parameters$edges) # Variables are the edges.
   edge_optimisation_matrix <- matrix("0", m, n)
@@ -245,10 +248,41 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
   }
   # Make a complaint if the number of linearly independent equations is not higher
   # than the number of variables. The equations contain polynomials of admix 
-  # variables so we need to study a set of linear equations that has a variable for
-  # each row of column_reduced (polynomial) and an equation for every 
-  # (column, monomial) -pair of column_reduced (edge or admix variable monomial). 
-  complaint <- FALSE
+  # variables so we need to study a set of linear equations that has a separate
+  # variable for each pair of a column and a monomial (product of several, possibly
+  # zero admix variables). 
+  big_matrix <- matrix(0, m, 0)
+  for (i in seq(1, m)) {
+    for (j in seq(1, ncol(column_reduced))) {
+      word <- column_reduced[i, j]
+      if (word != "0") {
+        start <- 1
+        for (k in seq(1, nchar(word))) {
+          if (k == nchar(word) || substring(word, k + 1, k + 1) == "+" ||
+              substring(word, k + 1, k + 1) == "-") {
+            mono <- substring(word, start, k)
+            start <- k + 1
+            star <- which(strsplit(mono, "")[[1]] == "*")[1]
+            number <- as.numeric(substring(mono, 1, star - 1))
+            label <- paste(colnames(column_reduced)[j], substring(mono, star + 1),
+                           sep = "*")   
+            if (is.na(match(label, colnames(big_matrix))) == TRUE) {
+              v <- rep(0, m)
+              big_matrix <- cbind(big_matrix, v)
+              colnames(big_matrix)[ncol(big_matrix)] <- label
+            }
+            big_matrix[i, label] <- number
+          }
+        }
+      }
+    }
+  }
+  big_matrix <- pracma::rref(big_matrix)
+  h <- nrow(unique(rbind(big_matrix, 0))) - 1
+  complaint <- TRUE
+  if (h > ncol(column_reduced)) {
+    complaint <- FALSE
+  }
   list(full = edge_optimisation_matrix, column_reduced = column_reduced, 
        complaint = complaint)
 }
@@ -404,7 +438,7 @@ edge_optimisation_function <- function(data, matrix, graph,
     # edge lengths depend on one another, as the least square function only gave
     # one exaple of an optimal solution. This information is visible after
     # manipulating the optimisation matrix into reduced row echelon form.
-    homogeneous_matrix <- evaluated_matrix # pracma::rref(evaluated_matrix)
+    homogeneous_matrix <- pracma::rref(evaluated_matrix)
     # Make a list of (one choice of) free edges.
     free_edges <- c()
     i <- 1
