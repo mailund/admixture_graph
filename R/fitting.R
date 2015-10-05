@@ -5,7 +5,6 @@
 # 2) Find out how the f-statistics depend on one another. Find out what subsets of
 #    the set of all statistics have no implied weight on some data. Preferably make
 #    a program to remove extra data from already sufficient data in some fair way.
-# 3) The compalaint condition was a bit silly and is down right now.
 
 ## Graph fitting #################################################################
 
