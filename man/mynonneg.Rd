@@ -12,10 +12,14 @@ mynonneg(C, d)
 \item{d}{The vector.}
 }
 \value{
-Look at the documentation of lsqnonneg.
+A vector ($x) and the error ($resid.norm).
 }
 \description{
-This is lsqnonneg-function from the package pracma, just added some tolerance to
-avoid crashing.
+This is lsqnonneg-function from the package pracma, just changed qr.solve into
+using Moore-Penrose inverse instead (ginv from MASS) as qr.solve crashes for
+some singular inputs. Now it won't crash but it's sometimes running for very long
+time (forever?), presumably with those problematic inputs. After too many steps
+the function halts and lies that the fit was terrible. I don't think this will
+cause problems.
 }
 
