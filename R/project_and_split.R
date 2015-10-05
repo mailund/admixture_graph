@@ -47,6 +47,6 @@ split_population.data.frame <- function(x) {
 #' @param x  The projected data or a fitted object on projected data.
 #' @export
 split_population.agraph_fit <- function(x) {
-  x$fit_data <- x$fit_data %>% split_population
+  x$fit_data <- fitted(x) %>% split_population
   x
 }
