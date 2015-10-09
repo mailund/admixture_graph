@@ -184,7 +184,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
   if (!requireNamespace("pracma", quietly = TRUE)) {
     stop("This function requires pracma to be installed.")
   }
-  m <- nrow(data) # Number of equations is the number of f4-statistics.
+  m <- NROW(data) # Number of equations is the number of f4-statistics.
   n <- length(parameters$edges) # Variables are the edges.
   edge_optimisation_matrix <- matrix("0", m, n)
   colnames(edge_optimisation_matrix) <- parameters$edges
@@ -200,19 +200,33 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
           }
           admix_product <- substring(admix_product, 2)
           # Yeah I know this is a bit silly but the matrix is only created once.
-          if (nrow(statistic[[j]]$positive) > 0) { # Insert the positive stuff
-            for (k in seq(1, nrow(statistic[[j]]$positive))) {
-              edge_name <- paste("edge", statistic[[j]]$positive[k, 1],
+          if (NROW(statistic[[j]]$positive) > 0) { # Insert the positive stuff
+            for (k in seq(1, NROW(statistic[[j]]$positive))) {
+              edge_name1 <- paste("edge", statistic[[j]]$positive[k, 1],
                                  statistic[[j]]$positive[k, 2], sep = "_")
+              edge_name2 <- paste("edge", statistic[[j]]$positive[k, 2],
+                                  statistic[[j]]$positive[k, 1], sep = "_")
+              if (edge_name1 %in% parameters$edges) {
+                edge_name <- edge_name1
+              } else {
+                edge_name <- edge_name2
+              }
               edge_optimisation_matrix[i, edge_name] <- 
                 paste(edge_optimisation_matrix[i, edge_name],
                       admix_product, sep = "+")
             }
           }
-          if (nrow(statistic[[j]]$negative) > 0) { # Insert the negative stuff
-            for (k in seq(1, nrow(statistic[[j]]$negative))) {
-              edge_name <- paste("edge", statistic[[j]]$negative[k, 1], 
+          if (NROW(statistic[[j]]$negative) > 0) { # Insert the negative stuff
+            for (k in seq(1, NROW(statistic[[j]]$negative))) {
+              edge_name1 <- paste("edge", statistic[[j]]$negative[k, 1], 
                                  statistic[[j]]$negative[k, 2], sep = "_")
+              edge_name2 <- paste("edge", statistic[[j]]$positive[k, 2],
+                                  statistic[[j]]$positive[k, 1], sep = "_")
+              if (edge_name1 %in% parameters$edges) {
+                edge_name <- edge_name1
+              } else {
+                edge_name <- edge_name2
+              }
               edge_optimisation_matrix[i, edge_name] <- 
                 paste(edge_optimisation_matrix[i, edge_name], 
                       admix_product, sep = "-")
@@ -234,7 +248,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
   # Make a version with zero columns removed.
   column_reduced <- edge_optimisation_matrix
   j <- 1
-  while (j <= ncol(column_reduced)) {
+  while (j <= NCOL(column_reduced)) {
     for (i in seq(1, m)) {
       if (column_reduced[i, j] != "0") {
         j <- j + 1
@@ -242,6 +256,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
       }
       if (i == m) {
         column_reduced <- column_reduced[, -j]
+        column_reduced <- rbind(column_reduced)
       }
     }
   }
@@ -252,7 +267,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
   # zero admix variables). 
   big_matrix <- matrix(0, m, 0)
   for (i in seq(1, m)) {
-    for (j in seq(1, ncol(column_reduced))) {
+    for (j in seq(1, NCOL(column_reduced))) {
       word <- column_reduced[i, j]
       if (word != "0") {
         start <- 1
@@ -268,7 +283,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
             if (is.na(match(label, colnames(big_matrix))) == TRUE) {
               v <- rep(0, m)
               big_matrix <- cbind(big_matrix, v)
-              colnames(big_matrix)[ncol(big_matrix)] <- label
+              colnames(big_matrix)[NCOL(big_matrix)] <- label
             }
             big_matrix[i, label] <- number
           }
@@ -276,10 +291,12 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
       }
     }
   }
-  big_matrix <- pracma::rref(big_matrix)
-  h <- nrow(unique(rbind(big_matrix, 0))) - 1
+  if (NROW(big_matrix) != 1) {
+    big_matrix <- pracma::rref(big_matrix)
+  }
+  h <- NROW(unique(rbind(big_matrix, 0))) - 1
   complaint <- TRUE
-  if (h > ncol(column_reduced)) {
+  if (h > NCOL(column_reduced)) {
     complaint <- FALSE
   }
   list(full = edge_optimisation_matrix, column_reduced = column_reduced, 
@@ -308,7 +325,7 @@ mynonneg <- function(C, d) {
   stopifnot(is.numeric(C), is.numeric(d))
   if (!is.matrix(C) || !is.vector(d))
     stop("Argument 'C' must be a matrix, 'd' a vector.")
-  m <- nrow(C); n <- ncol(C)
+  m <- NROW(C); n <- NCOL(C)
   if (m != length(d))
     stop("Arguments 'C' and 'd' have nonconformable dimensions.")
   tol <- 10 * 2.220446e-16 * norm(C, "F") * (max(n, m) + 1)
@@ -373,12 +390,12 @@ cost_function <- function(data, matrix, graph,
   goal <- data$D
   function(x) {
     # Evaluate the column reduced edge optimisation matrix at x.
-    evaluated_matrix <- matrix(0, nrow(matrix), ncol(matrix))
+    evaluated_matrix <- matrix(0, NROW(matrix), NCOL(matrix))
     for (i in seq(1, length(parameters$admix_prop))) {
       assign(parameters$admix_prop[i], x[i])
     }
-    for (i in seq(1, nrow(matrix))) {
-      for (j in seq(1, ncol(matrix))) {
+    for (i in seq(1, NROW(matrix))) {
+      for (j in seq(1, NCOL(matrix))) {
         evaluated_matrix[i, j] <- eval(parse(text = matrix[i, j]))
       }
     }
@@ -418,12 +435,12 @@ edge_optimisation_function <- function(data, matrix, graph,
   goal <- data$D
   function(x) {
     # Evaluate the full edge otimisation matrix at x.
-    evaluated_matrix <- matrix(0, nrow(matrix), ncol(matrix))
+    evaluated_matrix <- matrix(0, NROW(matrix), NCOL(matrix))
     for (i in seq(1, length(parameters$admix_prop))) {
       assign(parameters$admix_prop[i], x[i])
     }
-    for (i in seq(1, nrow(matrix))) {
-      for (j in seq(1, ncol(matrix))) {
+    for (i in seq(1, NROW(matrix))) {
+      for (j in seq(1, NCOL(matrix))) {
         evaluated_matrix[i, j] <- eval(parse(text = matrix[i, j]))
       }
     }
@@ -437,15 +454,19 @@ edge_optimisation_function <- function(data, matrix, graph,
     # edge lengths depend on one another, as the least square function only gave
     # one exaple of an optimal solution. This information is visible after
     # manipulating the optimisation matrix into reduced row echelon form.
-    homogeneous_matrix <- pracma::rref(evaluated_matrix)
+    if (NROW(evaluated_matrix) != 1) {
+      homogeneous_matrix <- pracma::rref(evaluated_matrix)
+    } else {
+      homogeneous_matrix <- evaluated_matrix
+    }
     # Make a list of (one choice of) free edges.
     free_edges <- c()
     i <- 1
     j <- 1
-    while (j <= ncol(matrix)) {
+    while (j <= NCOL(matrix)) {
       if (homogeneous_matrix[i, j] != 0) {
-        if (i == nrow(matrix) && j < ncol(matrix)) {
-          for (k in seq(j + 1, ncol(matrix))) {
+        if (i == NROW(matrix) && j < NCOL(matrix)) {
+          for (k in seq(j + 1, NCOL(matrix))) {
             free_edges <- c(free_edges, parameters$edges[k])
           }
           break
@@ -459,10 +480,10 @@ edge_optimisation_function <- function(data, matrix, graph,
       }
     }
     # Explain the relationship between the remaining edges and the free edges.
-    h <- nrow(unique(rbind(homogeneous_matrix, 0))) - 1
+    h <- NROW(unique(rbind(homogeneous_matrix, 0))) - 1
     bounded_edges <- rep("", h)
     for (i in seq(1, h)) {
-      for (j in seq(1, ncol(matrix))) {
+      for (j in seq(1, NCOL(matrix))) {
         if (homogeneous_matrix[i, j] != 0) {
           if (bounded_edges[i] == "") {
             bounded_edges[i] <- paste(bounded_edges[i], parameters$edges[j], " =",
