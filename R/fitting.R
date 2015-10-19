@@ -195,49 +195,51 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
   n <- length(parameters$edges) # Variables are the edges.
   edge_optimisation_matrix <- matrix("+0", m, n)
   colnames(edge_optimisation_matrix) <- parameters$edges
+  
   # Let's fill the matrix with polynomials of admix proportions.
   for (i in seq(1, m)) {
     statistic <- f4(graph, data$W[i], data$X[i], data$Y[i], data$Z[i])
     if (length(statistic) != 0) {
       for (j in seq(1, length(statistic))) {
-        if (length(statistic[[j]]$prob) != 0) {
-          admix_product <- ""
-          for (k in seq(1, length(statistic[[j]]$prob))) {
-            admix_product <- paste(admix_product, statistic[[j]]$prob[k], sep = "*")
-          }
-          admix_product <- substring(admix_product, 2)
-          # Yeah I know this is a bit silly but the matrix is only created once.
-          if (NROW(statistic[[j]]$positive) > 0) { # Insert the positive stuff
-            for (k in seq(1, NROW(statistic[[j]]$positive))) {
-              edge_name1 <- paste("edge", statistic[[j]]$positive[k, 1],
-                                 statistic[[j]]$positive[k, 2], sep = "_")
-              edge_name2 <- paste("edge", statistic[[j]]$positive[k, 2],
-                                  statistic[[j]]$positive[k, 1], sep = "_")
-              if (edge_name1 %in% parameters$edges) {
-                edge_name <- edge_name1
-              } else {
-                edge_name <- edge_name2
-              }
-              edge_optimisation_matrix[i, edge_name] <-
-                paste(edge_optimisation_matrix[i, edge_name],
-                      admix_product, sep = "+")
+        if (length(statistic[[j]]$prob) == 0) {
+          statistic[[j]]$prob <- "1"
+        }
+        admix_product <- ""
+        for (k in seq(1, length(statistic[[j]]$prob))) {
+          admix_product <- paste(admix_product, statistic[[j]]$prob[k], sep = "*")
+        }
+        admix_product <- substring(admix_product, 2)
+        # Yeah I know this is a bit silly but the matrix is only created once.
+        if (NROW(statistic[[j]]$positive) > 0) { # Insert the positive stuff
+          for (k in seq(1, NROW(statistic[[j]]$positive))) {
+            edge_name1 <- paste("edge", statistic[[j]]$positive[k, 1],
+                                statistic[[j]]$positive[k, 2], sep = "_")
+            edge_name2 <- paste("edge", statistic[[j]]$positive[k, 2],
+                                statistic[[j]]$positive[k, 1], sep = "_")
+            if (edge_name1 %in% parameters$edges) {
+              edge_name <- edge_name1
+            } else {
+              edge_name <- edge_name2
             }
+            edge_optimisation_matrix[i, edge_name] <-
+              paste(edge_optimisation_matrix[i, edge_name],
+                    admix_product, sep = "+")
           }
-          if (NROW(statistic[[j]]$negative) > 0) { # Insert the negative stuff
-            for (k in seq(1, NROW(statistic[[j]]$negative))) {
-              edge_name1 <- paste("edge", statistic[[j]]$negative[k, 1],
-                                 statistic[[j]]$negative[k, 2], sep = "_")
-              edge_name2 <- paste("edge", statistic[[j]]$positive[k, 2],
-                                  statistic[[j]]$positive[k, 1], sep = "_")
-              if (edge_name1 %in% parameters$edges) {
-                edge_name <- edge_name1
-              } else {
-                edge_name <- edge_name2
-              }
-              edge_optimisation_matrix[i, edge_name] <-
-                paste(edge_optimisation_matrix[i, edge_name],
-                      admix_product, sep = "-")
+        }
+        if (NROW(statistic[[j]]$negative) > 0) { # Insert the negative stuff
+          for (k in seq(1, NROW(statistic[[j]]$negative))) {
+            edge_name1 <- paste("edge", statistic[[j]]$negative[k, 1],
+                                statistic[[j]]$negative[k, 2], sep = "_")
+            edge_name2 <- paste("edge", statistic[[j]]$positive[k, 2],
+                                statistic[[j]]$positive[k, 1], sep = "_")
+            if (edge_name1 %in% parameters$edges) {
+              edge_name <- edge_name1
+            } else {
+              edge_name <- edge_name2
             }
+            edge_optimisation_matrix[i, edge_name] <-
+              paste(edge_optimisation_matrix[i, edge_name],
+                    admix_product, sep = "-")
           }
         }
       }
