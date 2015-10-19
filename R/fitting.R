@@ -144,7 +144,7 @@ canonise_expression <- function(x) {
     }
   }
   # Put elements in lexicographic order, unless the list in empty in which case we want
-  # to return "0" for later use (because as.numeric() does not interpret "" as zero). 
+  # to return "+0" for later use (because as.numeric() does not interpret "" as zero). 
   if (length(math_list) == 0) {
     result <- "+0"
   } else {
@@ -255,25 +255,34 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
   # not, we assign random value to some of them, not all but maybe none. We can
   # accurately detect if none of the admix variables affect the fit, but if some
   # do and some do not we have a probability zero chance of false accusation.
-  complaint <- rep(TRUE, 2^(length(parameters$admix_prop)) - 1)
-  for (r in seq(1, 2^(length(parameters$admix_prop)) - 1)) {
-    A <- rep(NaN, length(parameters$admix_prop))
-    for (a in seq(1, length(parameters$admix_prop))) {
-      if ((r/(2^a)) %% 1 < 0.5) {
-        A[a] <- runif(1) # Note that the last case is not assigning anything.
+  # First thing is to take into account the possibility of no admix variables.
+  R <- max(2^(length(parameters$admix_prop)) - 1, 1)
+  complaint <- rep(TRUE, R)
+  for (r in seq(R, R)) { # 1, 2^(length(parameters$admix_prop)) - 1)) {
+    # We bypass the new feature for now as it needs more testing. Running times
+    # might be unacceptable, and there is no proper user interface for reading the
+    # complaint vector. REMEMBER TO REMOVE LATER!
+    if (length(parameters$admix_prop) != 0) {
+      A <- rep(NaN, length(parameters$admix_prop))
+      for (a in seq(1, length(parameters$admix_prop))) {
+        if ((r/(2^a)) %% 1 < 0.5) {
+          A[a] <- runif(1) # Note that the last case r = R is not assigning anything.
+        }
       }
     }
-    evaluated_matrix <- edge_optimisation_matrix
+    evaluated_matrix <- edge_optimisation_matrix # Evaluated but still chars.
     # This might be a silly way for assigning the values but I can't use assign,
     # eval and parse as some variables stay symbolic. The problematic thing about
     # this is that we are no longer allowed to have an admix variable name that is
     # a subword of another.
-    for (i in seq(1, m)) {
-      for (j in seq(1, n)) {
-        for (a in seq(1, length(parameters$admix_prop))) {
-          if (is.nan(A[a]) == FALSE) {
-            evaluated_matrix[i, j] <- 
-              gsub(parameters$admix_prop[a], A[a], evaluated_matrix[i, j])
+    if (length(parameters$admix_prop != 0)) {
+      for (i in seq(1, m)) {
+        for (j in seq(1, n)) {
+          for (a in seq(1, length(parameters$admix_prop))) {
+            if (is.nan(A[a]) == FALSE) {
+              evaluated_matrix[i, j] <- 
+                gsub(parameters$admix_prop[a], A[a], evaluated_matrix[i, j])
+            }
           }
         }
       }
@@ -335,6 +344,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
       complaint[r] <- FALSE
     }
   }
+  complaint <- complaint[R] # Hiding the new feature for now. REMEMBER TO REMOVE LATER!
   list(full = edge_optimisation_matrix, column_reduced = column_reduced,
        complaint = complaint)
 }
