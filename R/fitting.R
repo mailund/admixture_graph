@@ -454,36 +454,38 @@ cost_function <- function(data, matrix, graph,
 }
 
 #' More detailed edge fitting than mere \code{cost_function}.
-#'
-#' Returning the cost, an example edge solution of an optimal fit, and linear
+#' 
+#' Returning the cost, an example edge solution of an optimal fit, and linear 
 #' relations describing the set of all edge solutions. Operating with the full
 #' edge optimisation matrix.
-#'
+#' 
 #' @param data  The data set.
-#' @param matrix  A full  edge optimisation matrix (typically given by the
+#' @param matrix  A full  edge optimisation matrix (typically given by the 
 #'                function \code{edge_optimisation_matrix$full}).
 #' @param graph  The admixture graph.
 #' @param parameters  In case one wants to tweak something in the graph.
-#'
+#'   
 #' @return  Given an input vector of admix variables, returns a list \code{x} containing
-#'          the minimal error (\code{x$cost}), the graph-f4-statistics
+#'          the minimal error (\code{x$cost}), the graph-f4-statistics 
 #'          (\code{x$approximation}), an example solution (\code{x$edge_fit}), linear
-#'          relations describing all the solutions (\code{x$homogeneous}) and one
-#'          way to choose the free (\code{x$free_edges}) and bounded
+#'          relations describing all the solutions (\code{x$homogeneous}) and one 
+#'          way to choose the free (\code{x$free_edges}) and bounded 
 #'          (\code{x$bounded_edges}) edge variables.
 #'
 #' @export
-edge_optimisation_function <- function(data, matrix, graph,
-                              parameters = extract_graph_parameters(graph)) {
+edge_optimisation_function <- function(data, matrix, graph, 
+                                       parameters = extract_graph_parameters(graph)) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
     stop("This function requires pracma to be installed.")
   }
   goal <- data$D
   function(x) {
-    # Evaluate the full edge otimisation matrix at x.
+    # Evaluate the full edge otimisation matrix at x, if we even have admix variables.
     evaluated_matrix <- matrix(0, NROW(matrix), NCOL(matrix))
-    for (i in seq(1, length(parameters$admix_prop))) {
-      assign(parameters$admix_prop[i], x[i])
+    if (length(parameters$admix_prop) != 0) {
+      for (i in seq(1, length(parameters$admix_prop))) {
+        assign(parameters$admix_prop[i], x[i])
+      }
     }
     for (i in seq(1, NROW(matrix))) {
       for (j in seq(1, NCOL(matrix))) {
@@ -559,72 +561,80 @@ edge_optimisation_function <- function(data, matrix, graph,
       }
     }
     list(cost = lsq_solution$resid.norm, approximation = approximation,
-         edge_fit = edge_fit, homogeneous = homogeneous_matrix,
+         edge_fit = edge_fit, homogeneous = homogeneous_matrix, 
          free_edges = free_edges, bounded_edges = bounded_edges)
   }
 }
 
 #' Fit the graph parameters to a data set.
-#'
-#' Tries to minimize the squared distance between statistics in \code{data} and
+#' 
+#' Tries to minimize the squared distance between statistics in \code{data} and 
 #' statistics given by the graph.
-#'
-#' The data frame, \code{data}, must contain columns \code{W}, \code{X},
+#' 
+#' The data frame, \code{data}, must contain columns \code{W}, \code{X}, 
 #' \code{Y}, and \code{Z}. The function then computes the \eqn{f_4(W,X;Y,Z)}
 #' statistics for all rows from these to obtain the prediction made by the
 #' graph.
-#'
-#' The data frame must also contain a column, \code{D}, containing the
-#' statistics observed in the data. The fitting algorithm attempts to minimize
+#' 
+#' The data frame must also contain a column, \code{D}, containing the 
+#' statistics observed in the data. The fitting algorithm attempts to minimize 
 #' the distance from this column and the predictions made by the graph.
-#'
+#' 
 #' @param data  The data set.
 #' @param graph  The admixture graph.
 #' @param optimisation_options  Options to the optimisation algorithm.
 #' @param parameters  In case one wants to tweak something in the graph.
-#'
+#'   
 #' @return A list containing everything about the fit.
-#'
+#'   
 #' @seealso \code{\link[neldermead]{optimset}}
-#'
+#'   
 #' @export
 fit_graph <- function(data, graph, optimisation_options = NULL,
                       parameters = extract_graph_parameters(graph)) {
   if (!requireNamespace("neldermead", quietly = TRUE)) {
     stop("This function requires neldermead to be installed.")
   }
-  x0 <- rep(0.5, length(parameters$admix_prop))
   matrix <- build_edge_optimisation_matrix(data, graph, parameters)
   full_matrix <- matrix$full
   reduced_matrix <- matrix$column_reduced
-  cfunc <- cost_function(data, reduced_matrix, graph, parameters)
-  opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = rep(0, length(x0)),
-                              xmax = rep(1, length(x0)),
-                              options = optimisation_options)
-  # The value opti is a class "neldermead" object.
-  best_fit <- neldermead::neldermead.get(opti, "xopt") # Optimal admix values.
-  best_fit <- best_fit[, 1]
-  names(best_fit) <- parameters$admix_prop
-  detailed_fit <-
+  if (length(parameters$admix_prop) == 0) {
+    # I want to create "named numeric(0)" as the optimal admix vector,
+    # just for the sake of consistency.
+    temp <- c(1)
+    names(temp) <- c(1)
+    best_fit <- temp[!1]
+  } else {
+    x0 <- rep(0.5, length(parameters$admix_prop))  
+    cfunc <- cost_function(data, reduced_matrix, graph, parameters)
+    opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = rep(0, length(x0)),
+                                xmax = rep(1, length(x0)),
+                                options = optimisation_options)
+    # The value opti is a class "neldermead" object.
+    best_fit <- neldermead::neldermead.get(opti, "xopt") # Optimal admix values.
+    best_fit <- best_fit[, 1]
+    names(best_fit) <- parameters$admix_prop
+  }
+  detailed_fit <- 
     edge_optimisation_function(data, full_matrix, graph, parameters)(best_fit)
   data$graph_f4 <- detailed_fit$approximation
   # The output is a list with "agraph_fit" -mystery property.
   structure(list(
-      call = sys.call(),
-      data = data,
-      graph = graph,
-      matrix = matrix,
-      complaint = matrix$complaint,
-      best_fit = best_fit,
-      best_edge_fit = detailed_fit$edge_fit,
-      homogeneous = detailed_fit$homogeneous,
-      free_edges = detailed_fit$free_edges,
-      bounded_edges = detailed_fit$bounded_edges,
-      best_error = detailed_fit$cost,
-      approximation = detailed_fit$approximation,
-      parameters = parameters
-    ),
-    class = "agraph_fit"
+    call = sys.call(),
+    data = data,
+    graph = graph,
+    matrix = matrix,
+    complaint = matrix$complaint,
+    best_fit = best_fit,
+    best_edge_fit = detailed_fit$edge_fit,
+    homogeneous = detailed_fit$homogeneous,
+    free_edges = detailed_fit$free_edges,
+    bounded_edges = detailed_fit$bounded_edges,
+    best_error = detailed_fit$cost,
+    approximation = detailed_fit$approximation,
+    parameters = parameters
+  ),  
+  class = "agraph_fit"
   )
 }
 
