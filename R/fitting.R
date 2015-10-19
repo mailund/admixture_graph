@@ -1,3 +1,15 @@
+format_edge <- function(graph) {
+  force(graph)
+  function(from, to) {
+    if (graph$children[from,to]) {
+      paste("edge_", from, "_", to, sep="")
+    } else {
+      paste("edge_", to, "_", from, sep="")
+    }
+  }
+}
+
+
 # TODO:
 #
 # 1) Take the covariance matrix into account. When covariance matrix not given,
@@ -184,6 +196,9 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
   if (!requireNamespace("pracma", quietly = TRUE)) {
     stop("This function requires pracma to be installed.")
   }
+  
+  fe <- format_edge(graph)
+  
   m <- NROW(data) # Number of equations is the number of f4-statistics.
   n <- length(parameters$edges) # Variables are the edges.
   edge_optimisation_matrix <- matrix("0", m, n)
@@ -202,15 +217,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
           # Yeah I know this is a bit silly but the matrix is only created once.
           if (NROW(statistic[[j]]$positive) > 0) { # Insert the positive stuff
             for (k in seq(1, NROW(statistic[[j]]$positive))) {
-              edge_name1 <- paste("edge", statistic[[j]]$positive[k, 1],
-                                 statistic[[j]]$positive[k, 2], sep = "_")
-              edge_name2 <- paste("edge", statistic[[j]]$positive[k, 2],
-                                  statistic[[j]]$positive[k, 1], sep = "_")
-              if (edge_name1 %in% parameters$edges) {
-                edge_name <- edge_name1
-              } else {
-                edge_name <- edge_name2
-              }
+              edge_name <- fe(statistic[[j]]$positive[k, 1], statistic[[j]]$positive[k, 2])
               edge_optimisation_matrix[i, edge_name] <- 
                 paste(edge_optimisation_matrix[i, edge_name],
                       admix_product, sep = "+")
@@ -218,15 +225,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
           }
           if (NROW(statistic[[j]]$negative) > 0) { # Insert the negative stuff
             for (k in seq(1, NROW(statistic[[j]]$negative))) {
-              edge_name1 <- paste("edge", statistic[[j]]$negative[k, 1], 
-                                 statistic[[j]]$negative[k, 2], sep = "_")
-              edge_name2 <- paste("edge", statistic[[j]]$positive[k, 2],
-                                  statistic[[j]]$positive[k, 1], sep = "_")
-              if (edge_name1 %in% parameters$edges) {
-                edge_name <- edge_name1
-              } else {
-                edge_name <- edge_name2
-              }
+              edge_name <- fe(statistic[[j]]$negative[k, 1], statistic[[j]]$negative[k, 2])
               edge_optimisation_matrix[i, edge_name] <- 
                 paste(edge_optimisation_matrix[i, edge_name], 
                       admix_product, sep = "-")
