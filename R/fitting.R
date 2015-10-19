@@ -434,10 +434,12 @@ edge_optimisation_function <- function(data, matrix, graph,
   }
   goal <- data$D
   function(x) {
-    # Evaluate the full edge otimisation matrix at x.
+    # Evaluate the full edge otimisation matrix at x, if we even have admix variables.
     evaluated_matrix <- matrix(0, NROW(matrix), NCOL(matrix))
-    for (i in seq(1, length(parameters$admix_prop))) {
-      assign(parameters$admix_prop[i], x[i])
+    if (length(parameters$admix_prop) != 0) {
+      for (i in seq(1, length(parameters$admix_prop))) {
+        assign(parameters$admix_prop[i], x[i])
+      }
     }
     for (i in seq(1, NROW(matrix))) {
       for (j in seq(1, NCOL(matrix))) {
@@ -547,18 +549,26 @@ fit_graph <- function(data, graph, optimisation_options = NULL,
   if (!requireNamespace("neldermead", quietly = TRUE)) {
     stop("This function requires neldermead to be installed.")
   }
-  x0 <- rep(0.5, length(parameters$admix_prop))
   matrix <- build_edge_optimisation_matrix(data, graph, parameters)
   full_matrix <- matrix$full
   reduced_matrix <- matrix$column_reduced
-  cfunc <- cost_function(data, reduced_matrix, graph, parameters)
-  opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = rep(0, length(x0)),
-                              xmax = rep(1, length(x0)),
-                              options = optimisation_options)
-  # The value opti is a class "neldermead" object.
-  best_fit <- neldermead::neldermead.get(opti, "xopt") # Optimal admix values.
-  best_fit <- best_fit[, 1]
-  names(best_fit) <- parameters$admix_prop
+  if (length(parameters$admix_prop) == 0) {
+    # I want to create "named numeric(0)" as the optimal admix vector,
+    # just for the sake of consistency.
+    temp <- c(1)
+    names(temp) <- c(1)
+    best_fit <- temp[!1]
+  } else {
+    x0 <- rep(0.5, length(parameters$admix_prop))  
+    cfunc <- cost_function(data, reduced_matrix, graph, parameters)
+    opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = rep(0, length(x0)),
+                                xmax = rep(1, length(x0)),
+                                options = optimisation_options)
+    # The value opti is a class "neldermead" object.
+    best_fit <- neldermead::neldermead.get(opti, "xopt") # Optimal admix values.
+    best_fit <- best_fit[, 1]
+    names(best_fit) <- parameters$admix_prop
+  }
   detailed_fit <- 
     edge_optimisation_function(data, full_matrix, graph, parameters)(best_fit)
   data$graph_f4 <- detailed_fit$approximation
