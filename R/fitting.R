@@ -230,8 +230,8 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
           for (k in seq(1, NROW(statistic[[j]]$negative))) {
             edge_name1 <- paste("edge", statistic[[j]]$negative[k, 1],
                                 statistic[[j]]$negative[k, 2], sep = "_")
-            edge_name2 <- paste("edge", statistic[[j]]$positive[k, 2],
-                                statistic[[j]]$positive[k, 1], sep = "_")
+            edge_name2 <- paste("edge", statistic[[j]]$negative[k, 2],
+                                statistic[[j]]$negative[k, 1], sep = "_")
             if (edge_name1 %in% parameters$edges) {
               edge_name <- edge_name1
             } else {

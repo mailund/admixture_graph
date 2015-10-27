@@ -7,16 +7,18 @@
 canonise_expression(x)
 }
 \arguments{
-\item{x}{Input is assumed to be a char containing numerals, variables and
-           clauses \code{(1 - variable)} (mind the spaces, this is how the
-           f4-function outputs), separated by \code{+}, \code{-} or \code{*},
-           with no spaces.
-           Everything is pretty much ruined if variable names contain forbidden
-           symbols \code{+, -, *, (, )} or are purely numerals.}
+\item{x}{Input is assumed to be a char consisting of one or more terms. Each term
+           starts with either \code{+} or \code{-} and after that contains one or
+           more factors separated by \code{*}. Each factor is either an admix variable,
+           a number or a clause \code{(1 - x)} (mind the spaces, this is how the
+           f4-function outputs), where x is again either an admix variable or a
+           number.
+           Everything is pretty much ruined if variable names are numbers or contain
+           forbidden symbols \code{+, -, *, (, )}.}
 }
 \value{
 A polynomial in a canonical form with no parenthesis or spaces and the
-          monomials in lexicographical order.
+          monomials in lexicographical order. If everything is cancelled out then "+0".
 }
 \description{
 This is not pretty but let's see if it speeds up the program.
