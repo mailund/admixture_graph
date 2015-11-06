@@ -354,34 +354,38 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
       # the edges can be chosen in such a way that each independent polynomial gets any
       # value as we please. Thus, the remaining admix variables did not affect the fit and
       # we make a complaint.
-      big_matrix <- matrix(0, m, 0)
-      for (i in seq(1, m)) {
-        for (j in seq(1, NCOL(column_reduced_temp))) {
-          word <- column_reduced_temp[i, j]
-          if (word != "+0") {
-            start <- 1
-            for (k in seq(1, nchar(word))) {
-              if (k == nchar(word) || substring(word, k + 1, k + 1) == "+" ||
-                  substring(word, k + 1, k + 1) == "-") {
-                mono <- substring(word, start, k)
-                start <- k + 1
-                star <- which(strsplit(mono, "")[[1]] == "*")[1]
-                number <- as.numeric(substring(mono, 1, star - 1))
-                label <- paste(colnames(column_reduced_temp)[j], substring(mono, star + 1),
-                               sep = "*")
-                if (is.na(match(label, colnames(big_matrix))) == TRUE) {
-                  v <- rep(0, m)
-                  big_matrix <- cbind(big_matrix, v)
-                  colnames(big_matrix)[NCOL(big_matrix)] <- label
+      if (NCOL(column_reduced_temp) > 0) {
+        big_matrix <- matrix(0, m, 0)
+        for (i in seq(1, m)) {
+          for (j in seq(1, NCOL(column_reduced_temp))) {
+            word <- column_reduced_temp[i, j]
+            if (word != "+0") {
+              start <- 1
+              for (k in seq(1, nchar(word))) {
+                if (k == nchar(word) || substring(word, k + 1, k + 1) == "+" ||
+                    substring(word, k + 1, k + 1) == "-") {
+                  mono <- substring(word, start, k)
+                  start <- k + 1
+                  star <- which(strsplit(mono, "")[[1]] == "*")[1]
+                  number <- as.numeric(substring(mono, 1, star - 1))
+                  label <- paste(colnames(column_reduced_temp)[j], substring(mono, star + 1),
+                                 sep = "*")
+                  if (is.na(match(label, colnames(big_matrix))) == TRUE) {
+                    v <- rep(0, m)
+                    big_matrix <- cbind(big_matrix, v)
+                    colnames(big_matrix)[NCOL(big_matrix)] <- label
+                  }
+                  big_matrix[i, label] <- number
                 }
-                big_matrix[i, label] <- number
               }
             }
           }
         }
+        h <- qr(big_matrix)$rank # This is a problem.
+      } else {
+        h <- 0
       }
-      h <- qr(big_matrix)$rank # This is a problem.
-      if (h <= NCOL(column_reduced)) {
+      if (h <= NCOL(column_reduced_temp)) {
         complaint <- c(complaint, r)
         for (a in seq(1, length(parameters$admix_prop))) {
           if ((r/(2^a)) %% 1 >= 0.5) {
@@ -486,16 +490,22 @@ cost_function <- function(data, matrix, graph,
     for (i in seq(1, length(parameters$admix_prop))) {
       assign(parameters$admix_prop[i], x[i])
     }
-    for (i in seq(1, NROW(matrix))) {
-      for (j in seq(1, NCOL(matrix))) {
-        evaluated_matrix[i, j] <- eval(parse(text = matrix[i, j]))
+    if (NCOL(matrix) > 0) {
+      for (i in seq(1, NROW(matrix))) {
+        for (j in seq(1, NCOL(matrix))) {
+          evaluated_matrix[i, j] <- eval(parse(text = matrix[i, j]))
+        }
       }
     }
     # Now just use a ready-made function to find the best non-negative solution
     # in the Euclidian norm. Apparently this is "slow" in the sense it takes
     # O(n^3) steps and not O(n^2.3) steps as it could in principle.
-    lsq_solution <- mynonneg(evaluated_matrix, goal)
-    lsq_solution$resid.norm
+    if (NCOL(matrix) > 0) {
+      lsq_solution <- mynonneg(evaluated_matrix, goal)
+      cost <- lsq_solution$resid.norm
+    } else {
+      cost <- sum(goal^2)
+    }
   }
 }
 
@@ -576,34 +586,36 @@ edge_optimisation_function <- function(data, matrix, graph,
     # Explain the relationship between the remaining edges and the free edges.
     h <- NROW(unique(rbind(homogeneous_matrix, 0))) - 1
     bounded_edges <- rep("", h)
-    for (i in seq(1, h)) {
-      for (j in seq(1, NCOL(matrix))) {
-        if (homogeneous_matrix[i, j] != 0) {
-          if (bounded_edges[i] == "") {
-            bounded_edges[i] <- paste(bounded_edges[i], parameters$edges[j], " =",
-                                      sep = "")
-          }
-          else {
-            if (homogeneous_matrix[i, j] > 0) {
-              bounded_edges[i] <- paste(bounded_edges[i], " - ",
-                                        homogeneous_matrix[i, j], "*",
-                                        parameters$edges[j], sep = "")
+    if (h != 0) {
+      for (i in seq(1, h)) {
+        for (j in seq(1, NCOL(matrix))) {
+          if (homogeneous_matrix[i, j] != 0) {
+            if (bounded_edges[i] == "") {
+              bounded_edges[i] <- paste(bounded_edges[i], parameters$edges[j], " =",
+                                        sep = "")
             }
-            if (homogeneous_matrix[i, j] < 0) {
-              if (substring(bounded_edges[i], nchar(bounded_edges[i])) == "=") {
-                bounded_edges[i] <- paste(bounded_edges[i], " ", sep = "")
+            else {
+              if (homogeneous_matrix[i, j] > 0) {
+                bounded_edges[i] <- paste(bounded_edges[i], " - ",
+                                          homogeneous_matrix[i, j], "*",
+                                          parameters$edges[j], sep = "")
               }
-              else {
-                bounded_edges[i] <- paste(bounded_edges[i], " + ", sep = "")
+              if (homogeneous_matrix[i, j] < 0) {
+                if (substring(bounded_edges[i], nchar(bounded_edges[i])) == "=") {
+                  bounded_edges[i] <- paste(bounded_edges[i], " ", sep = "")
+                }
+                else {
+                  bounded_edges[i] <- paste(bounded_edges[i], " + ", sep = "")
+                }
+                bounded_edges[i] <- paste(bounded_edges[i], homogeneous_matrix[i, j],
+                                          "*", parameters$edges[j], sep = "")
               }
-              bounded_edges[i] <- paste(bounded_edges[i], homogeneous_matrix[i, j],
-                                        "*", parameters$edges[j], sep = "")
             }
           }
         }
-      }
-      if (substring(bounded_edges[i], nchar(bounded_edges[i])) == "=") {
-        bounded_edges[i] <- paste(bounded_edges[i], " 0", sep = "")
+        if (substring(bounded_edges[i], nchar(bounded_edges[i])) == "=") {
+          bounded_edges[i] <- paste(bounded_edges[i], " 0", sep = "")
+        }
       }
     }
     list(cost = lsq_solution$resid.norm, approximation = approximation,
@@ -820,3 +832,281 @@ fitted.agraph_fit <- function(object, ...) {
 residuals.agraph_fit <- function(object, ...) {
   object$data$D - object$data$graph_f4
 }
+
+#' Helping to untangle the relationships between four populations based on given data.
+#' 
+#' Note that we do not say anything about the exact positionof the root: it can be
+#' placed on any edge that is not already admixed. The graphs drawn are just chosen in 
+#' a way they look nice.
+#'
+#' @param data         The data set.
+#' @param populations  A four element vector of population names.
+#'
+#' @return Printing stuff on console and "plots" tab.
+#'
+#' @export
+fit_four <- function(data, populations) {
+  # First the trees.
+  best_tree_error <- Inf
+  tree_errors <- rep(Inf, 3)
+  for (j in seq(1, 3)) {
+    if (j == 1) {
+      A <- populations[1]
+      B <- populations[2]
+      C <- populations[3]
+      D <- populations[4]
+    } else if (j == 2) {
+      A <- populations[1]
+      B <- populations[3]
+      C <- populations[2]
+      D <- populations[4]
+    } else {
+      A <- populations[1]
+      B <- populations[4]
+      C <- populations[2]
+      D <- populations[3]
+    }
+    leaves <- c(A, B, C, D)
+    inner_nodes <- c("R", "x", "y")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge(A, "x"),
+      edge(B, "x"),
+      edge(C, "y"),
+      edge(D, "y")
+    ))
+    admixtures <- NULL
+    graph <- agraph(leaves, inner_nodes, edges, admixtures)
+    fit <- fit_graph(filter_on_leaves(data, graph), graph)
+    tree_errors[j] <- fit$best_error
+    if (fit$best_error <= best_tree_error) {
+      best_tree <- graph
+      best_tree_error <- fit$best_error
+    }
+  }
+  plot(best_tree, main = "The best tree")
+  print("Best error among trees (the graph is plotted):")
+  print(best_tree_error)
+  print("The other errors for comparison:")
+  print(tree_errors)
+  # Next the graphs with one admixture event. In order for the admix loop to be distinguishable
+  # from just an edge, it needs at least two edges entering it plus the mixed edge leaving it.
+  # This leaves us with three kinds of graphs: three leaves entering the admix loop, two edges
+  # entering with the other one branching into two leaves, and two leaves entering the admix loop
+  # with the admixed edge branching into two leaves. Taking symmetries into acoount, together
+  # these are 4 + 12 + 6 = 22 essentially different situations.
+  best_one_admixture_error <- Inf
+  one_admixture_errors <- rep(Inf, 22)
+  for (j in seq(1, 4)) {
+    if (j == 1) {
+      A <- populations[1]
+      B <- populations[2]
+      C <- populations[3]
+      D <- populations[4]
+    } else if (j == 2) {
+      A <- populations[2]
+      B <- populations[1]
+      C <- populations[3]
+      D <- populations[4]
+    } else if (j == 3) {
+      A <- populations[3]
+      B <- populations[1]
+      C <- populations[2]
+      D <- populations[4]
+    } else {
+      A <- populations[4]
+      B <- populations[1]
+      C <- populations[2]
+      D <- populations[3]
+    }
+    leaves <- c(B, C, A, D)
+    inner_nodes <- c("R", "x", "y", "z", "M")
+    edges <- parent_edges(c(
+      edge(B, "R"),
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "x"),
+      edge(C, "y"), 
+      edge(D, "z"),
+      edge(A, "M"),
+      admixture_edge("M", "y", "z")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "y", "z", "a")
+    ))
+    graph <- agraph(leaves, inner_nodes, edges, admixtures)
+    fit <- fit_graph(filter_on_leaves(data, graph), graph)
+    one_admixture_errors[j] <- fit$best_error
+    if (fit$best_error <= best_one_admixture_error) {
+      best_one_admixture <- graph
+      best_one_admixture_error <- fit$best_error
+    }
+  }
+  for (j in seq(1, 12)) {
+    if (j == 1) {
+      A <- populations[1]
+      B <- populations[2]
+      C <- populations[3]
+      D <- populations[4]
+    } else if (j == 2) {
+      A <- populations[1]
+      B <- populations[3]
+      C <- populations[2]
+      D <- populations[4]
+    } else if (j == 3) {
+      A <- populations[1]
+      B <- populations[4]
+      C <- populations[2]
+      D <- populations[3]
+    } else if (j == 4) {
+      A <- populations[2]
+      B <- populations[1]
+      C <- populations[3]
+      D <- populations[4]
+    } else if (j == 5) {
+      A <- populations[2]
+      B <- populations[3]
+      C <- populations[1]
+      D <- populations[4]
+    } else if (j == 6) {
+      A <- populations[2]
+      B <- populations[4]
+      C <- populations[1]
+      D <- populations[3]
+    } else if (j == 7) {
+      A <- populations[3]
+      B <- populations[1]
+      C <- populations[2]
+      D <- populations[4]
+    } else if (j == 8) {
+      A <- populations[3]
+      B <- populations[2]
+      C <- populations[1]
+      D <- populations[4]
+    } else if (j == 9) {
+      A <- populations[3]
+      B <- populations[4]
+      C <- populations[1]
+      D <- populations[2]
+    } else if (j == 10) {
+      A <- populations[4]
+      B <- populations[1]
+      C <- populations[2]
+      D <- populations[3]
+    } else if (j == 11) {
+      A <- populations[4]
+      B <- populations[2]
+      C <- populations[1]
+      D <- populations[3]
+    } else {
+      A <- populations[4]
+      B <- populations[3]
+      C <- populations[1]
+      D <- populations[2]
+    }
+    leaves <- c(A, B, C, D)
+    inner_nodes <- c("R", "y", "z", "w", "M")
+    edges <- parent_edges(c(
+      edge("y", "R"),
+      edge("z", "R"),
+      edge("w", "z"),
+      edge(A, "y"), 
+      edge(B, "M"), 
+      edge(C, "w"),
+      edge(D, "w"),
+      admixture_edge("M", "y", "z")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "y", "z", "a")
+    ))
+    graph <- agraph(leaves, inner_nodes, edges, admixtures)
+    fit <- fit_graph(filter_on_leaves(data, graph), graph)
+    one_admixture_errors[4 + j] <- fit$best_error
+    if (fit$best_error <= best_one_admixture_error) {
+      best_one_admixture <- graph
+      best_one_admixture_error <- fit$best_error
+    }
+  }
+  for (j in seq(1, 6)) {
+    if (j == 1) {
+      A <- populations[1]
+      B <- populations[3]
+      C <- populations[4]
+      D <- populations[2]
+    } else if (j == 2) {
+      A <- populations[1]
+      B <- populations[2]
+      C <- populations[4]
+      D <- populations[3]
+    } else if (j == 3) {
+      A <- populations[1]
+      B <- populations[2]
+      C <- populations[3]
+      D <- populations[4]
+    } else if (j == 4) {
+      A <- populations[2]
+      B <- populations[1]
+      C <- populations[4]
+      D <- populations[3]
+    } else if (j == 5) {
+      A <- populations[2]
+      B <- populations[1]
+      C <- populations[3]
+      D <- populations[4]
+    } else {
+      A <- populations[3]
+      B <- populations[1]
+      C <- populations[2]
+      D <- populations[4]
+    }
+    leaves <- c(A, B, C, D)
+    inner_nodes <- c("R", "y", "z", "w", "M")
+    edges <- parent_edges(c(
+      edge("y", "R"),
+      edge("z", "R"),
+      edge("w", "M"),
+      edge(A, "y"), 
+      edge(B, "w"), 
+      edge(C, "w"),
+      edge(D, "z"),
+      admixture_edge("M", "y", "z")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "y", "z", "a")
+    ))
+    graph <- agraph(leaves, inner_nodes, edges, admixtures)
+    fit <- fit_graph(filter_on_leaves(data, graph), graph)
+    one_admixture_errors[16 + j] <- fit$best_error
+    if (fit$best_error <= best_one_admixture_error) {
+      best_one_admixture <- graph
+      best_one_admixture_error <- fit$best_error
+    }
+  }
+  plot(best_one_admixture, main = "The best graph with one admixture event")
+  print("Best error allowing one admixture event (the graph is plotted):")
+  print(best_one_admixture_error)
+  print("The other errors for comparison:")
+  print(one_admixture_errors)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
