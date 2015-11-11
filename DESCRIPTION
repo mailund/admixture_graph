@@ -5,21 +5,24 @@ Version: 0.4.0.9010
 Date: 2015-09-24
 Authors@R: c(person("Thomas", "Mailund", email = "mailund@birc.au.dk", role = c("cre", "aut")),
              person("Kalle", "Leppälaä", email = "kalle.m.leppala@gmail.com", role = c("aut")))
-Description: Implements tools for building and visualising admixture graphs and for extracting
-    equations from them. These equations can be compared to f-statistics obtained from data
-    to test the consistency of a graph against data -- for example by comparing the sign of 
-    f4 statistics with the signs predicted by the graph -- and graph parameters (edge lengths
-    and admixture proportions) can be fitted to observed statistics.
+Description: Implements tools for building and visualising admixture graphs
+    and for extracting equations from them. These equations can be compared to f-
+    statistics obtained from data to test the consistency of a graph against data --
+    for example by comparing the sign of f4 statistics with the signs predicted by
+    the graph -- and graph parameters (edge lengths and admixture proportions) can
+    be fitted to observed statistics.
 License: GPL-2
-Depends: R (>= 2.10)
-Imports: 
-  ggplot2,
-  dplyr,
-  pracma,
-  neldermead
-Suggests: 
-  testthat,
-  knitr
+Depends:
+    R (>= 2.10)
+Imports:
+    ggplot2,
+    dplyr,
+    pracma,
+    neldermead
+Suggests:
+    testthat,
+    knitr
 URL: https://github.com/mailund/admixture_graph
 BugReports: https://github.com/mailund/admixture_graph/issues
 VignetteBuilder: knitr
+RoxygenNote: 5.0.0
