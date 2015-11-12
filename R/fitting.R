@@ -274,8 +274,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
           break
         }
         if (i == m) {
-          column_reduced <- column_reduced[, -j]
-          column_reduced <- cbind(column_reduced)
+          column_reduced <- column_reduced[, -j, drop=FALSE]
         }
       }
     }
@@ -337,8 +336,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
             break
           }
           if (i == m) {
-            column_reduced_temp <- column_reduced_temp[, -j]
-            column_reduced_temp <- cbind(column_reduced_temp)
+            column_reduced_temp <- column_reduced_temp[, -j, drop=FALSE]
           }
         }
       }
