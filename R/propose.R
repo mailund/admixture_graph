@@ -1027,7 +1027,7 @@ fit_permutations_and_graphs <- function(data, permutations, graphs) {
 #'
 #' @export
 fit_all_graphs <- function(data, populations) {
-  if (!(length(populations) %in% c(4,5)) ) {
+  if (!(length(populations) %in% c(4, 5)) ) {
     stop("We can currently only explore graph spaces for four or five leaves")
   }
     
@@ -1037,5 +1037,56 @@ fit_all_graphs <- function(data, populations) {
   structure(fits, class = c("agraph_fit_list", "list"))
 }
 
+#' Print function for the fitted graphs.
+#'
+#' Print summary of the result of a list of fitted graphs.
+#'
+#' @param object  The fitted object.
+#' @param ...     Additional parameters.
+#'
+#' @export
+summary.agraph_fit_list <- function(object, ...) {
+  admixture_events <- no_admixture_events(object)
+  sse <- sum_of_squared_errors(object)
+  poor_fits <- no_poor_fits(object)
+  
+  no_admix <- unique(admixture_events)
+  for (na in no_admix) {
+    indices <- which(admixture_events == na)
+    cat("Fits with", na, "admixture events:", length(indices), "\n")
+    
+    best <- min(sse[admixture_events == na])
+    best_fits <- which(sse[admixture_events == na] == best)
+    cat("The best SSE is", best, "and", length(best_fits), "graphs achieve this fit.\n")
+    
+    best <- min(poor_fits[admixture_events == na])
+    best_fits <- which(poor_fits[admixture_events == na] == best)
+    cat("The best number of tests that fall outside error bars is", best, "and",
+        length(best_fits), "graphs achieve this fit.\n\n")
+  }
+}
+
+
+#' Plot a list of fitted admixture graphs.
+#' 
+#' @param x List of fitted graphs.
+#' @param ... Additional plotting options
+#'   
+#' @export
+plot.agraph_fit_list <- function(x, measure = "SSE", ...) {
+  admixture_events <- no_admixture_events(x)
+  sse <- sum_of_squared_errors(x)
+  fits <- no_poor_fits(x)
+  
+  d <- data.frame(indices = seq_along(x), 
+                  no_admixture_events = admixture_events,
+                  SSE = sse, no_poor_fits = fits)
+  
+  if (measure == "SSE") {
+    ggplot(d) + facet_grid(~no_admixture_events) + geom_point(aes(x = indices, y = SSE))
+  } else {
+    ggplot(d) + facet_grid(~no_admixture_events) + geom_point(aes(x = indices, y = no_poor_fits))
+  }
+}
 
 
