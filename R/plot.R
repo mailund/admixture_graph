@@ -68,17 +68,31 @@ plot.agraph <- function(x,
 
     } else if (length(parents) == 2) {
       break_y <- ypos[node]
-      break_x_left <- xpos[node] - 0.3
-      break_x_right <- xpos[node] + 0.3
+      break_x_left <- xpos[node] - 0.2
+      break_x_right <- xpos[node] + 0.2
       
-      if (xpos[parents[1]] < xpos[parents[2]]) {
+      if (ypos[parents[1]] * (xpos[parents[2]] - break_x_left) >
+          (ypos[parents[2]] - break_y) * (xpos[parents[1]] - break_x_left) + break_y &&
+          xpos[parents[2]] * (ypos[parents[1]] - break_y) >
+          (xpos[parents[1]] - break_x_right) * (ypos[parents[1]] - break_y) + break_x_right) {
         lines(c(xpos[parents[1]], break_x_left), c(ypos[parents[1]], break_y))
-        lines(c(xpos[parents[2]], break_x_right), c(ypos[parents[2]], break_y))  
+        lines(c(xpos[parents[2]], break_x_right), c(ypos[parents[2]], break_y))
+      } else if (ypos[parents[2]] * (xpos[parents[1]] - break_x_left) >
+                 (ypos[parents[1]] - break_y) * (xpos[parents[2]] - break_x_left) + break_y &&
+                 xpos[parents[1]] * (ypos[parents[2]] - break_y) >
+                 (xpos[parents[2]] - break_x_right) * (ypos[parents[2]] - break_y) + break_x_right) {
+        lines(c(xpos[parents[2]], break_x_left), c(ypos[parents[2]], break_y))
+        lines(c(xpos[parents[1]], break_x_right), c(ypos[parents[1]], break_y))
+      } else if (sqrt((break_x_left - xpos[parents[1]])^2 + (break_y - ypos[parents[1]])^2)
+                 + sqrt((break_x_right - xpos[parents[2]])^2 + (break_y - ypos[parents[2]])^2) <
+                 sqrt((break_x_left - xpos[parents[2]])^2 + (break_y - ypos[parents[2]])^2)
+                 + sqrt((break_x_right - xpos[parents[1]])^2 + (break_y - ypos[parents[1]])^2)) {
+        lines(c(xpos[parents[1]], break_x_left), c(ypos[parents[1]], break_y))
+        lines(c(xpos[parents[2]], break_x_right), c(ypos[parents[2]], break_y))
       } else {
         lines(c(xpos[parents[2]], break_x_left), c(ypos[parents[2]], break_y))
         lines(c(xpos[parents[1]], break_x_right), c(ypos[parents[1]], break_y))
       }
-      
       
       segments(break_x_left, break_y, xpos[node], ypos[node], col = "red")
       segments(break_x_right, break_y, xpos[node], ypos[node], col = "red")
@@ -108,7 +122,7 @@ plot.agraph <- function(x,
          labels = graph$nodes[inner_nodes], cex = 0.6, col = "blue", pos = 3)
   }
   text(xpos[leaves], ypos[leaves], labels = graph$nodes[leaves], 
-       cex = 0.7, col = "black", pos = 1)
+       cex = 0.7, col = "blue", pos = 1)
 
   invisible()
 }

@@ -379,7 +379,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
             }
           }
         }
-        h <- qr(big_matrix, tol = 1e-10)$rank
+        h <- qr(big_matrix, tol = 1e-8)$rank
       } else {
         h <- 0
       }

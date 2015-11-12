@@ -902,6 +902,7 @@ fit_five <- function(data, populations, display = 10) {
   tree_list <- list()
   one_admixture_list <- list()
   for (permutation in P) {
+    print(permutation)
     A <- permutation[1]
     B <- permutation[2]
     C <- permutation[3]
