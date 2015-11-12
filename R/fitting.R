@@ -274,8 +274,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
           break
         }
         if (i == m) {
-          column_reduced <- column_reduced[, -j]
-          column_reduced <- cbind(column_reduced)
+          column_reduced <- column_reduced[, -j, drop = FALSE]
         }
       }
     }
@@ -337,8 +336,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
             break
           }
           if (i == m) {
-            column_reduced_temp <- column_reduced_temp[, -j]
-            column_reduced_temp <- cbind(column_reduced_temp)
+            column_reduced_temp <- column_reduced_temp[, -j, drop = FALSE]
           }
         }
       }
@@ -381,7 +379,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
             }
           }
         }
-        h <- qr(big_matrix)$rank # This is a problem.
+        h <- qr(big_matrix, tol = 1e-10)$rank
       } else {
         h <- 0
       }
@@ -414,7 +412,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
 #' @return A vector ($x) and the error ($resid.norm).
 #'
 #' @export
-mynonneg <- function(C, d) {
+mynonneg <- function(C, d, iteration_multiplier = 3) {
   if (!requireNamespace("MASS", quietly = TRUE)) {
     stop("This function requires MASS to be installed.")
   }
@@ -432,7 +430,7 @@ mynonneg <- function(C, d) {
   wz <- numeric(n)
   # iteration parameters
   outeriter <- 0; it <- 0
-  itmax <- 3 * n; exitflag <- 1
+  itmax <- iteration_multiplier * n; exitflag <- 1
   while (any(Z) && any(w[Z] > tol)) {
     outeriter <- outeriter + 1
     z <- numeric(n)
@@ -479,7 +477,8 @@ mynonneg <- function(C, d) {
 #'
 #' @export
 cost_function <- function(data, matrix, graph,
-                          parameters = extract_graph_parameters(graph)) {
+                          parameters = extract_graph_parameters(graph),
+                          iteration_multiplier = 3) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
     stop("This function requires pracma to be installed.")
   }
@@ -501,7 +500,7 @@ cost_function <- function(data, matrix, graph,
     # in the Euclidian norm. Apparently this is "slow" in the sense it takes
     # O(n^3) steps and not O(n^2.3) steps as it could in principle.
     if (NCOL(matrix) > 0) {
-      lsq_solution <- mynonneg(evaluated_matrix, goal)
+      lsq_solution <- mynonneg(evaluated_matrix, goal, iteration_multiplier)
       cost <- lsq_solution$resid.norm
     } else {
       cost <- sum(goal^2)
@@ -530,7 +529,8 @@ cost_function <- function(data, matrix, graph,
 #'
 #' @export
 edge_optimisation_function <- function(data, matrix, graph,
-                                       parameters = extract_graph_parameters(graph)) {
+                                       parameters = extract_graph_parameters(graph),
+                                       iteration_multiplier = 3) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
     stop("This function requires pracma to be installed.")
   }
@@ -549,7 +549,7 @@ edge_optimisation_function <- function(data, matrix, graph,
       }
     }
     # Record the (or an example of an) optimal solution and error.
-    lsq_solution <- mynonneg(evaluated_matrix, goal)
+    lsq_solution <- mynonneg(evaluated_matrix, goal, iteration_multiplier)
     edge_fit <- lsq_solution$x
     names(edge_fit) <- parameters$edges
     approximation <- evaluated_matrix %*% edge_fit
@@ -649,7 +649,8 @@ edge_optimisation_function <- function(data, matrix, graph,
 #'
 #' @export
 fit_graph <- function(data, graph, optimisation_options = NULL,
-                      parameters = extract_graph_parameters(graph)) {
+                      parameters = extract_graph_parameters(graph),
+                      iteration_multiplier = 3) {
   if (!requireNamespace("neldermead", quietly = TRUE)) {
     stop("This function requires neldermead to be installed.")
   }
@@ -664,7 +665,7 @@ fit_graph <- function(data, graph, optimisation_options = NULL,
     best_fit <- temp[!1]
   } else {
     x0 <- rep(0.5, length(parameters$admix_prop))
-    cfunc <- cost_function(data, reduced_matrix, graph, parameters)
+    cfunc <- cost_function(data, reduced_matrix, graph, parameters, iteration_multiplier)
     opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = rep(0, length(x0)),
                                 xmax = rep(1, length(x0)),
                                 options = optimisation_options)
@@ -674,7 +675,7 @@ fit_graph <- function(data, graph, optimisation_options = NULL,
     names(best_fit) <- parameters$admix_prop
   }
   detailed_fit <-
-    edge_optimisation_function(data, full_matrix, graph, parameters)(best_fit)
+    edge_optimisation_function(data, full_matrix, graph, parameters, iteration_multiplier)(best_fit)
   data$graph_f4 <- detailed_fit$approximation
   # The output is a list with class "agraph_fit"
   structure(list(
