@@ -676,7 +676,7 @@ fit_graph <- function(data, graph, optimisation_options = NULL,
   detailed_fit <-
     edge_optimisation_function(data, full_matrix, graph, parameters)(best_fit)
   data$graph_f4 <- detailed_fit$approximation
-  # The output is a list with "agraph_fit" -mystery property.
+  # The output is a list with class "agraph_fit"
   structure(list(
     call = sys.call(),
     data = data,
