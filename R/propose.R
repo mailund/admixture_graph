@@ -1,40 +1,49 @@
-#' Helping to untangle the relationships between four populations based on given data.
+
+#' Make a list of all permutations of populations.
 #' 
-#' Note that we do not say anything about the exact position of the root: the graphs
-#' drawn are just chosen in a way they look nice. In all but one cases it is possible
-#' to set the root on an outgroup branch, but often the plot is so weird that we
-#' nonetheless prefer to set it somewhere else.
-#'
-#' @param data         The data set.
-#' @param populations  A four element vector of population names.
-#'
-#' @return Printing stuff on console and "plots" tab. Making something fancy later.
-#'
-#' @export
-fit_four <- function(data, populations, display = 10) {
-  # We start by building a set of all 24 permutations of the 4 populations.
+#' Right now it is hardwired to create permutations for four or five populations because
+#' I just copied code from the two fit functions, but this should be generalized if we
+#' need that at some point.
+make_permutations <- function(populations) {
   P <- list()
-  for (i in seq(1, 4)) {
-    permutation <- rep("", 4)
-    permutation[1] <- populations[i]
-    for (j in seq(1, 3)) {
-      permutation[2] <- populations[-i][j]
-      for (k in seq(1, 2)) {
-        permutation[3] <- populations[-i][-j][k]
-        permutation[4] <- populations[-i][-j][-k][1]
-        P[[length(P) + 1]] <- permutation
+  if (length(populations) == 4) {
+    for (i in seq(1, 4)) {
+      permutation <- rep("", 4)
+      permutation[1] <- populations[i]
+      for (j in seq(1, 3)) {
+        permutation[2] <- populations[-i][j]
+        for (k in seq(1, 2)) {
+          permutation[3] <- populations[-i][-j][k]
+          permutation[4] <- populations[-i][-j][-k][1]
+          P[[length(P) + 1]] <- permutation
+        }
       }
-    }
+    }  
+  } else if (length(populations) == 5) {
+    for (i in seq(1, 5)) {
+      permutation <- rep("", 5)
+      permutation[1] <- populations[i]
+      for (j in seq(1, 4)) {
+        permutation[2] <- populations[-i][j]
+        for (k in seq(1, 3)) {
+          permutation[3] <- populations[-i][-j][k]
+          for (l in seq(1, 2)) {
+            permutation[4] <- populations[-i][-j][-k][l]
+            permutation[5] <- populations[-i][-j][-k][-l][1]
+            P[[length(P) + 1]] <- permutation
+          }
+        }
+      }
+    }    
   }
-  tree_list <- list()
-  one_admixture_list <- list()
-  two_admixture_list <- list()
-  for (permutation in P) {
-    A <- permutation[1]
-    B <- permutation[2]
-    C <- permutation[3]
-    D <- permutation[4]
-    # First the only tree.
+  return(P)
+}
+
+
+
+four_leaves_graphs <- list(
+  # single tree
+  tree = function(A,B,C,D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y")
     edges <- parent_edges(c(
@@ -46,12 +55,11 @@ fit_four <- function(data, populations, display = 10) {
       edge(D, "y")
     ))
     admixtures <- NULL
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Tree 1, each combination listed 8 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    tree_list[[length(tree_list) + 1]] <- list(graph = graph, description = description,
-                                               error = fit$best_error)
-    # Then the three graphs with one admixture event.
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  # one admixture event
+  one_admixture_1 = function(A,B,C,D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "M")
     edges <- parent_edges(c(
@@ -67,18 +75,17 @@ fit_four <- function(data, populations, display = 10) {
     admixtures <- admixture_proportions(c(
       admix_props("M", "y", "z", "a")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with one admixture 1, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    one_admixture_list[[length(one_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_2 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "y", "z", "w", "M")
     edges <- parent_edges(c(
       edge("y", "R"),
       edge("z", "R"),
       edge("w", "z"),
-      edge(A, "y"), 
+      edge(A, "R"), 
       edge(B, "M"), 
       edge(C, "w"),
       edge(D, "w"),
@@ -87,11 +94,10 @@ fit_four <- function(data, populations, display = 10) {
     admixtures <- admixture_proportions(c(
       admix_props("M", "y", "z", "a")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with one admixture 2, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    one_admixture_list[[length(one_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_3 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "y", "z", "w", "M")
     edges <- parent_edges(c(
@@ -107,12 +113,11 @@ fit_four <- function(data, populations, display = 10) {
     admixtures <- admixture_proportions(c(
       admix_props("M", "y", "z", "a")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with one admixture 3, each combination listed 4 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    one_admixture_list[[length(one_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
-    # Finally the 32 graphs with two admixture events, in no particular order.
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  # two admixture events
+  two_admixtures_1 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -131,11 +136,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "y", "a"),
       admix_props("N", "z", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 1, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_2 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -154,11 +158,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "y", "a"),
       admix_props("N", "z", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 2, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_3 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -177,11 +180,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "y", "z", "a"),
       admix_props("N", "y", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 3, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_4 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -200,11 +202,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "z", "a"),
       admix_props("N", "w", "y", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 4, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_5 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -223,11 +224,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "y", "z", "a"),
       admix_props("N", "M", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 5, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_6 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -246,11 +246,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "z", "a"),
       admix_props("N", "z", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 6, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_7 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -269,11 +268,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "z", "w", "a"),
       admix_props("N", "w", "y", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 7, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_8 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -292,11 +290,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "w", "a"),
       admix_props("N", "z", "y", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 8, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_9 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -315,11 +312,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "y", "w", "a"),
       admix_props("N", "M", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 9, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_10 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -338,11 +334,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "y", "a"),
       admix_props("N", "M", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 10, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_11 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -361,11 +356,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "y", "a"),
       admix_props("N", "z", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 11, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_12 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -384,11 +378,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "y", "a"),
       admix_props("N", "w", "y", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 12, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_13 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -407,11 +400,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "z", "w", "a"),
       admix_props("N", "z", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 13, each combination listed 4 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_14 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -430,11 +422,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "y", "z", "a"),
       admix_props("N", "y", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 14, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_15 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -453,11 +444,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "y", "N", "a"),
       admix_props("N", "w", "z", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 15, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_16 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -476,11 +466,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "z", "w", "a"),
       admix_props("N", "M", "x", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 16, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_17 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -499,11 +488,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "z", "a"),
       admix_props("N", "w", "y", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 17, each combination listed once"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_18 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -522,11 +510,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "z", "w", "a"),
       admix_props("N", "z", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 18, each combination listed 4 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_19 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -545,11 +532,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "w", "y", "a"),
       admix_props("N", "z", "M", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 19, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_20 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -568,11 +554,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "y", "z", "a"),
       admix_props("N", "y", "z", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 20, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_21 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -591,11 +576,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "z", "x", "a"),
       admix_props("N", "y", "M", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 21, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_22 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -614,11 +598,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "z", "a"),
       admix_props("N", "M", "z", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 22, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_23 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -637,11 +620,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "z", "a"),
       admix_props("N", "y", "z", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 23, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_24 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -660,11 +642,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "y", "z", "a"),
       admix_props("N", "M", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 24, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_25 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -683,11 +664,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "z", "w", "a"),
       admix_props("N", "M", "w", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 25, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_26 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -706,11 +686,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "z", "a"),
       admix_props("N", "z", "y", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 26, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_27 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -729,11 +708,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "y", "w", "a"),
       admix_props("N", "w", "z", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 27, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_28 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -752,11 +730,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "y", "a"),
       admix_props("N", "M", "z", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 28, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_29 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -775,11 +752,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "y", "a"),
       admix_props("N", "M", "z", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 29, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_30 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -798,11 +774,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "y", "a"),
       admix_props("N", "z", "y", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 30, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_31 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -821,11 +796,10 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "w", "z", "a"),
       admix_props("N", "M", "y", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 31, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_32 = function(A, B, C, D) {
     leaves <- c(A, B, C, D)
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
@@ -844,71 +818,13 @@ fit_four <- function(data, populations, display = 10) {
       admix_props("M", "x", "y", "a"),
       admix_props("N", "x", "y", "b")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with two admixtures 32, each combination listed 8 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    two_admixture_list[[length(two_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
   }
-  tree_list <- tree_list[order(sapply(tree_list, "[[", 3))]
-  one_admixture_list <- one_admixture_list[order(sapply(one_admixture_list, "[[", 3))]
-  two_admixture_list <- two_admixture_list[order(sapply(two_admixture_list, "[[", 3))]
-  if (display > 0) {
-    for (j in seq(1, display)) {
-      stuff <- paste(tree_list[[j]]$description, ", error: ", tree_list[[j]]$error, sep = "")
-      plot(tree_list[[j]]$graph, main = stuff)
-    }
-    for (j in seq(1, display)) {
-      stuff <- paste(one_admixture_list[[j]]$description, ", error: ", one_admixture_list[[j]]$error, sep = "")
-      plot(one_admixture_list[[j]]$graph, main = stuff)
-    }
-    for (j in seq(1, display)) {
-      stuff <- paste(two_admixture_list[[j]]$description, ", error: ", two_admixture_list[[j]]$error, sep = "")
-      plot(two_admixture_list[[j]]$graph, main = stuff)
-    }
-  }
-  list(tree = tree_list, one_admixture = one_admixture_list, two_admixture = two_admixture_list)
-}
+)
 
-#' Helping to untangle the relationships between five populations based on given data.
-#' 
-#' Note that we do not say anything about the exact position of the root: the graphs
-#' drawn are just chosen in a way they look nice.
-#'
-#' @param data         The data set.
-#' @param populations  A five element vector of population names.
-#'
-#' @return Printing stuff on console and "plots" tab. Making something fancy later.
-#'
-#' @export
-fit_five <- function(data, populations, display = 10) {
-  # We start by building a set of all 120 permutations of the 5 populations.
-  P <- list()
-  for (i in seq(1, 5)) {
-    permutation <- rep("", 5)
-    permutation[1] <- populations[i]
-    for (j in seq(1, 4)) {
-      permutation[2] <- populations[-i][j]
-      for (k in seq(1, 3)) {
-        permutation[3] <- populations[-i][-j][k]
-        for (l in seq(1, 2)) {
-          permutation[4] <- populations[-i][-j][-k][l]
-          permutation[5] <- populations[-i][-j][-k][-l][1]
-          P[[length(P) + 1]] <- permutation
-        }
-      }
-    }
-  }
-  tree_list <- list()
-  one_admixture_list <- list()
-  for (permutation in P) {
-    print(permutation)
-    A <- permutation[1]
-    B <- permutation[2]
-    C <- permutation[3]
-    D <- permutation[4]
-    E <- permutation[5]
-    # First the only tree.
+five_leaves_graphs <- list(
+  # tree
+  tree = function(A, B, C, D, E) {
     leaves <- c(A, B, C, D, E)
     inner_nodes <- c("R", "x", "y", "z")
     edges <- parent_edges(c(
@@ -922,12 +838,11 @@ fit_five <- function(data, populations, display = 10) {
       edge(E, "z")
     ))
     admixtures <- NULL
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Tree 1, each combination listed 8 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    tree_list[[length(tree_list) + 1]] <- list(graph = graph, description = description,
-                                               error = fit$best_error)
-    # Then the seven graphs with one admixture event.
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  # one admixture
+  one_admixture_1 = function(A, B, C, D, E) {
     leaves <- c(A, B, C, D, E)
     inner_nodes <- c("R", "x", "y", "z", "w", "M")
     edges <- parent_edges(c(
@@ -945,11 +860,10 @@ fit_five <- function(data, populations, display = 10) {
     admixtures <- admixture_proportions(c(
       admix_props("M", "y", "w", "a")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with one admixture 1, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    one_admixture_list[[length(one_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_2 = function(A, B, C, D, E) {
     leaves <- c(A, B, C, D, E)
     inner_nodes <- c("R", "x", "y", "z", "w", "M")
     edges <- parent_edges(c(
@@ -967,11 +881,10 @@ fit_five <- function(data, populations, display = 10) {
     admixtures <- admixture_proportions(c(
       admix_props("M", "y", "z", "a")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with one admixture 2, each combination listed 4 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    one_admixture_list[[length(one_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_3 = function(A, B, C, D, E) {
     leaves <- c(A, B, C, D, E)
     inner_nodes <- c("R", "x", "y", "z", "w", "M")
     edges <- parent_edges(c(
@@ -989,11 +902,10 @@ fit_five <- function(data, populations, display = 10) {
     admixtures <- admixture_proportions(c(
       admix_props("M", "y", "z", "a")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with one admixture 3, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    one_admixture_list[[length(one_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_4 = function(A, B, C, D, E) {
     leaves <- c(A, B, C, D, E)
     inner_nodes <- c("R", "x", "y", "z", "w", "M")
     edges <- parent_edges(c(
@@ -1011,11 +923,10 @@ fit_five <- function(data, populations, display = 10) {
     admixtures <- admixture_proportions(c(
       admix_props("M", "x", "y", "a")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with one admixture 4, each combination listed 8 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    one_admixture_list[[length(one_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_5 = function(A, B, C, D, E) {
     leaves <- c(A, B, C, D, E)
     inner_nodes <- c("R", "x", "y", "z", "w", "M")
     edges <- parent_edges(c(
@@ -1033,11 +944,10 @@ fit_five <- function(data, populations, display = 10) {
     admixtures <- admixture_proportions(c(
       admix_props("M", "x", "y", "a")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with one admixture 5, each combination listed 4 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    one_admixture_list[[length(one_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_6 = function(A, B, C, D, E) {
     leaves <- c(A, B, C, D, E)
     inner_nodes <- c("R", "x", "y", "z", "w", "M")
     edges <- parent_edges(c(
@@ -1055,11 +965,10 @@ fit_five <- function(data, populations, display = 10) {
     admixtures <- admixture_proportions(c(
       admix_props("M", "x", "y", "a")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with one admixture 6, each combination listed 4 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    one_admixture_list[[length(one_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_7 = function(A, B, C, D, E) {
     leaves <- c(A, B, C, D, E)
     inner_nodes <- c("R", "x", "y", "z", "w", "M")
     edges <- parent_edges(c(
@@ -1077,23 +986,107 @@ fit_five <- function(data, populations, display = 10) {
     admixtures <- admixture_proportions(c(
       admix_props("M", "x", "y", "a")
     ))
-    graph <- agraph(leaves, inner_nodes, edges, admixtures)
-    description <- "Graph with one admixture 7, each combination listed 2 times"
-    fit <- fit_graph(filter_on_leaves(data, graph), graph)
-    one_admixture_list[[length(one_admixture_list) + 1]] <- list(graph = graph, description = description,
-                                                                 error = fit$best_error)
+    agraph(leaves, inner_nodes, edges, admixtures)
   }
-  tree_list <- tree_list[order(sapply(tree_list, "[[", 3))]
-  one_admixture_list <- one_admixture_list[order(sapply(one_admixture_list, "[[", 3))]
-  if (display > 0) {
-    for (j in seq(1, display)) {
-      stuff <- paste(tree_list[[j]]$description, ", error: ", tree_list[[j]]$error, sep = "")
-      plot(tree_list[[j]]$graph, main = stuff)
-    }
-    for (j in seq(1, display)) {
-      stuff <- paste(one_admixture_list[[j]]$description, ", error: ", one_admixture_list[[j]]$error, sep = "")
-      plot(one_admixture_list[[j]]$graph, main = stuff)
+)
+
+
+
+#' Combine a list of permutations with a list of (parameterized) graphs to fit them
+#' 
+#' @param permutations List of population permutations
+#' @param graphs       List of functions for producing graphs
+#' 
+#' @return a list of fitted graphs.
+fit_permutations_and_graphs <- function(data, permutations, graphs) {
+  result <- vector("list", length(permutations) * length(graphs))
+  idx <- 1
+  for (permutation in permutations) {
+    for (graph_constructure in graphs) {
+      graph <- do.call(graph_constructure, as.list(permutation))
+      fit <- fit_graph(filter_on_leaves(data, graph), graph)
+      result[[idx]] <- fit
+      idx <- idx + 1
     }
   }
-  list(tree = tree_list, one_admixture = one_admixture_list)
+  result
 }
+
+#' Helping to untangle the relationships between four populations based on given data.
+#' 
+#' Note that we do not say anything about the exact position of the root: the graphs
+#' drawn are just chosen in a way they look nice. In all but one cases it is possible
+#' to set the root on an outgroup branch, but sometimes the plot is so weird that we
+#' nonetheless prefer to set it somewhere else. The first element of populations is
+#' the leaf often drawn as the outgroup.
+#'
+#' @param data         The data set.
+#' @param populations  A four or element vector of population names.
+#'
+#' @return Printing stuff on console and "plots" tab. Making something fancy later.
+#'
+#' @export
+fit_all_graphs <- function(data, populations) {
+  if (!(length(populations) %in% c(4, 5)) ) {
+    stop("We can currently only explore graph spaces for four or five leaves")
+  }
+    
+  P <- make_permutations(populations)
+  graphs <- if (length(populations) == 4) four_leaves_graphs else five_leaves_graphs
+  fits <- fit_permutations_and_graphs(data, P, graphs)
+  structure(fits, class = c("agraph_fit_list", "list"))
+}
+
+#' Print function for the fitted graphs.
+#'
+#' Print summary of the result of a list of fitted graphs.
+#'
+#' @param object  The fitted object.
+#' @param ...     Additional parameters.
+#'
+#' @export
+summary.agraph_fit_list <- function(object, ...) {
+  admixture_events <- no_admixture_events(object)
+  sse <- sum_of_squared_errors(object)
+  poor_fits <- no_poor_fits(object)
+  
+  no_admix <- unique(admixture_events)
+  for (na in no_admix) {
+    indices <- which(admixture_events == na)
+    cat("Fits with", na, "admixture events:", length(indices), "\n")
+    
+    best <- min(sse[admixture_events == na])
+    best_fits <- which(sse[admixture_events == na] == best)
+    cat("The best SSE is", best, "and", length(best_fits), "graphs achieve this fit.\n")
+    
+    best <- min(poor_fits[admixture_events == na])
+    best_fits <- which(poor_fits[admixture_events == na] == best)
+    cat("The best number of tests that fall outside error bars is", best, "and",
+        length(best_fits), "graphs achieve this fit.\n\n")
+  }
+}
+
+
+#' Plot a list of fitted admixture graphs.
+#' 
+#' @param x List of fitted graphs.
+#' @param ... Additional plotting options
+#'   
+#' @export
+plot.agraph_fit_list <- function(x, measure = "SSE", ...) {
+  admixture_events <- no_admixture_events(x)
+  sse <- sum_of_squared_errors(x)
+  fits <- no_poor_fits(x)
+  
+  d <- data.frame(indices = seq_along(x), 
+                  no_admixture_events = admixture_events,
+                  SSE = sse, no_poor_fits = fits)
+  
+  if (measure == "SSE") {
+    ggplot(d) + facet_grid(~no_admixture_events) + geom_point(aes(x = indices, y = SSE))
+  } else {
+    ggplot(d) + facet_grid(~no_admixture_events) + geom_point(aes(x = indices, y = no_poor_fits))
+  }
+}
+
+
