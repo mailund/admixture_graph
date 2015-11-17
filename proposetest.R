@@ -6,8 +6,8 @@ populations <- c("BLK", "PB",
                  "Bar", "Chi1", "Chi2", "Adm1", "Adm2",
                  "Denali", "Kenai", "Sweden") 
 
-#four <- bears %>% fit_all_graphs(c("BLK", "PB", "Denali", "Sweden"))
-#five <- bears %>% fit_all_graphs(c("BLK", "PB", "Kenai", "Adm1", "Sweden"))
+four <- bears %>% fit_all_graphs(c("BLK", "PB", "Denali", "Sweden"))
+five <- bears %>% fit_all_graphs(c("BLK", "PB", "Kenai", "Adm1", "Sweden"))
 
 
 
