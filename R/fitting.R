@@ -187,7 +187,8 @@ canonise_expression <- function(x) {
 #'
 #' @export
 build_edge_optimisation_matrix <- function(data, graph, parameters
-                                           = extract_graph_parameters(graph)) {
+                                           = extract_graph_parameters(graph),
+                                           tolerance = 1e-8) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
     stop("This function requires pracma to be installed.")
   }
@@ -379,7 +380,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
             }
           }
         }
-        h <- qr(big_matrix, tol = 1e-8)$rank
+        h <- qr(big_matrix, tol = tolerance)$rank
       } else {
         h <- 0
       }
@@ -430,7 +431,7 @@ mynonneg <- function(C, d, iteration_multiplier = 3) {
   wz <- numeric(n)
   # iteration parameters
   outeriter <- 0; it <- 0
-  itmax <- iteration_multiplier * n; exitflag <- 1
+  itmax <- 10 * iteration_multiplier * n; exitflag <- 1
   while (any(Z) && any(w[Z] > tol)) {
     outeriter <- outeriter + 1
     z <- numeric(n)
@@ -650,11 +651,11 @@ edge_optimisation_function <- function(data, matrix, graph,
 #' @export
 fit_graph <- function(data, graph, optimisation_options = NULL,
                       parameters = extract_graph_parameters(graph),
-                      iteration_multiplier = 3) {
+                      iteration_multiplier = 3, ...) {
   if (!requireNamespace("neldermead", quietly = TRUE)) {
     stop("This function requires neldermead to be installed.")
   }
-  matrix <- build_edge_optimisation_matrix(data, graph, parameters)
+  matrix <- build_edge_optimisation_matrix(data, graph, parameters, ...)
   full_matrix <- matrix$full
   reduced_matrix <- matrix$column_reduced
   if (length(parameters$admix_prop) == 0) {

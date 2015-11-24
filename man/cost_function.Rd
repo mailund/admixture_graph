@@ -5,7 +5,7 @@
 \title{The cost function fed to nelder mead.}
 \usage{
 cost_function(data, matrix, graph,
-  parameters = extract_graph_parameters(graph))
+  parameters = extract_graph_parameters(graph), iteration_multiplier = 3)
 }
 \arguments{
 \item{data}{The data set.}

@@ -5,7 +5,7 @@
 \title{More detailed edge fitting than mere \code{cost_function}.}
 \usage{
 edge_optimisation_function(data, matrix, graph,
-  parameters = extract_graph_parameters(graph))
+  parameters = extract_graph_parameters(graph), iteration_multiplier = 3)
 }
 \arguments{
 \item{data}{The data set.}

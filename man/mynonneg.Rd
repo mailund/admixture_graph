@@ -4,7 +4,7 @@
 \alias{mynonneg}
 \title{Non negative least square solution.}
 \usage{
-mynonneg(C, d)
+mynonneg(C, d, iteration_multiplier = 3)
 }
 \arguments{
 \item{C}{The matrix.}

@@ -5,7 +5,8 @@
 \title{Fit the graph parameters to a data set.}
 \usage{
 fit_graph(data, graph, optimisation_options = NULL,
-  parameters = extract_graph_parameters(graph))
+  parameters = extract_graph_parameters(graph), iteration_multiplier = 3,
+  ...)
 }
 \arguments{
 \item{data}{The data set.}
