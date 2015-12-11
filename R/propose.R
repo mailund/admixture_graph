@@ -4,6 +4,8 @@
 #' Right now it is hardwired to create permutations for four or five populations because
 #' I just copied code from the two fit functions, but this should be generalized if we
 #' need that at some point.
+#'
+#' @export
 make_permutations <- function(populations) {
   P <- list()
   if (length(populations) == 4) {
@@ -35,12 +37,30 @@ make_permutations <- function(populations) {
         }
       }
     }    
+  } else if (length(populations) == 6) {
+    for (i in seq(1, 6)) {
+      permutation <- rep("", 6)
+      permutation[1] <- populations[i]
+      for (j in seq(1, 5)) {
+        permutation[2] <- populations[-i][j]
+        for (k in seq(1, 4)) {
+          permutation[3] <- populations[-i][-j][k]
+          for (l in seq(1, 3)) {
+            permutation[4] <- populations[-i][-j][-k][l]
+            for (m in seq(1, 2)) {
+              permutation[5] <- populations[-i][-j][-k][-l][m]  
+              permutation[6] <- populations[-i][-j][-k][-l][-m][1]  
+              P[[length(P) + 1]] <- permutation
+            }
+          }
+        }
+      }
+    }
   }
   return(P)
 }
 
-
-
+#' @export
 four_leaves_graphs <- list(
   # single tree
   tree = function(A,B,C,D) {
@@ -797,31 +817,10 @@ four_leaves_graphs <- list(
       admix_props("N", "M", "y", "b")
     ))
     agraph(leaves, inner_nodes, edges, admixtures)
-  },
-  
-  two_admixtures_32 = function(A, B, C, D) {
-    leaves <- c(A, B, C, D)
-    inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
-    edges <- parent_edges(c(
-      edge("x", "R"),
-      edge("y", "R"),
-      edge("z", "M"),
-      edge("w", "N"),
-      edge(A, "z"), 
-      edge(B, "z"), 
-      edge(C, "w"),
-      edge(D, "w"),
-      admixture_edge("M", "x", "y"),
-      admixture_edge("N", "x", "y")
-    ))
-    admixtures <- admixture_proportions(c(
-      admix_props("M", "x", "y", "a"),
-      admix_props("N", "x", "y", "b")
-    ))
-    agraph(leaves, inner_nodes, edges, admixtures)
   }
 )
 
+#' @export
 five_leaves_graphs <- list(
   # tree
   tree = function(A, B, C, D, E) {
@@ -990,7 +989,485 @@ five_leaves_graphs <- list(
   }
 )
 
+#' @export
+six_leaves_graphs <- list(
+  # tree
+  tree_1 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "y"),
+      edge("w", "y"),
+      edge(A, "R"),
+      edge(B, "x"),
+      edge(C, "z"),
+      edge(D, "z"),
+      edge(E, "w"),
+      edge(G, "w")
+    ))
+    admixtures <- NULL
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  tree_2 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "y"),
+      edge("w", "z"),
+      edge(A, "R"),
+      edge(B, "x"),
+      edge(C, "y"),
+      edge(D, "z"),
+      edge(E, "w"),
+      edge(G, "w")
+    ))
+    admixtures <- NULL
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  # one admixture
+  one_admixture_1 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "x"),
+      edge("w", "y"),
+      edge("u", "z"),
+      edge(A, "R"),
+      edge(B, "y"), 
+      edge(C, "w"),
+      edge(D, "M"),
+      edge(E, "u"),
+      edge(G, "z"),
+      admixture_edge("M", "w", "u")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "w", "u", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_2 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "x"),
+      edge("w", "y"),
+      edge("u", "M"),
+      edge(A, "x"),
+      edge(B, "z"), 
+      edge(C, "u"),
+      edge(D, "u"),
+      edge(E, "w"),
+      edge(G, "y"),
+      admixture_edge("M", "z", "w")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "z", "w", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_3 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "x"),
+      edge("w", "y"),
+      edge("u", "w"),
+      edge(A, "x"),
+      edge(B, "z"), 
+      edge(C, "M"),
+      edge(D, "u"),
+      edge(E, "u"),
+      edge(G, "y"),
+      admixture_edge("M", "z", "w")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "z", "w", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
 
+  one_admixture_4 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "x"),
+      edge("w", "y"),
+      edge("u", "y"),
+      edge(A, "x"),
+      edge(B, "z"), 
+      edge(C, "M"),
+      edge(D, "w"),
+      edge(E, "u"),
+      edge(G, "u"),
+      admixture_edge("M", "z", "w")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "z", "w", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_5 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "x"),
+      edge("w", "M"),
+      edge("u", "w"),
+      edge(A, "R"),
+      edge(B, "y"), 
+      edge(C, "w"),
+      edge(D, "u"),
+      edge(E, "u"),
+      edge(G, "z"),
+      admixture_edge("M", "y", "z")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "y", "z", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_6 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "x"),
+      edge("w", "z"),
+      edge("u", "w"),
+      edge(A, "R"),
+      edge(B, "y"), 
+      edge(C, "M"),
+      edge(D, "w"),
+      edge(E, "u"),
+      edge(G, "u"),
+      admixture_edge("M", "y", "z")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "y", "z", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_7 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "x"),
+      edge("w", "R"),
+      edge("u", "w"),
+      edge(A, "u"),
+      edge(B, "u"), 
+      edge(C, "w"),
+      edge(D, "y"),
+      edge(E, "M"),
+      edge(G, "z"),
+      admixture_edge("M", "y", "z")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "y", "z", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_8 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "x"),
+      edge("w", "M"),
+      edge("u", "z"),
+      edge(A, "R"),
+      edge(B, "y"), 
+      edge(C, "w"),
+      edge(D, "w"),
+      edge(E, "u"),
+      edge(G, "u"),
+      admixture_edge("M", "y", "z")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "y", "z", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_9 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "x"),
+      edge("w", "R"),
+      edge("u", "z"),
+      edge(A, "w"),
+      edge(B, "w"), 
+      edge(C, "y"),
+      edge(D, "M"),
+      edge(E, "u"),
+      edge(G, "u"),
+      admixture_edge("M", "y", "z")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "y", "z", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_10 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "x"),
+      edge("w", "R"),
+      edge("u", "M"),
+      edge(A, "w"),
+      edge(B, "w"), 
+      edge(C, "y"),
+      edge(D, "u"),
+      edge(E, "u"),
+      edge(G, "z"),
+      admixture_edge("M", "y", "z")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "y", "z", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_11 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "x"),
+      edge("w", "y"),
+      edge("u", "z"),
+      edge(A, "R"),
+      edge(B, "w"), 
+      edge(C, "w"),
+      edge(D, "M"),
+      edge(E, "u"),
+      edge(G, "u"),
+      admixture_edge("M", "y", "z")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "y", "z", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_12 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "M"),
+      edge("w", "z"),
+      edge("u", "w"),
+      edge(A, "x"),
+      edge(B, "z"), 
+      edge(C, "w"),
+      edge(D, "u"),
+      edge(E, "u"),
+      edge(G, "y"),
+      admixture_edge("M", "x", "y")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "x", "y", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_13 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "y"),
+      edge("w", "z"),
+      edge("u", "w"),
+      edge(A, "x"),
+      edge(B, "M"), 
+      edge(C, "z"),
+      edge(D, "w"),
+      edge(E, "u"),
+      edge(G, "u"),
+      admixture_edge("M", "x", "y")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "x", "y", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_14 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "M"),
+      edge("w", "z"),
+      edge("u", "z"),
+      edge(A, "x"),
+      edge(B, "w"), 
+      edge(C, "w"),
+      edge(D, "u"),
+      edge(E, "u"),
+      edge(G, "y"),
+      admixture_edge("M", "x", "y")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "x", "y", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_15 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "y"),
+      edge("w", "z"),
+      edge("u", "z"),
+      edge(A, "x"),
+      edge(B, "M"), 
+      edge(C, "w"),
+      edge(D, "w"),
+      edge(E, "u"),
+      edge(G, "u"),
+      admixture_edge("M", "x", "y")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "x", "y", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_16 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "M"),
+      edge("w", "z"),
+      edge("u", "y"),
+      edge(A, "x"),
+      edge(B, "z"), 
+      edge(C, "w"),
+      edge(D, "w"),
+      edge(E, "u"),
+      edge(G, "u"),
+      admixture_edge("M", "x", "y")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "x", "y", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_17 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "M"),
+      edge("w", "y"),
+      edge("u", "w"),
+      edge(A, "x"),
+      edge(B, "z"), 
+      edge(C, "z"),
+      edge(D, "w"),
+      edge(E, "u"),
+      edge(G, "u"),
+      admixture_edge("M", "x", "y")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "x", "y", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_18 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "x"),
+      edge("w", "y"),
+      edge("u", "w"),
+      edge(A, "z"),
+      edge(B, "z"), 
+      edge(C, "M"),
+      edge(D, "w"),
+      edge(E, "u"),
+      edge(G, "u"),
+      admixture_edge("M", "x", "y")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "x", "y", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  one_admixture_19 = function(A, B, C, D, E, G) {
+    leaves <- c(A, B, C, D, E, G)
+    inner_nodes <- c("R", "x", "y", "z", "w", "u", "M")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "x"),
+      edge("w", "M"),
+      edge("u", "y"),
+      edge(A, "z"),
+      edge(B, "z"), 
+      edge(C, "w"),
+      edge(D, "w"),
+      edge(E, "u"),
+      edge(G, "u"),
+      admixture_edge("M", "x", "y")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "x", "y", "a")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  }
+)
 
 #' Combine a list of permutations with a list of (parameterized) graphs to fit them
 #' 
@@ -998,95 +1475,481 @@ five_leaves_graphs <- list(
 #' @param graphs       List of functions for producing graphs
 #' 
 #' @return a list of fitted graphs.
+#'
+#' @export
 fit_permutations_and_graphs <- function(data, permutations, graphs) {
   result <- vector("list", length(permutations) * length(graphs))
   idx <- 1
-  for (permutation in permutations) {
+  foreach(i = seq(1, length(permutations))) %do% {
+    permutation <- permutations[[i]]
     for (graph_constructure in graphs) {
       graph <- do.call(graph_constructure, as.list(permutation))
-      fit <- fit_graph(filter_on_leaves(data, graph), graph)
-      result[[idx]] <- fit
+      result[[idx]] <- fast_fit(filter_on_leaves(data, graph), graph)
       idx <- idx + 1
     }
+    progress <- paste(100 * i / length(permutations), "%", sep = "")
+    print(progress)
   }
   result
 }
 
-#' Helping to untangle the relationships between four populations based on given data.
-#' 
-#' Note that we do not say anything about the exact position of the root: the graphs
-#' drawn are just chosen in a way they look nice. In all but one cases it is possible
-#' to set the root on an outgroup branch, but sometimes the plot is so weird that we
-#' nonetheless prefer to set it somewhere else. The first element of populations is
-#' the leaf often drawn as the outgroup.
-#'
-#' @param data         The data set.
-#' @param populations  A four or element vector of population names.
-#'
-#' @return Printing stuff on console and "plots" tab. Making something fancy later.
-#'
 #' @export
-fit_all_graphs <- function(data, populations) {
-  if (!(length(populations) %in% c(4, 5)) ) {
-    stop("We can currently only explore graph spaces for four or five leaves")
+add_a_leaf <- function(graph, leaf_name) {
+  graph_list <- list()
+  broken_graph <- break_graph(graph)
+  inner_name <- paste("inner", leaf_name, sep = "_")
+  root <- broken_graph$root
+  forgive <- TRUE
+  for (i in seq(1, length(broken_graph$edges))) {
+    leaves <- c(broken_graph$leaves, leaf_name)
+    inner_nodes <- c(broken_graph$inner_nodes, inner_name)
+    new_edges <- broken_graph$edges
+    chosen <- new_edges[[i]]
+    edge_argument <- character(0)
+    new_admixtures <- broken_graph$admixtures
+    admix_argument <- character(0)
+    new_edges[[i]] <- NULL
+    new_edges[[length(new_edges) + 1]] <- c(leaf_name, inner_name)
+    new_edges[[length(new_edges) + 1]] <- c(chosen[1], inner_name)
+    new_edges[[length(new_edges) + 1]] <- c(inner_name, chosen[2])
+    for (j in seq(1, length(new_edges))) {
+      edge_argument <- c(edge_argument, edge(new_edges[[j]][1], new_edges[[j]][2]))
+    }
+    for (k in seq(1, length(new_admixtures))) {
+      edge_argument <- c(edge_argument, admixture_edge(new_admixtures[[k]][1], new_admixtures[[k]][2],
+                                                       new_admixtures[[k]][3]))
+      admix_argument <- c(admix_argument, admix_props(new_admixtures[[k]][1], new_admixtures[[k]][2],
+                                                      new_admixtures[[k]][3], new_admixtures[[k]][4]))
+    }
+    edges <- parent_edges(edge_argument)
+    admixtures <- admixture_proportions(admix_argument)
+    skip <- FALSE
+    if (chosen[2] == root) {
+      if (forgive == TRUE) {
+        forgive <- FALSE
+      } else {
+        skip <- TRUE
+      }
+    }
+    if (skip == FALSE) {
+      graph_list[[length(graph_list) + 1]] <- agraph(leaves, inner_nodes, edges, admixtures)
+    }
   }
-    
-  P <- make_permutations(populations)
-  graphs <- if (length(populations) == 4) four_leaves_graphs else five_leaves_graphs
-  fits <- fit_permutations_and_graphs(data, P, graphs)
-  structure(fits, class = c("agraph_fit_list", "list"))
+  if (length(broken_graph$admixtures) > 0) {
+    for (i in seq(1, length(broken_graph$admixtures))) {
+      leaves <- c(broken_graph$leaves, leaf_name)
+      inner_nodes <- c(broken_graph$inner_nodes, inner_name)
+      new_edges <- broken_graph$edges
+      edge_argument <- character(0)
+      new_admixtures <- broken_graph$admixtures
+      chosen <- new_admixtures[[i]]
+      admix_argument <- character(0)
+      new_admixtures[[i]] <- NULL
+      new_edges[[length(new_edges) + 1]] <- c(leaf_name, inner_name)
+      new_edges[[length(new_edges) + 1]] <- c(inner_name, chosen[2])
+      new_admixtures[[length(new_admixtures) + 1]] <- c(chosen[1], inner_name, chosen[3], chosen[4])
+      for (j in seq(1, length(new_edges))) {
+        edge_argument <- c(edge_argument, edge(new_edges[[j]][1], new_edges[[j]][2]))
+      }
+      for (k in seq(1, length(new_admixtures))) {
+        edge_argument <- c(edge_argument, admixture_edge(new_admixtures[[k]][1], new_admixtures[[k]][2],
+                                                         new_admixtures[[k]][3]))
+        admix_argument <- c(admix_argument, admix_props(new_admixtures[[k]][1], new_admixtures[[k]][2],
+                                                        new_admixtures[[k]][3], new_admixtures[[k]][4]))
+      }
+      edges <- parent_edges(edge_argument)
+      admixtures <- admixture_proportions(admix_argument)
+      graph_list[[length(graph_list) + 1]] <- agraph(leaves, inner_nodes, edges, admixtures)
+      new_edges <- broken_graph$edges
+      edge_argument <- character(0)
+      new_admixtures <- broken_graph$admixtures
+      chosen <- new_admixtures[[i]]
+      admix_argument <- character(0)
+      new_admixtures[[i]] <- NULL
+      new_edges[[length(new_edges) + 1]] <- c(leaf_name, inner_name)
+      new_edges[[length(new_edges) + 1]] <- c(inner_name, chosen[3])
+      new_admixtures[[length(new_admixtures) + 1]] <- c(chosen[1], chosen[2], inner_name, chosen[4])
+      for (j in seq(1, length(new_edges))) {
+        edge_argument <- c(edge_argument, edge(new_edges[[j]][1], new_edges[[j]][2]))
+      }
+      for (k in seq(1, length(new_admixtures))) {
+        edge_argument <- c(edge_argument, admixture_edge(new_admixtures[[k]][1], new_admixtures[[k]][2],
+                                                         new_admixtures[[k]][3]))
+        admix_argument <- c(admix_argument, admix_props(new_admixtures[[k]][1], new_admixtures[[k]][2],
+                                                        new_admixtures[[k]][3], new_admixtures[[k]][4]))
+      }
+      edges <- parent_edges(edge_argument)
+      admixtures <- admixture_proportions(admix_argument)
+      graph_list[[length(graph_list) + 1]] <- agraph(leaves, inner_nodes, edges, admixtures)
+    }  
+  }
+  return(graph_list)
 }
 
-#' Print function for the fitted graphs.
-#'
-#' Print summary of the result of a list of fitted graphs.
-#'
-#' @param object  The fitted object.
-#' @param ...     Additional parameters.
-#'
 #' @export
-summary.agraph_fit_list <- function(object, ...) {
-  admixture_events <- no_admixture_events(object)
-  sse <- sum_of_squared_errors(object)
-  poor_fits <- no_poor_fits(object)
-  
-  no_admix <- unique(admixture_events)
-  for (na in no_admix) {
-    indices <- which(admixture_events == na)
-    cat("Fits with", na, "admixture events:", length(indices), "\n")
-    
-    best <- min(sse[admixture_events == na])
-    best_fits <- which(sse[admixture_events == na] == best)
-    cat("The best SSE is", best, "and", length(best_fits), "graphs achieve this fit.\n")
-    
-    best <- min(poor_fits[admixture_events == na])
-    best_fits <- which(poor_fits[admixture_events == na] == best)
-    cat("The best number of tests that fall outside error bars is", best, "and",
-        length(best_fits), "graphs achieve this fit.\n\n")
+add_an_admixture <- function(graph, admixture_variable_name) {
+  graph_list <- list()
+  broken_graph <- break_graph(graph)
+  # We might have to choose a different root after adding the admixture, so we start by removing
+  # the original root and treating only the edges colliding in an admix event as directed and the
+  # rest as undirected.
+  leaves <- broken_graph$leaves
+  original_inner_nodes <- broken_graph$inner_nodes
+  original_edges <- broken_graph$edges
+  original_admixtures <- broken_graph$admixtures
+  root <- broken_graph$root
+  for (i in seq(1, length(original_inner_nodes))) {
+    node <- original_inner_nodes[i]
+    if (node == root) {
+      original_inner_nodes <- original_inner_nodes[-i]
+      break
+    }
   }
+  memory <- ""
+  to_be_deleted <- nchar(0)
+  for (i in seq(1, length(original_edges))) {
+    edge <- original_edges[[i]]
+    if (edge[2] == root) {
+      if (nchar(memory) == 0) {
+        memory <- edge[1]
+        to_be_deleted <- i
+      } else {
+        original_edges[[i]] <- c(memory, edge[1])
+      }
+    }
+  }
+  original_edges[[to_be_deleted]] <- NULL
+  original_directed_edges <- list()
+  for (admixture in original_admixtures) {
+    original_directed_edges[[length(original_directed_edges) + 1]] <- c(admixture[2], admixture[1])
+    original_directed_edges[[length(original_directed_edges) + 1]] <- c(admixture[3], admixture[1])
+  }
+  inner_name <- paste("inner", admixture_variable_name, sep = "_")
+  admix_name <- paste("admix", admixture_variable_name, sep = "_")
+  inner_nodes <- c(original_inner_nodes, inner_name, admix_name)
+  for (i in seq(1, length(original_edges))) {
+    for (j in seq(1, length(original_edges))) {
+      if (i != j) {
+        # From edge to edge, direction [2]:
+        admixtures <- original_admixtures
+        admixtures[[length(admixtures) + 1]] <- c(admix_name, inner_name, original_edges[[j]][1], admixture_variable_name)
+        directed_edges <- original_directed_edges
+        directed_edges[[length(directed_edges) + 1]] <- c(inner_name, admix_name)
+        directed_edges[[length(directed_edges) + 1]] <- c(original_edges[[j]][1], admix_name)
+        edges <- original_edges
+        edges[[i]] <- c(inner_name, original_edges[[i]][1])
+        edges[[j]] <- c(inner_name, original_edges[[i]][2])
+        edges[[length(edges) + 1]] <- c(admix_name, original_edges[[j]][2])
+        starting_directed_edge <- c(admix_name, original_edges[[j]][2])
+        flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+        if (flow_result$problem == FALSE) {
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph_list[[length(graph_list) + 1]] <- graph
+        }
+        # From edge to edge, direction [1]:
+        admixtures <- original_admixtures
+        admixtures[[length(admixtures) + 1]] <- c(admix_name, inner_name, original_edges[[j]][2], admixture_variable_name)
+        directed_edges <- original_directed_edges
+        directed_edges[[length(directed_edges) + 1]] <- c(inner_name, admix_name)
+        directed_edges[[length(directed_edges) + 1]] <- c(original_edges[[j]][2], admix_name)
+        edges <- original_edges
+        edges[[i]] <- c(inner_name, original_edges[[i]][1])
+        edges[[j]] <- c(inner_name, original_edges[[i]][2])
+        edges[[length(edges) + 1]] <- c(admix_name, original_edges[[j]][1])
+        starting_directed_edge <- c(admix_name, original_edges[[j]][1])
+        flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+        if (flow_result$problem == FALSE) {
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph_list[[length(graph_list) + 1]] <- graph
+        }
+      }
+    }
+    for (j in seq(1, length(original_directed_edges))) {
+      # From edge to directed edge:
+      admixtures <- original_admixtures
+      for (k in seq(1, length(admixtures))) {
+        admixture <- admixtures[[k]]
+        if (admixture[1] == original_directed_edges[[j]][2]) {
+          if (admixture[2] == original_directed_edges[[j]][1]) {
+            admixture[2] <- admix_name
+          }
+          if (admixture[3] == original_directed_edges[[j]][1]) {
+            admixture[3] <- admix_name
+          }
+          admixtures[[k]] <- admixture
+        }
+      }
+      admixtures[[length(admixtures) + 1]] <- c(admix_name, inner_name, original_directed_edges[[j]][1], admixture_variable_name)
+      directed_edges <- original_directed_edges
+      directed_edges[[j]] <- c(inner_name, admix_name)
+      directed_edges[[length(directed_edges) + 1]] <- c(original_directed_edges[[j]][1], admix_name)
+      directed_edges[[length(directed_edges) + 1]] <- c(admix_name, original_directed_edges[[j]][2])
+      edges <- original_edges
+      edges[[i]] <- c(inner_name, original_edges[[i]][1])
+      edges[[length(edges) + 1]] <- c(inner_name, original_edges[[i]][2])
+      starting_directed_edge <- c(admix_name, original_directed_edges[[j]][2])
+      flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+      if (flow_result$problem == FALSE) {
+        graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+        graph_list[[length(graph_list) + 1]] <- graph
+      }
+    }
+  }
+  for (i in seq(1, length(original_directed_edges))) {
+    for (j in seq(1, length(original_edges))) {
+      # From directed edge to edge, direction [2]:
+      admixtures <- original_admixtures
+      for (k in seq(1, length(admixtures))) {
+        admixture <- admixtures[[k]]
+        if (admixture[1] == original_directed_edges[[i]][2]) {
+          if (admixture[2] == original_directed_edges[[i]][1]) {
+            admixture[2] <- inner_name
+          }
+          if (admixture[3] == original_directed_edges[[i]][1]) {
+            admixture[3] <- inner_name
+          }
+          admixtures[[k]] <- admixture
+        }
+      }
+      admixtures[[length(admixtures) + 1]] <- c(admix_name, inner_name, original_edges[[j]][1], admixture_variable_name)
+      directed_edges <- original_directed_edges
+      directed_edges[[i]] <- c(inner_name, original_directed_edges[[i]][2])
+      directed_edges[[length(directed_edges) + 1]] <- c(inner_name, admix_name)
+      directed_edges[[length(directed_edges) + 1]] <- c(original_edges[[j]][1], admix_name)
+      edges <- original_edges
+      edges[[j]] <- c(original_directed_edges[[i]][1], inner_name)
+      edges[[length(edges) + 1]] <- c(admix_name, original_edges[[j]][2])
+      starting_directed_edge <- c(admix_name, original_edges[[j]][2])
+      flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+      if (flow_result$problem == FALSE) {
+        graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+        graph_list[[length(graph_list) + 1]] <- graph
+      }
+      # From directed edge to edge, direction [1]:
+      admixtures <- original_admixtures
+      for (k in seq(1, length(admixtures))) {
+        admixture <- admixtures[[k]]
+        if (admixture[1] == original_directed_edges[[i]][2]) {
+          if (admixture[2] == original_directed_edges[[i]][1]) {
+            admixture[2] <- inner_name
+          }
+          if (admixture[3] == original_directed_edges[[i]][1]) {
+            admixture[3] <- inner_name
+          }
+          admixtures[[k]] <- admixture
+        }
+      }
+      admixtures[[length(admixtures) + 1]] <- c(admix_name, inner_name, original_edges[[j]][2], admixture_variable_name)
+      directed_edges <- original_directed_edges
+      directed_edges[[i]] <- c(inner_name, original_directed_edges[[i]][2])
+      directed_edges[[length(directed_edges) + 1]] <- c(inner_name, admix_name)
+      directed_edges[[length(directed_edges) + 1]] <- c(original_edges[[j]][2], admix_name)
+      edges <- original_edges
+      edges[[j]] <- c(original_directed_edges[[i]][1], inner_name)
+      edges[[length(edges) + 1]] <- c(admix_name, original_edges[[j]][1])
+      starting_directed_edge <- c(admix_name, original_edges[[j]][1])
+      flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+      if (flow_result$problem == FALSE) {
+        graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+        graph_list[[length(graph_list) + 1]] <- graph
+      }
+    }
+    for (j in seq(1, length(original_directed_edges))) {
+      if (i != j) {
+        # From directed edge to directed edge:
+        admixtures <- original_admixtures
+        if (original_directed_edges[[i]][2] == original_directed_edges[[j]][2]) {
+          for (k in seq(1,length(admixtures))) {
+            admixture <- admixtures[[k]]
+            if (admixture[1] == original_directed_edges[[i]][2]) {
+              if (admixture[2] == original_directed_edges[[i]][1]) {
+                admixture[2] <- inner_name
+                admixture[3] <- admix_name
+              } else {
+                admixture[3] <- inner_name
+                admixture[2] <- admix_name
+              }
+              admixtures[[k]] <- admixture
+            }
+          }
+        } else {
+          for (k in seq(1,length(admixtures))) {
+            admixture <- admixtures[[k]]
+            if (admixture[1] == original_directed_edges[[i]][2]) {
+              if (admixture[2] == original_directed_edges[[i]][1]) {
+                admixture[2] <- inner_name
+              }
+              if (admixture[3] == original_directed_edges[[i]][1]) {
+                admixture[3] <- inner_name
+              }
+              admixtures[[k]] <- admixture
+            }
+            if (admixture[1] == original_directed_edges[[j]][2]) {
+              if (admixture[2] == original_directed_edges[[j]][1]) {
+                admixture[2] <- admix_name
+              }
+              if (admixture[3] == original_directed_edges[[j]][1]) {
+                admixture[3] <- admix_name
+              }
+              admixtures[[k]] <- admixture
+            }
+          }
+        }
+        admixtures[[length(admixtures) + 1]] <- c(admix_name, inner_name, original_directed_edges[[j]][1], admixture_variable_name)
+        directed_edges <- original_directed_edges
+        directed_edges[[i]] <- c(inner_name, original_directed_edges[[i]][2])
+        directed_edges[[j]] <- c(inner_name, admix_name)
+        directed_edges[[length(directed_edges) + 1]] <- c(admix_name, original_directed_edges[[j]][2])
+        directed_edges[[length(directed_edges) + 1]] <- c(original_directed_edges[[j]][1], admix_name)
+        edges <- original_edges
+        edges[[length(edges) + 1]] <- c(original_directed_edges[[i]][1], inner_name)
+        starting_directed_edge <- c(admix_name, original_directed_edges[[j]][2])
+        flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+        if (flow_result$problem == FALSE) {
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph_list[[length(graph_list) + 1]] <- graph
+        }
+      }
+    }
+  }
+  return(graph_list)
 }
 
-
-#' Plot a list of fitted admixture graphs.
-#' 
-#' @param x List of fitted graphs.
-#' @param ... Additional plotting options
-#'   
-#' @export
-plot.agraph_fit_list <- function(x, measure = "SSE", ...) {
-  admixture_events <- no_admixture_events(x)
-  sse <- sum_of_squared_errors(x)
-  fits <- no_poor_fits(x)
-  
-  d <- data.frame(indices = seq_along(x), 
-                  no_admixture_events = admixture_events,
-                  SSE = sse, no_poor_fits = fits)
-  
-  if (measure == "SSE") {
-    ggplot(d) + facet_grid(~no_admixture_events) + geom_point(aes(x = indices, y = SSE))
-  } else {
-    ggplot(d) + facet_grid(~no_admixture_events) + geom_point(aes(x = indices, y = no_poor_fits))
+# Breaking up a graph back to its components.
+break_graph <- function(graph) {
+  nodes <- graph$nodes
+  edges <- list()
+  admixtures <- list()
+  parents <- graph$parents
+  probs <- graph$probs
+  for (i in seq(1, NROW(parents))) {
+    match <- which(parents[i, ] == TRUE)
+    if (length(match) == 0) {
+      root <- nodes[i]
+    } else if (length(match) == 1) {
+      edges[[length(edges) + 1]] <- c(nodes[i], nodes[match[1]])
+    } else if (length(match) == 2) {
+      if (nchar(probs[i, match[1]]) > nchar(probs[i, match[2]])) {
+        admixtures[[length(admixtures) + 1]] <- c(nodes[i], nodes[match[2]], nodes[match[1]], probs[i, match[2]])
+      } else {
+        admixtures[[length(admixtures) + 1]] <- c(nodes[i], nodes[match[1]], nodes[match[2]], probs[i, match[1]])
+      }
+    }
   }
+  return(list(leaves = graph$leaves, inner_nodes = graph$inner_nodes, edges = edges, admixtures = admixtures, root = root))
 }
 
+# Given material for a graph known to been all right, choose a suitable root and build the graph.
+root_graph <- function(leaves, inner_nodes, edges, directed_edges, admixtures) {
+  for (admixture in admixtures) {
+    flow_result <- flow(leaves, edges, directed_edges, c(admixture[2], admixture[1]))
+    edges <- flow_result$edges
+    directed_edges <- flow_result$directed_edges
+  }
+  inner_nodes <- c(inner_nodes, "R")
+  edge <- edges[[1]]
+  edges[[1]] <- NULL
+  directed_edges[[length(directed_edges) + 1]] <- c("R", edge[1])
+  directed_edges[[length(directed_edges) + 1]] <- c("R", edge[2])
+  flow_result <- flow(leaves, edges, directed_edges, c("R", edge[1]))
+  edges <- flow_result$edges
+  directed_edges <- flow_result$directed_edges
+  flow_result <- flow(leaves, edges, directed_edges, c("R", edge[2]))
+  # There should be no undirected edges anymore.
+  directed_edges <- flow_result$directed_edges
+  # This is a little embarassing but the edge directions are in fact wrong at the moment.
+  edge_argument <- character(0)
+  admix_argument <- character(0)
+  for (j in seq(1, length(directed_edges))) {
+    edge_argument <- c(edge_argument, edge(directed_edges[[j]][2], directed_edges[[j]][1]))
+  }
+  for (k in seq(1, length(admixtures))) {
+    edge_argument <- c(edge_argument, admixture_edge(admixtures[[k]][1], admixtures[[k]][2],
+                                                     admixtures[[k]][3]))
+    admix_argument <- c(admix_argument, admix_props(admixtures[[k]][1], admixtures[[k]][2],
+                                                    admixtures[[k]][3], admixtures[[k]][4]))
+  }
+  edges <- parent_edges(edge_argument)
+  admixtures <- admixture_proportions(admix_argument)
+  return(agraph(leaves, inner_nodes, edges, admixtures))
+}
 
+# Detecting directed loops and collisions, gives a direction to undirected edges.
+flow <- function(leaves, edges, directed_edges, starting_directed_edge) {
+  forgive <- TRUE
+  problem <- FALSE
+  active_directed_edges <- list(starting_directed_edge)
+  # We might need to remove the starting directed edge from the normal edge list and add it to directed edge list:
+  erase <- 0
+  if (length(edges) > 0) {
+    for (i in seq(1, length(edges))) {
+      edge <- edges[[i]]
+      if (edge[1] == starting_directed_edge[1] && edge[2] == starting_directed_edge[2]) {
+        erase <- i
+        directed_edges[[length(directed_edges) + 1]] <- starting_directed_edge
+      }
+      if (edge[1] == starting_directed_edge[2] && edge[2] == starting_directed_edge[1]) {
+        erase <- i
+        directed_edges[[length(directed_edges) + 1]] <- starting_directed_edge
+      }
+    }
+  }
+  if (erase > 0) {
+    edges[[erase]] <- NULL
+  }
+  # Now start the iteration:
+  while (problem == FALSE && length(active_directed_edges) > 0) {
+    active_directed_edge <- active_directed_edges[[1]]
+    # Detect directed loops:
+    if (active_directed_edge[1] == starting_directed_edge[1] && active_directed_edge[2] == starting_directed_edge[2]) {
+      if (forgive == TRUE) {
+        forgive <- FALSE
+      } else {
+        problem <- TRUE
+      }
+    }
+    continues <- FALSE
+    # Flow to directed edges:
+    if (length(directed_edges) > 0) {
+      for (i in seq(1, length(directed_edges))) {
+        selected_directed_edge <- directed_edges[[i]]
+        if (active_directed_edge[2] == selected_directed_edge[1]) {
+          active_directed_edges[[length(active_directed_edges) + 1]] <- selected_directed_edge
+          continues <- TRUE
+        }
+      }
+    }
+    # Flow to undirected edges and direct them:
+    if (length(edges) > 0) {
+      to_be_erased <- integer(0)
+      for (i in seq(1, length(edges))) {
+        selected_edge <- edges[[i]]
+        if (active_directed_edge[2] == selected_edge[1]) {
+          active_directed_edges[[length(active_directed_edges) + 1]] <- selected_edge
+          directed_edges[[length(directed_edges) + 1]] <- selected_edge
+          to_be_erased <- c(to_be_erased, i)
+          continues <- TRUE
+        }
+        if (active_directed_edge[2] == selected_edge[2]) {
+          active_directed_edges[[length(active_directed_edges) + 1]] <- c(selected_edge[2], selected_edge[1])
+          directed_edges[[length(directed_edges) + 1]] <- c(selected_edge[2], selected_edge[1])
+          to_be_erased <- c(to_be_erased, i)
+          continues <- TRUE
+        }
+      }
+      while (length(to_be_erased) > 0) {
+        edges[[to_be_erased[length(to_be_erased)]]] <- NULL
+        to_be_erased <- to_be_erased[-length(to_be_erased)]
+      }
+    }
+    # If the flow stops we must be at a leaf:
+    if (continues == FALSE) {
+      if (active_directed_edge[2] %in% leaves) {
+      } else {
+        problem <- TRUE  
+      }
+    }
+    active_directed_edges[[1]] <- NULL
+  }
+  return(list(problem = problem, edges = edges, directed_edges = directed_edges))
+}
