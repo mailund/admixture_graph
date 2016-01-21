@@ -500,6 +500,7 @@ mynonneg <- function(C, d, iteration_multiplier = 3) {
 #' the fit. For the details, use \code{edge_optimisation_function} instead.
 #'
 #' @param data  The data set.
+#' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
 #' @param matrix  A column reduced edge optimisation matrix (typically given by
 #'                the function \code{edge_optimisation_matrix$column_reduced}).
 #' @param graph  The admixture graph.
@@ -509,7 +510,7 @@ mynonneg <- function(C, d, iteration_multiplier = 3) {
 #'          regarding the edge variables.
 #'
 #' @export
-cost_function <- function(data, matrix, graph,
+cost_function <- function(data, concentration, matrix, graph,
                           parameters = extract_graph_parameters(graph),
                           iteration_multiplier = 3) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
@@ -532,11 +533,14 @@ cost_function <- function(data, matrix, graph,
     # Now just use a ready-made function to find the best non-negative solution
     # in the Euclidian norm. Apparently this is "slow" in the sense it takes
     # O(n^3) steps and not O(n^2.3) steps as it could in principle.
+    # The matrix A is taking variances and covariances into account.
     if (NCOL(matrix) > 0) {
-      lsq_solution <- mynonneg(evaluated_matrix, goal, iteration_multiplier)
+      C <- concentration %*% evaluated_matrix
+      d <- as.vector(concentration %*% goal)
+      lsq_solution <- mynonneg(C, d, iteration_multiplier)
       cost <- lsq_solution$resid.norm
     } else {
-      cost <- sum(goal^2)
+      cost <- sum((concentration %*% goal)^2)
     }
   }
 }
@@ -548,7 +552,8 @@ cost_function <- function(data, matrix, graph,
 #' edge optimisation matrix.
 #'
 #' @param data  The data set.
-#' @param matrix  A full  edge optimisation matrix (typically given by the
+#' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
+#' @param matrix  A full edge optimisation matrix (typically given by the
 #'                function \code{edge_optimisation_matrix$full}).
 #' @param graph  The admixture graph.
 #' @param parameters  In case one wants to tweak something in the graph.
@@ -561,7 +566,7 @@ cost_function <- function(data, matrix, graph,
 #'          (\code{x$bounded_edges}) edge variables.
 #'
 #' @export
-edge_optimisation_function <- function(data, matrix, graph,
+edge_optimisation_function <- function(data, concentration, matrix, graph,
                                        parameters = extract_graph_parameters(graph),
                                        iteration_multiplier = 3) {
   if (!requireNamespace("pracma", quietly = TRUE)) {
@@ -582,7 +587,9 @@ edge_optimisation_function <- function(data, matrix, graph,
       }
     }
     # Record the (or an example of an) optimal solution and error.
-    lsq_solution <- mynonneg(evaluated_matrix, goal, iteration_multiplier)
+    C <- concentration %*% evaluated_matrix
+    d <- as.vector(concentration %*% goal)
+    lsq_solution <- mynonneg(C, d, iteration_multiplier)
     edge_fit <- lsq_solution$x
     names(edge_fit) <- parameters$edges
     approximation <- evaluated_matrix %*% edge_fit
@@ -657,6 +664,15 @@ edge_optimisation_function <- function(data, matrix, graph,
   }
 }
 
+#' @export
+calculate_concentration <- function(data) {
+  concentration <- matrix(0, NROW(data), NROW(data))
+  for (j in seq(1, NROW(data))) {
+    concentration[j, j] <-  as.numeric(data[j, "Z.value"])/as.numeric(data[j, "D"])
+  }
+  concentration
+}
+
 #' A fast version of graph fitting.
 #'
 #' Like fit_graph() but only gives the very basics, dropping the analysis
@@ -665,6 +681,7 @@ edge_optimisation_function <- function(data, matrix, graph,
 #'
 #' @param data  The data set.
 #' @param graph  The admixture graph.
+#' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
 #' @param optimisation_options  Options to the optimisation algorithm.
 #' @param parameters  In case one wants to tweak something in the graph.
 #'
@@ -673,7 +690,11 @@ edge_optimisation_function <- function(data, matrix, graph,
 #' @seealso \code{\link[neldermead]{optimset}}
 #'
 #' @export
-fast_fit <- function(data, graph, optimisation_options = NULL,
+fast_fit <- function(data, graph,
+                     point = list(rep(0, length(extract_graph_parameters(graph)$admix_prop)),
+                                  rep(1, length(extract_graph_parameters(graph)$admix_prop))),
+                     concentration = calculate_concentration(data),
+                     optimisation_options = NULL,
                      parameters = extract_graph_parameters(graph),
                      iteration_multiplier = 3) {
   if (!requireNamespace("neldermead", quietly = TRUE)) {
@@ -683,15 +704,15 @@ fast_fit <- function(data, graph, optimisation_options = NULL,
     stop("This function requires pracma to be installed.")
   }
   withCallingHandlers({
-    inner_fast_fit(data, graph, optimisation_options, parameters,
-                   iteration_multiplier)
+    inner_fast_fit(data, graph, point, concentration, optimisation_options,
+                   parameters, iteration_multiplier)
   }, error = function(e) {
     message("error")
     invokeRestart("try_again")
   })
 }
-inner_fast_fit <- function(data, graph, optimisation_options, parameters,
-                           iteration_multiplier) {
+inner_fast_fit <- function(data, graph, point, concentration, optimisation_options,
+                           parameters, iteration_multiplier) {
   withRestarts({
     matrix <- build_edge_optimisation_matrix(data, graph, parameters)
     reduced_matrix <- matrix$column_reduced
@@ -703,13 +724,13 @@ inner_fast_fit <- function(data, graph, optimisation_options, parameters,
       best_fit <- temp[!1]
       full_matrix <- matrix$full
       detailed_fit <-
-        edge_optimisation_function(data, full_matrix, graph, parameters, iteration_multiplier)(best_fit)
+        edge_optimisation_function(data, concentration, full_matrix, graph, parameters,
+                                   iteration_multiplier)(best_fit)
       best_error <- detailed_fit$cost
     } else {
-      x0 <- rep(0.5, length(parameters$admix_prop))
-      cfunc <- cost_function(data, reduced_matrix, graph, parameters, iteration_multiplier)
-      opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = rep(0, length(x0)),
-                                  xmax = rep(1, length(x0)),
+      x0 <- 0.5*(point[[1]] + point[[2]])
+      cfunc <- cost_function(data, concentration, reduced_matrix, graph, parameters, iteration_multiplier)
+      opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = point[[1]], xmax = point[[2]],
                                   options = optimisation_options)
       # The value opti is a class "neldermead" object.
       best_error <- neldermead::neldermead.get(opti, "fopt") # Optimal error.
@@ -720,7 +741,7 @@ inner_fast_fit <- function(data, graph, optimisation_options, parameters,
     # The output is a list containing the square sum error, admix variable fit and the graph.
     list(best_error = best_error, best_fit = best_fit, graph = graph)
   }, try_again = function() {
-    inner_fast_fit(data, graph, optimisation_options, parameters,
+    inner_fast_fit(data, graph, point, concentration, optimisation_options, parameters,
                    iteration_multiplier)
   })
 }
@@ -741,6 +762,7 @@ inner_fast_fit <- function(data, graph, optimisation_options, parameters,
 #'
 #' @param data  The data set.
 #' @param graph  The admixture graph.
+#' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
 #' @param optimisation_options  Options to the optimisation algorithm.
 #' @param parameters  In case one wants to tweak something in the graph.
 #'
@@ -749,7 +771,11 @@ inner_fast_fit <- function(data, graph, optimisation_options, parameters,
 #' @seealso \code{\link[neldermead]{optimset}}
 #'
 #' @export
-fit_graph <- function(data, graph, optimisation_options = NULL,
+fit_graph <- function(data, graph,
+                      point = list(rep(0, length(extract_graph_parameters(graph)$admix_prop)),
+                                   rep(1, length(extract_graph_parameters(graph)$admix_prop))),
+                      concentration = calculate_concentration(data),
+                      optimisation_options = NULL,
                       parameters = extract_graph_parameters(graph), 
                       iteration_multiplier = 3, qr_tol = 1e-8) {
   if (!requireNamespace("neldermead", quietly = TRUE)) {
@@ -759,14 +785,14 @@ fit_graph <- function(data, graph, optimisation_options = NULL,
     stop("This function requires pracma to be installed.")
   }
   withCallingHandlers({
-    inner_fit_graph(data, graph, optimisation_options, parameters,
-                   iteration_multiplier, qr_tol)
+    inner_fit_graph(data, graph, point, concentration, optimisation_options,
+                    parameters, iteration_multiplier, qr_tol)
   }, error = function(e) {
     invokeRestart("try_again")
   })
 }
-inner_fit_graph <- function(data, graph, optimisation_options, parameters,
-                      iteration_multiplier, qr_tol) {
+inner_fit_graph <- function(data, graph, point, concentration, optimisation_options,
+                            parameters, iteration_multiplier, qr_tol) {
   withRestarts({
     matrix <- build_edge_optimisation_matrix(data, graph, parameters)
     full_matrix <- matrix$full
@@ -779,10 +805,9 @@ inner_fit_graph <- function(data, graph, optimisation_options, parameters,
       names(temp) <- c(1)
       best_fit <- temp[!1]
     } else {
-      x0 <- rep(0.5, length(parameters$admix_prop))
-      cfunc <- cost_function(data, reduced_matrix, graph, parameters, iteration_multiplier)
-      opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = rep(0, length(x0)),
-                                  xmax = rep(1, length(x0)),
+      x0 <- 0.5*(point[[1]] + point[[2]])
+      cfunc <- cost_function(data, concentration, reduced_matrix, graph, parameters, iteration_multiplier)
+      opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = point[[1]], xmax = point[[2]],
                                   options = optimisation_options)
       # The value opti is a class "neldermead" object.
       best_fit <- neldermead::neldermead.get(opti, "xopt") # Optimal admix values.
@@ -790,7 +815,8 @@ inner_fit_graph <- function(data, graph, optimisation_options, parameters,
       names(best_fit) <- parameters$admix_prop
     }
     detailed_fit <-
-      edge_optimisation_function(data, full_matrix, graph, parameters, iteration_multiplier)(best_fit)
+      edge_optimisation_function(data, concentration, full_matrix, graph, parameters,
+                                 iteration_multiplier)(best_fit)
     data$graph_f4 <- detailed_fit$approximation
     # The output is a list with class "agraph_fit"
     structure(list(
@@ -811,7 +837,7 @@ inner_fit_graph <- function(data, graph, optimisation_options, parameters,
     class = "agraph_fit"
     )
   }, try_again = function() {
-    inner_fit_graph(data, graph, optimisation_options, parameters,
+    inner_fit_graph(data, graph, point, concentration, optimisation_options, parameters,
                     iteration_multiplier, qr_tol)
   })
 }
