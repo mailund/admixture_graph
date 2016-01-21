@@ -29,7 +29,7 @@ canonise_expression <- function(x) {
   # First remove the symbols 1 and - from inside the parenthesis to make things easier.
   l <- nchar(x)
   for (i in seq(0, l - 1)) {
-   if (substring(x, l - i, l - i) == "(") {
+    if (substring(x, l - i, l - i) == "(") {
       x <- paste(substring(x, 1, l - i), substring(x, l - i + 5), sep = "")
     }
   }
@@ -204,10 +204,6 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
         # Yeah I know this is a bit silly but the matrix is only created once.
         if (NROW(statistic[[j]]$positive) > 0) { # Insert the positive stuff
           for (k in seq(1, NROW(statistic[[j]]$positive))) {
-<<<<<<< HEAD
-            edge_name <- fe(statistic[[j]]$positive[k, 1], statistic[[j]]$positive[k, 2])
-            edge_optimisation_matrix[i, edge_name] <- 
-=======
             edge_name1 <- paste("edge", statistic[[j]]$positive[k, 1],
                                 statistic[[j]]$positive[k, 2], sep = "_")
             edge_name2 <- paste("edge", statistic[[j]]$positive[k, 2],
@@ -218,18 +214,12 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
               edge_name <- edge_name2
             }
             edge_optimisation_matrix[i, edge_name] <-
->>>>>>> origin/develop
               paste(edge_optimisation_matrix[i, edge_name],
                     admix_product, sep = "+")
           }
         }
         if (NROW(statistic[[j]]$negative) > 0) { # Insert the negative stuff
           for (k in seq(1, NROW(statistic[[j]]$negative))) {
-<<<<<<< HEAD
-            edge_name <- fe(statistic[[j]]$negative[k, 1], statistic[[j]]$negative[k, 2])
-            edge_optimisation_matrix[i, edge_name] <- 
-              paste(edge_optimisation_matrix[i, edge_name], 
-=======
             edge_name1 <- paste("edge", statistic[[j]]$negative[k, 1],
                                 statistic[[j]]$negative[k, 2], sep = "_")
             edge_name2 <- paste("edge", statistic[[j]]$negative[k, 2],
@@ -241,7 +231,6 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
             }
             edge_optimisation_matrix[i, edge_name] <-
               paste(edge_optimisation_matrix[i, edge_name],
->>>>>>> origin/develop
                     admix_product, sep = "-")
           }
         }
@@ -792,33 +781,6 @@ fit_graph <- function(data, graph,
   if (!requireNamespace("neldermead", quietly = TRUE)) {
     stop("This function requires neldermead to be installed.")
   }
-<<<<<<< HEAD
-  matrix <- build_edge_optimisation_matrix(data, graph, parameters)
-  full_matrix <- matrix$full
-  reduced_matrix <- matrix$column_reduced
-  if (length(parameters$admix_prop) == 0) {
-    # I want to create "named numeric(0)" as the optimal admix vector,
-    # just for the sake of consistency.
-    temp <- c(1)
-    names(temp) <- c(1)
-    best_fit <- temp[!1]
-  } else {
-    x0 <- rep(0.5, length(parameters$admix_prop))  
-    cfunc <- cost_function(data, reduced_matrix, graph, parameters)
-    opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = rep(0, length(x0)),
-                                xmax = rep(1, length(x0)),
-                                options = optimisation_options)
-    # The value opti is a class "neldermead" object.
-    best_fit <- neldermead::neldermead.get(opti, "xopt") # Optimal admix values.
-    best_fit <- best_fit[, 1]
-    names(best_fit) <- parameters$admix_prop
-  }
-  detailed_fit <- 
-    edge_optimisation_function(data, full_matrix, graph, parameters)(best_fit)
-  data$graph_f4 <- detailed_fit$approximation
-  # The output is a list with "agraph_fit" -mystery property.
-  structure(list(
-=======
   if (!requireNamespace("pracma", quietly = TRUE)) {
     stop("This function requires pracma to be installed.")
   }
@@ -858,7 +820,6 @@ inner_fit_graph <- function(data, graph, point, concentration, optimisation_opti
     data$graph_f4 <- detailed_fit$approximation
     # The output is a list with class "agraph_fit"
     structure(list(
->>>>>>> origin/develop
       call = sys.call(),
       data = data,
       graph = graph,
