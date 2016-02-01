@@ -274,6 +274,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
 #' around).
 #'
 #' @param matrix  Not really a matrix but two (an output of build_edge_optimisation_matrix())
+#' @param tol  Calulating the rank with qr.rank sometimes crashes (it shouldn't!).
 #'
 #' @return An indicator of warning ($complaint), coding all the possibilities in a way that
 #'         is interpreted elsewhere (in summary()).
@@ -441,6 +442,7 @@ examine_edge_optimisation_matrix <- function(matrix, tol = 1e-8) {
 #'
 #' @param C  The matrix.
 #' @param d  The vector.
+#' @param iteration_multiplier  The definition of "too many steps".
 #'
 #' @return A vector ($x) and the error ($resid.norm).
 #'
@@ -557,6 +559,7 @@ cost_function <- function(data, concentration, matrix, graph,
 #'                function \code{edge_optimisation_matrix$full}).
 #' @param graph  The admixture graph.
 #' @param parameters  In case one wants to tweak something in the graph.
+#' @param iteration_multiplier Given to mynonneg().
 #'
 #' @return  Given an input vector of admix variables, returns a list \code{x} containing
 #'          the minimal error (\code{x$cost}), the graph-f4-statistics
@@ -665,10 +668,17 @@ edge_optimisation_function <- function(data, concentration, matrix, graph,
 }
 
 #' @export
-calculate_concentration <- function(data) {
+calculate_concentration <- function(data, Z.value) {
   concentration <- matrix(0, NROW(data), NROW(data))
-  for (j in seq(1, NROW(data))) {
-    concentration[j, j] <-  as.numeric(data[j, "Z.value"])/as.numeric(data[j, "D"])
+  if (Z.value == TRUE) {
+    for (j in seq(1, NROW(data))) {
+      concentration[j, j] <-  as.numeric(data[j, "Z.value"])/as.numeric(data[j, "D"])
+    }
+  }
+  else {
+    for (j in seq(1, NROW(data))) {
+      concentration[j, j] <-  1
+    }
   }
   concentration
 }
@@ -681,11 +691,17 @@ calculate_concentration <- function(data) {
 #'
 #' @param data  The data set.
 #' @param graph  The admixture graph.
+#' @param point  If the user wants to restrict admix variables somehow, like fixing some
+#'               of them. A list of two vectors: the lower and the upper bounds.
+#' @param Z.value  Whether we calculate the default concentration from Z.values (default
+#'                 option) or just use the identity matrix.
 #' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
+#'                       Default matrix determined by parameter Z.value.
 #' @param optimisation_options  Options to the optimisation algorithm.
 #' @param parameters  In case one wants to tweak something in the graph.
+#' @param iteration_multiplier  Given to mynonneg().
 #'
-#' @return A list containing someselected stuff about the fit.
+#' @return A list containing some selected stuff about the fit.
 #'
 #' @seealso \code{\link[neldermead]{optimset}}
 #'
@@ -693,7 +709,8 @@ calculate_concentration <- function(data) {
 fast_fit <- function(data, graph,
                      point = list(rep(0, length(extract_graph_parameters(graph)$admix_prop)),
                                   rep(1, length(extract_graph_parameters(graph)$admix_prop))),
-                     concentration = calculate_concentration(data),
+                     Z.value = TRUE,
+                     concentration = calculate_concentration(data, Z.value),
                      optimisation_options = NULL,
                      parameters = extract_graph_parameters(graph),
                      iteration_multiplier = 3) {
@@ -704,14 +721,14 @@ fast_fit <- function(data, graph,
     stop("This function requires pracma to be installed.")
   }
   withCallingHandlers({
-    inner_fast_fit(data, graph, point, concentration, optimisation_options,
+    inner_fast_fit(data, graph, point, Z.value, concentration, optimisation_options,
                    parameters, iteration_multiplier)
   }, error = function(e) {
     message("error")
     invokeRestart("try_again")
   })
 }
-inner_fast_fit <- function(data, graph, point, concentration, optimisation_options,
+inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisation_options,
                            parameters, iteration_multiplier) {
   withRestarts({
     matrix <- build_edge_optimisation_matrix(data, graph, parameters)
@@ -741,7 +758,7 @@ inner_fast_fit <- function(data, graph, point, concentration, optimisation_optio
     # The output is a list containing the square sum error, admix variable fit and the graph.
     list(best_error = best_error, best_fit = best_fit, graph = graph)
   }, try_again = function() {
-    inner_fast_fit(data, graph, point, concentration, optimisation_options, parameters,
+    inner_fast_fit(data, graph, point, Z.value, concentration, optimisation_options, parameters,
                    iteration_multiplier)
   })
 }
@@ -762,9 +779,16 @@ inner_fast_fit <- function(data, graph, point, concentration, optimisation_optio
 #'
 #' @param data  The data set.
 #' @param graph  The admixture graph.
+#' @param point  If the user wants to restrict admix variables somehow, like fixing some
+#'               of them. A list of two vectors: the lower and the upper bounds.
+#' @param Z.value  Whether we calculate the default concentration from Z.values (default
+#'                 option) or just use the identity matrix.
 #' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
+#'                       Default matrix determined by parameter Z.value.
 #' @param optimisation_options  Options to the optimisation algorithm.
 #' @param parameters  In case one wants to tweak something in the graph.
+#' @param iteration_multiplier  Given to mynonneg().
+#' @param qr_tol  Given to examine_edge_optimisation_matrix().
 #'
 #' @return A list containing everything about the fit.
 #'
@@ -774,7 +798,8 @@ inner_fast_fit <- function(data, graph, point, concentration, optimisation_optio
 fit_graph <- function(data, graph,
                       point = list(rep(0, length(extract_graph_parameters(graph)$admix_prop)),
                                    rep(1, length(extract_graph_parameters(graph)$admix_prop))),
-                      concentration = calculate_concentration(data),
+                      Z.value = TRUE,
+                      concentration = calculate_concentration(data, Z.value),
                       optimisation_options = NULL,
                       parameters = extract_graph_parameters(graph), 
                       iteration_multiplier = 3, qr_tol = 1e-8) {
@@ -785,13 +810,13 @@ fit_graph <- function(data, graph,
     stop("This function requires pracma to be installed.")
   }
   withCallingHandlers({
-    inner_fit_graph(data, graph, point, concentration, optimisation_options,
+    inner_fit_graph(data, graph, point, Z.value, concentration, optimisation_options,
                     parameters, iteration_multiplier, qr_tol)
   }, error = function(e) {
     invokeRestart("try_again")
   })
 }
-inner_fit_graph <- function(data, graph, point, concentration, optimisation_options,
+inner_fit_graph <- function(data, graph, point, Z.value, concentration, optimisation_options,
                             parameters, iteration_multiplier, qr_tol) {
   withRestarts({
     matrix <- build_edge_optimisation_matrix(data, graph, parameters)
@@ -837,7 +862,7 @@ inner_fit_graph <- function(data, graph, point, concentration, optimisation_opti
     class = "agraph_fit"
     )
   }, try_again = function() {
-    inner_fit_graph(data, graph, point, concentration, optimisation_options, parameters,
+    inner_fit_graph(data, graph, point, Z.value, concentration, optimisation_options, parameters,
                     iteration_multiplier, qr_tol)
   })
 }
