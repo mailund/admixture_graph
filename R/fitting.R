@@ -516,7 +516,7 @@ cost_function <- function(data, concentration, matrix, graph,
   if (!requireNamespace("pracma", quietly = TRUE)) {
     stop("This function requires pracma to be installed.")
   }
-  goal <- data$D
+  goal <- cbind(data$D)
   function(x) {
     # Evaluate the column reduced edge optimisation matrix at x.
     evaluated_matrix <- matrix(0, NROW(matrix), NCOL(matrix))
@@ -540,7 +540,7 @@ cost_function <- function(data, concentration, matrix, graph,
       lsq_solution <- mynonneg(C, d, iteration_multiplier)
       cost <- lsq_solution$resid.norm
     } else {
-      cost <- sum((concentration %*% goal)^2)
+      cost <- sum(as.vector(concentration %*% goal)^2)
     }
   }
 }
@@ -572,7 +572,7 @@ edge_optimisation_function <- function(data, concentration, matrix, graph,
   if (!requireNamespace("pracma", quietly = TRUE)) {
     stop("This function requires pracma to be installed.")
   }
-  goal <- data$D
+  goal <- cbind(data$D)
   function(x) {
     # Evaluate the full edge otimisation matrix at x, if we even have admix variables.
     evaluated_matrix <- matrix(0, NROW(matrix), NCOL(matrix))
