@@ -582,6 +582,27 @@ four_leaves_graphs <- list(
       edge("z", "y"),
       edge("w", "N"),
       edge(leaves[1], "x"), 
+      edge(leaves[2], "w"), 
+      edge(leaves[3], "w"),
+      edge(leaves[4], "y"),
+      admixture_edge("M", "x", "z"),
+      admixture_edge("N", "M", "z")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "x", "z", "a"),
+      admix_props("N", "M", "z", "b")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_23 = function(leaves) {
+    inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "R"),
+      edge("z", "y"),
+      edge("w", "N"),
+      edge(leaves[1], "x"), 
       edge(leaves[2], "M"), 
       edge(leaves[3], "w"),
       edge(leaves[4], "w"),
@@ -595,7 +616,7 @@ four_leaves_graphs <- list(
     agraph(leaves, inner_nodes, edges, admixtures)
   },
   
-  two_admixtures_23 = function(leaves) {
+  two_admixtures_24 = function(leaves) {
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
       edge("x", "R"),
@@ -616,7 +637,28 @@ four_leaves_graphs <- list(
     agraph(leaves, inner_nodes, edges, admixtures)
   },
   
-  two_admixtures_24 = function(leaves) {
+  two_admixtures_25 = function(leaves) {
+    inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "y"),
+      edge("w", "y"),
+      edge(leaves[1], "R"), 
+      edge(leaves[2], "z"), 
+      edge(leaves[3], "N"),
+      edge(leaves[4], "x"),
+      admixture_edge("M", "z", "w"),
+      admixture_edge("N", "M", "w")
+    ))
+    admixtures <- admixture_proportions(c(
+      admix_props("M", "z", "w", "a"),
+      admix_props("N", "M", "w", "b")
+    ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  two_admixtures_26 = function(leaves) {
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
       edge("x", "R"),
@@ -637,7 +679,7 @@ four_leaves_graphs <- list(
     agraph(leaves, inner_nodes, edges, admixtures)
   },
   
-  two_admixtures_25 = function(leaves) {
+  two_admixtures_27 = function(leaves) {
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
       edge("x", "R"),
@@ -658,7 +700,7 @@ four_leaves_graphs <- list(
     agraph(leaves, inner_nodes, edges, admixtures)
   },
   
-  two_admixtures_26 = function(leaves) {
+  two_admixtures_28 = function(leaves) {
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
       edge("x", "R"),
@@ -679,7 +721,7 @@ four_leaves_graphs <- list(
     agraph(leaves, inner_nodes, edges, admixtures)
   },
   
-  two_admixtures_27 = function(leaves) {
+  two_admixtures_29 = function(leaves) {
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
       edge("x", "R"),
@@ -700,7 +742,7 @@ four_leaves_graphs <- list(
     agraph(leaves, inner_nodes, edges, admixtures)
   },
   
-  two_admixtures_28 = function(leaves) {
+  two_admixtures_30 = function(leaves) {
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
       edge("x", "R"),
@@ -721,7 +763,7 @@ four_leaves_graphs <- list(
     agraph(leaves, inner_nodes, edges, admixtures)
   },
   
-  two_admixtures_29 = function(leaves) {
+  two_admixtures_31 = function(leaves) {
     inner_nodes <- c("R", "x", "y", "z", "w", "M", "N")
     edges <- parent_edges(c(
       edge("x", "R"),
@@ -1480,14 +1522,12 @@ add_a_leaf <- function(graph, leaf_name) {
 }
 
 #' @export
-add_an_admixture <- function(graph, admixture_variable_name) {
+add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FALSE) {
   graph_list <- list()
   broken_graph <- break_graph(graph)
   # We might have to choose a different root after adding the admixture, so we start by removing
   # the original root and treating only the edges colliding in an admix event as directed and the
   # rest as undirected.
-  # Note that we don't allow triangles of admix edges because, like "eyes", our method can't
-  # distinguish a graph like that from a simpler graph.
   leaves <- broken_graph$leaves
   original_inner_nodes <- broken_graph$inner_nodes
   original_edges <- broken_graph$edges
@@ -1525,25 +1565,39 @@ add_an_admixture <- function(graph, admixture_variable_name) {
   for (i in seq(1, length(original_edges))) {
     for (j in seq(1, length(original_edges))) {
       if (i != j) {
-        # Weeding out the directed triangles and half of the duplicated cases.
-        # Too messy to explain properly but I know it works.
+        # From edge to edge:
+        # Weeding out half of the duplicated cases.
+        # (I'm planning to write a complete description of how this works as a pdf.)
         default_problem <- FALSE
         if (length(intersect(original_edges[[i]], original_edges[[j]])) > 0) {
           common_node <- intersect(original_edges[[i]], original_edges[[j]])
           for (k in seq(1, i)) {
             if (length(intersect(common_node, original_edges[[k]])) > 0 && k < i && k != j) {
-              default_problem <- TRUE # All undirected -> compare indices
+              # All three undirected -> compare indices of i and k.
+              default_problem <- TRUE
             }
           }
           if (length(original_directed_edges) > 0) {
             for (k in seq(1, length(original_directed_edges))) {
               if (original_directed_edges[[k]][1] == common_node) {
-                default_problem <- TRUE # The only directed not j -> always choose the directed one
+                # The only directed not j -> always choose the directed i.
+                default_problem <- TRUE
               }
             }
           }
         }
-        # From edge to edge, direction [2]:
+        # Optionally weeding out half of the cases that are indistinguishable from existing admixtures.
+        if (labels_matter == FALSE) {
+          if (length(original_directed_edges) > 0) {
+            for (k in seq(1, length(original_directed_edges))) {
+              if (length(intersect(original_directed_edges[[k]][1], original_edges[[i]])) > 0 &&
+                  length(intersect(original_directed_edges[[k]][2], original_edges[[j]])) > 0) {
+                default_problem <- TRUE
+              }
+            }
+          }
+        }
+        # Direction [2]:
         admixtures <- original_admixtures
         admixtures[[length(admixtures) + 1]] <- c(admix_name, inner_name, original_edges[[j]][1], admixture_variable_name)
         directed_edges <- original_directed_edges
@@ -1559,7 +1613,7 @@ add_an_admixture <- function(graph, admixture_variable_name) {
           graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
           graph_list[[length(graph_list) + 1]] <- graph
         }
-        # From edge to edge, direction [1]:
+        # Direction [1]:
         admixtures <- original_admixtures
         admixtures[[length(admixtures) + 1]] <- c(admix_name, inner_name, original_edges[[j]][2], admixture_variable_name)
         directed_edges <- original_directed_edges
@@ -1579,22 +1633,46 @@ add_an_admixture <- function(graph, admixture_variable_name) {
     }
     if (length(original_directed_edges) > 0) {
       for (j in seq(1, length(original_directed_edges))) {
-        # Weeding out the directed triangles and half of the duplicated cases.
+        # From edge to directed edge:
+        # Weeding out half of the duplicated cases.
         default_problem <- FALSE
         if (length(intersect(original_edges[[i]], original_directed_edges[[j]])) > 0) {
           common_node <- intersect(original_edges[[i]], original_directed_edges[[j]])
           for (k in seq(1, i)) {
             if (length(intersect(common_node, original_edges[[k]])) > 0 && k < i) {
-              default_problem <- TRUE # The only directed j -> compare indices
+              # The only directed j -> compare indices of i and k.
+              default_problem <- TRUE
             }
           }
           for (k in seq(1, length(original_directed_edges))) {
             if (length(intersect(common_node, original_directed_edges[[k]])) > 0 && k != j) {
-              default_problem <- TRUE # The only undirected not j -> always choose the directed one
+              # The only undirected not j, diverging at common node -> always choose the directed i.
+              default_problem <- TRUE
             }
           }
         }
-        # From edge to directed edge:
+        # Optionally weeding out half of the cases that are indistinguishable from existing admixtures.
+        if (labels_matter == FALSE) {
+          for (k in seq(1, length(original_directed_edges))) {
+            if (length(intersect(original_directed_edges[[k]][1], original_edges[[i]])) > 0 &&
+                original_directed_edges[[k]][2] == original_directed_edges[[j]][1]) {
+              default_problem <- TRUE
+            }
+          }
+          if (length(intersect(original_edges[[i]], original_directed_edges[[j]])) == 0) {
+            for (k in seq(1, j)) {
+              if (length(intersect(original_directed_edges[[k]][1], original_edges[[i]])) > 0 &&
+                  original_directed_edges[[k]][2] == original_directed_edges[[j]][2] && k < j) {
+                for (l in seq(1, length(original_edges))) {
+                  if (length(intersect(original_edges[[l]], original_directed_edges[[j]][1])) &&
+                      length(intersect(original_edges[[l]], original_directed_edges[[k]][1]))) {
+                    default_problem <- TRUE
+                  }
+                }
+              }
+            }
+          }
+        }
         admixtures <- original_admixtures
         for (k in seq(1, length(admixtures))) {
           admixture <- admixtures[[k]]
@@ -1628,20 +1706,32 @@ add_an_admixture <- function(graph, admixture_variable_name) {
   if (length(original_directed_edges) > 0) {
     for (i in seq(1, length(original_directed_edges))) {
       for (j in seq(1, length(original_edges))) {
-        # Weeding out the directed triangles and half of the duplicated cases.
+        # From directed edge to edge:
+        # Weeding out half of the duplicated cases.
         default_problem <- FALSE
         if (length(intersect(original_directed_edges[[i]], original_edges[[j]])) > 0) {
           common_node <- intersect(original_directed_edges[[i]], original_edges[[j]])
           for (k in seq(1, length(original_directed_edges))) {
-            if (original_directed_edges[[k]][1] == common_node && k < i) {
-              default_problem <- TRUE # The only undirected j -> compare indices
+            if (common_node == original_directed_edges[[k]][1] && k < i) {
+              # The only undirected j, diverging at common node -> compare indices of i and k.
+              default_problem <- TRUE
             }
-            if (original_directed_edges[[k]][2] == common_node && i != k) {
-              default_problem <- TRUE # A directed triangle forming
+            if (common_node == original_directed_edges[[k]][2]) {
+              # The only undirected not i, meeting at common node -> always choose the directed j.
+              default_problem <- TRUE
             }
           }
         }
-        # From directed edge to edge, direction [2]:
+        # Optionally weeding out half of the cases that are indistinguishable from existing admixtures.
+        if (labels_matter == FALSE) {
+          for (k in seq(1, length(original_directed_edges))) {
+            if (original_directed_edges[[k]][1] == original_directed_edges[[i]][1] &&
+              length(intersect(original_directed_edges[[k]][2], original_edges[[j]])) > 0) {
+              default_problem <- TRUE
+            }
+          }
+        }
+        # Direction [2]:
         admixtures <- original_admixtures
         for (k in seq(1, length(admixtures))) {
           admixture <- admixtures[[k]]
@@ -1669,7 +1759,7 @@ add_an_admixture <- function(graph, admixture_variable_name) {
           graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
           graph_list[[length(graph_list) + 1]] <- graph
         }
-        # From directed edge to edge, direction [1]:
+        # Direction [1]:
         admixtures <- original_admixtures
         for (k in seq(1, length(admixtures))) {
           admixture <- admixtures[[k]]
@@ -1700,13 +1790,40 @@ add_an_admixture <- function(graph, admixture_variable_name) {
       }
       for (j in seq(1, length(original_directed_edges))) {
         if (i != j) {
-          # Weeding out the directed triangles and half of the duplicated cases.
-          default_problem <- FALSE
-          if (length(intersect(original_directed_edges[[i]], original_directed_edges[[j]])) > 0 &&
-              original_directed_edges[[i]][1] != original_directed_edges[[j]][1]) {
-            default_problem <- TRUE # A directed triangle forming
-          }
           # From directed edge to directed edge:
+          # Weeding out half of the duplicated cases.
+          default_problem <- FALSE
+          if (length(intersect(original_directed_edges[[i]], original_directed_edges[[j]])) > 0) {
+            common_node <- intersect(original_directed_edges[[i]], original_directed_edges[[j]])
+            for (k in seq(1, length(original_directed_edges))) {
+              if (original_directed_edges[[k]][2] == common_node && k != i && k != j) {
+                # All three directed -> choose i and j meeting at common node.
+                default_problem <- TRUE
+              }
+            }
+          }
+          # Optionally weeding out half of the cases that are indistinguishable from existing admixtures.
+          if (labels_matter == FALSE) {
+            for (k in seq(1, length(original_directed_edges))) {
+              if (original_directed_edges[[k]][1] == original_directed_edges[[i]][1] &&
+                  original_directed_edges[[k]][2] == original_directed_edges[[j]][1]) {
+                default_problem <- TRUE
+              }
+            }
+            if (length(intersect(original_directed_edges[[i]], original_directed_edges[[j]])) == 0) {
+              for (k in seq(1, j)) {
+                if (original_directed_edges[[k]][1] == original_directed_edges[[i]][1] &&  k != i &&
+                    original_directed_edges[[k]][2] == original_directed_edges[[j]][2] && k < j) {
+                  for (l in seq(1, length(original_edges))) {
+                    if (length(intersect(original_edges[[l]], original_directed_edges[[j]][1])) &&
+                        length(intersect(original_edges[[l]], original_directed_edges[[k]][1]))) {
+                      default_problem <- TRUE
+                    }
+                  }
+                }
+              }
+            }
+          }
           admixtures <- original_admixtures
           if (original_directed_edges[[i]][2] == original_directed_edges[[j]][2]) {
             for (k in seq(1,length(admixtures))) {
@@ -1908,22 +2025,3 @@ flow <- function(leaves, edges, directed_edges, starting_directed_edge, default_
   }
   return(list(problem = problem, edges = edges, directed_edges = directed_edges))
 }
-
-leaves <- c("A", "B", "C")
-inner_nodes <- c("R", "x", "y", "z", "M", "N")
-edges <- parent_edges(c(edge("x", "R"),
-                        edge("y", "R"),
-                        edge("z", "x"),
-                        edge("A", "z"),
-                        edge("B", "N"),
-                        edge("C", "y"),
-                        admixture_edge("M", "x", "y"),
-                        admixture_edge("N", "z", "M")
-))
-admixtures <-  admixture_proportions(c(
-  admix_props("M", "x", "y", "a"),
-  admix_props("N", "z", "M", "b")
-))
-
-graph <- agraph(leaves, inner_nodes, edges, admixtures)
-plot(graph)
