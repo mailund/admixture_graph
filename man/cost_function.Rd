@@ -4,11 +4,13 @@
 \alias{cost_function}
 \title{The cost function fed to nelder mead.}
 \usage{
-cost_function(data, matrix, graph,
+cost_function(data, concentration, matrix, graph,
   parameters = extract_graph_parameters(graph), iteration_multiplier = 3)
 }
 \arguments{
 \item{data}{The data set.}
+
+\item{concentration}{The Cholesky decomposition of the inverted covariance matrix.}
 
 \item{matrix}{A column reduced edge optimisation matrix (typically given by
 the function \code{edge_optimisation_matrix$column_reduced}).}

@@ -4,13 +4,15 @@
 \alias{edge_optimisation_function}
 \title{More detailed edge fitting than mere \code{cost_function}.}
 \usage{
-edge_optimisation_function(data, matrix, graph,
+edge_optimisation_function(data, concentration, matrix, graph,
   parameters = extract_graph_parameters(graph), iteration_multiplier = 3)
 }
 \arguments{
 \item{data}{The data set.}
 
-\item{matrix}{A full  edge optimisation matrix (typically given by the
+\item{concentration}{The Cholesky decomposition of the inverted covariance matrix.}
+
+\item{matrix}{A full edge optimisation matrix (typically given by the
 function \code{edge_optimisation_matrix$full}).}
 
 \item{graph}{The admixture graph.}

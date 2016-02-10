@@ -4,14 +4,19 @@
 \alias{fit_graph}
 \title{Fit the graph parameters to a data set.}
 \usage{
-fit_graph(data, graph, optimisation_options = NULL,
-  parameters = extract_graph_parameters(graph), iteration_multiplier = 3,
-  qr_tol = 1e-08)
+fit_graph(data, graph, point = list(rep(0,
+  length(extract_graph_parameters(graph)$admix_prop)), rep(1,
+  length(extract_graph_parameters(graph)$admix_prop))),
+  concentration = calculate_concentration(data),
+  optimisation_options = NULL, parameters = extract_graph_parameters(graph),
+  iteration_multiplier = 3, qr_tol = 1e-08)
 }
 \arguments{
 \item{data}{The data set.}
 
 \item{graph}{The admixture graph.}
+
+\item{concentration}{The Cholesky decomposition of the inverted covariance matrix.}
 
 \item{optimisation_options}{Options to the optimisation algorithm.}
 
