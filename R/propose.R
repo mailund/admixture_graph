@@ -56,6 +56,53 @@ make_permutations <- function(populations) {
         }
       }
     }
+  } else if (length(populations) == 7) {
+    for (i in seq(1, 7)) {
+      permutation <- rep("", 7)
+      permutation[1] <- populations[i]
+      for (j in seq(1, 6)) {
+        permutation[2] <- populations[-i][j]
+        for (k in seq(1, 5)) {
+          permutation[3] <- populations[-i][-j][k]
+          for (l in seq(1, 4)) {
+            permutation[4] <- populations[-i][-j][-k][l]
+            for (m in seq(1, 3)) {
+              permutation[5] <- populations[-i][-j][-k][-l][m]
+              for (n in seq(1, 2)) {
+                permutation[6] <- populations[-i][-j][-k][-l][-m][n]
+                permutation[7] <- populations[-i][-j][-k][-l][-m][-n][1]  
+                P[[length(P) + 1]] <- permutation
+              }
+            }
+          }
+        }
+      }
+    }
+  } else if (length(populations) == 8) {
+    for (i in seq(1, 8)) {
+      permutation <- rep("", 8)
+      permutation[1] <- populations[i]
+      for (j in seq(1, 7)) {
+        permutation[2] <- populations[-i][j]
+        for (k in seq(1, 6)) {
+          permutation[3] <- populations[-i][-j][k]
+          for (l in seq(1, 5)) {
+            permutation[4] <- populations[-i][-j][-k][l]
+            for (m in seq(1, 4)) {
+              permutation[5] <- populations[-i][-j][-k][-l][m]
+              for (n in seq(1, 3)) {
+                permutation[6] <- populations[-i][-j][-k][-l][-m][n]
+                for (o in seq(1, 2)) {
+                  permutation[7] <- populations[-i][-j][-k][-l][-m][-n][o]
+                  permutation[8] <- populations[-i][-j][-k][-l][-m][-n][-o][1]  
+                  P[[length(P) + 1]] <- permutation
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
   return(P)
 }
@@ -1401,6 +1448,118 @@ six_leaves_graphs <- list(
     admixtures <- admixture_proportions(c(
       admix_props("M", "x", "y", "a")
     ))
+    agraph(leaves, inner_nodes, edges, admixtures)
+  }
+)
+
+#' @export
+seven_leaves_trees <- list(
+  tree_1 = function(leaves) {
+    inner_nodes <- c("R", "x", "y", "z", "u", "v")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "x"),
+      edge("z", "y"),
+      edge("u", "z"),
+      edge("v", "u"),
+      edge(leaves[1], "R"),
+      edge(leaves[2], "x"),
+      edge(leaves[3], "y"),
+      edge(leaves[4], "z"),
+      edge(leaves[5], "u"),
+      edge(leaves[6], "v"),
+      edge(leaves[7], "v")
+    ))
+    admixtures <- NULL
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  tree_2 = function(leaves) {
+    inner_nodes <- c("R", "x", "y", "z", "u", "v")
+    edges <- parent_edges(c(
+      edge("x", "y"),
+      edge("y", "R"),
+      edge("z", "u"),
+      edge("u", "R"),
+      edge("v", "u"),
+      edge(leaves[1], "x"),
+      edge(leaves[2], "x"),
+      edge(leaves[3], "y"),
+      edge(leaves[4], "z"),
+      edge(leaves[5], "z"),
+      edge(leaves[6], "v"),
+      edge(leaves[7], "v")
+    ))
+    admixtures <- NULL
+    agraph(leaves, inner_nodes, edges, admixtures)
+  }
+)
+
+#' @export
+eight_leaves_trees <- list(
+  tree_1 = function(leaves) {
+    inner_nodes <- c("R", "x", "y", "z", "u", "v", "w")
+    edges <- parent_edges(c(
+      edge("x", "y"),
+      edge("y", "z"),
+      edge("z", "R"),
+      edge("u", "R"),
+      edge("v", "u"),
+      edge("w", "v"),
+      edge(leaves[1], "x"),
+      edge(leaves[2], "x"),
+      edge(leaves[3], "y"),
+      edge(leaves[4], "z"),
+      edge(leaves[5], "u"),
+      edge(leaves[6], "v"),
+      edge(leaves[7], "w"),
+      edge(leaves[8], "w")
+    ))
+    admixtures <- NULL
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  tree_2 = function(leaves) {
+    inner_nodes <- c("R", "x", "y", "z", "u", "v", "w")
+    edges <- parent_edges(c(
+      edge("x", "y"),
+      edge("y", "z"),
+      edge("z", "R"),
+      edge("u", "v"),
+      edge("v", "R"),
+      edge("w", "v"),
+      edge(leaves[1], "x"),
+      edge(leaves[2], "x"),
+      edge(leaves[3], "y"),
+      edge(leaves[4], "z"),
+      edge(leaves[5], "u"),
+      edge(leaves[6], "u"),
+      edge(leaves[7], "w"),
+      edge(leaves[8], "w")
+    ))
+    admixtures <- NULL
+    agraph(leaves, inner_nodes, edges, admixtures)
+  },
+  
+  tree_3 = function(leaves) {
+    inner_nodes <- c("R", "x", "y", "z", "u", "v", "w")
+    edges <- parent_edges(c(
+      edge("x", "R"),
+      edge("y", "z"),
+      edge("z", "u"),
+      edge("u", "R"),
+      edge("v", "u"),
+      edge("w", "v"),
+      edge(leaves[1], "x"),
+      edge(leaves[2], "x"),
+      edge(leaves[3], "y"),
+      edge(leaves[4], "y"),
+      edge(leaves[5], "z"),
+      edge(leaves[6], "v"),
+      edge(leaves[7], "w"),
+      edge(leaves[8], "w")
+    ))
+    admixtures <- NULL
     agraph(leaves, inner_nodes, edges, admixtures)
   }
 )
