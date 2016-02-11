@@ -88,7 +88,7 @@ canonise_expression <- function(x) {
     temp_vector <- numeric(0)
     monomial <- monomials_list[i]
     if (substring(monomial, 1, 1) == "-") {
-      coefficient <- - 1
+      coefficient <- -1
     }
     start <- 2
     for (j in seq(2, nchar(monomial))) {
@@ -98,7 +98,7 @@ canonise_expression <- function(x) {
           coefficient <- coefficient * suppressWarnings(as.numeric(word))
         }
         else {
-          temp_vector<- c(temp_vector, word)
+          temp_vector <- c(temp_vector, word)
         }
         start <- j + 1
       }
