@@ -499,12 +499,12 @@ mynonneg <- function(C, d, iteration_multiplier = 3) {
 #'
 #' We want nelder mead to run fast so the cost function operates with the column
 #' rduced edge optimisation matrix and does not give any extar information about
-#' the fit. For the details, use \code{edge_optimisation_function} instead.
+#' the fit. For the details, use edge_optimisation_function() instead.
 #'
 #' @param data  The data set.
 #' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
 #' @param matrix  A column reduced edge optimisation matrix (typically given by
-#'                the function \code{edge_optimisation_matrix$column_reduced}).
+#'                the edge_optimisation_matrix$column_reduced).
 #' @param graph  The admixture graph.
 #' @param parameters  In case one wants to tweak something in the graph.
 #'
@@ -544,6 +544,7 @@ cost_function <- function(data, concentration, matrix, graph,
     } else {
       cost <- sum(as.vector(concentration %*% goal)^2)
     }
+    return(cost)
   }
 }
 
@@ -865,6 +866,51 @@ inner_fit_graph <- function(data, graph, point, Z.value, concentration, optimisa
     inner_fit_graph(data, graph, point, Z.value, concentration, optimisation_options, parameters,
                     iteration_multiplier, qr_tol)
   })
+}
+
+#' Calculate the log likelihood of a graph with parameters, given observation.
+#'
+#' So basically this is just cost_function() that doesn't optimize the edge variables but has them as
+#' an argument instead. We use the edge optimisation matrix again because it can be calculated beforehand 
+#' and evaluating it for various values of admix variables is fast.
+#' 
+#' @param f  The observed f-statistics (the column D from data).
+#' @param concentration  The Cholesky decomposition of the inverted covariance matrix. So if S is the
+#'                       covariance matrix, this is C = chol(S^(-1)) satisfying S^(-1) = C^t*C.
+#' @param matrix  A column reduced edge optimisation matrix (typically given by
+#'                the edge_optimisation_matrix$column_reduced).
+#' @param graph  The admixture graph. Here to give default value for:
+#' @param parameters  We need to know variable names.
+#'
+#' @return  The output is a function. Given two input vectors of admix variables and edge variables,
+#'          this function calculates l = (F-f)^t*S^(-1)*(F-f). Up to a constant error and multiplier
+#'          that is the log likelihood, as the likelihood is det(2*pi*S)^(-1/2)*exp(-l/2).
+#'
+#' @export
+log_likelihood <- function(f, concentration, matrix, graph, parameters = extract_graph_parameters(graph)) {
+  function(x, e) {
+    # Evaluate the column reduced edge optimisation matrix at admix values x.
+    evaluated_matrix <- matrix(0, NROW(matrix), NCOL(matrix))
+    for (i in seq(1, length(parameters$admix_prop))) {
+      assign(parameters$admix_prop[i], x[i])
+    }
+    if (NCOL(matrix) > 0) {
+      for (i in seq(1, NROW(matrix))) {
+        for (j in seq(1, NCOL(matrix))) {
+          evaluated_matrix[i, j] <- eval(parse(text = matrix[i, j]))
+        }
+      }
+    }
+    # Now just multiply with edge values e to get F.
+    if (NCOL(matrix) > 0) {
+      FF <- evaluated_matrix %*% e
+      vector <- concentration %*% (FF - f)
+    } else {
+      vector <- concentration %*% f
+    }
+    likelihood <- sum(as.vector(vector)^2)
+    return(likelihood)
+  }
 }
 
 ## Interface for accessing fitted data ############################################
