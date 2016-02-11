@@ -21,7 +21,8 @@ Imports:
     neldermead
 Suggests:
     testthat,
-    knitr
+    knitr,
+    MHadaptive
 URL: https://github.com/mailund/admixture_graph
 BugReports: https://github.com/mailund/admixture_graph/issues
 VignetteBuilder: knitr
