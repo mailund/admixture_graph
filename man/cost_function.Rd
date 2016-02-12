@@ -4,14 +4,16 @@
 \alias{cost_function}
 \title{The cost function fed to nelder mead.}
 \usage{
-cost_function(data, matrix, graph,
+cost_function(data, concentration, matrix, graph,
   parameters = extract_graph_parameters(graph), iteration_multiplier = 3)
 }
 \arguments{
 \item{data}{The data set.}
 
+\item{concentration}{The Cholesky decomposition of the inverted covariance matrix.}
+
 \item{matrix}{A column reduced edge optimisation matrix (typically given by
-the function \code{edge_optimisation_matrix$column_reduced}).}
+the edge_optimisation_matrix$column_reduced).}
 
 \item{graph}{The admixture graph.}
 
@@ -24,6 +26,6 @@ Given an input vector of admix variables, returns the smallest error
 \description{
 We want nelder mead to run fast so the cost function operates with the column
 rduced edge optimisation matrix and does not give any extar information about
-the fit. For the details, use \code{edge_optimisation_function} instead.
+the fit. For the details, use edge_optimisation_function() instead.
 }
 
