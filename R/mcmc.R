@@ -49,7 +49,7 @@ make_mcmc_model <- function(graph, data) {
   }
   
   proposal <- function(state) {
-    rnorm(length(state), mean = state, sd = 0.01)
+    rnorm(length(state), mean = state, sd = 0.001)
   }
   
   list(log_prior = log_prior, log_likelihood = log_likelihood,
