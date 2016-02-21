@@ -52,7 +52,7 @@ make_mcmc_model <- function(graph, data) {
     admix <- graph_space_state[admix_idx]
     edges <- graph_space_state[edges_idx]
     edges <- matrix(edges, ncol=1)
-    tryCatch(logL(admix, edges), finally = -Inf)
+    tryCatch(-logL(admix, edges), finally = -Inf)
   }
   
   log_posterior <- function(state) {
@@ -60,7 +60,7 @@ make_mcmc_model <- function(graph, data) {
   }
 
   proposal <- function(state) {
-    rnorm(length(state), mean = state)
+    rnorm(length(state), mean = state, sd = 0.001)
   }
   
   list(log_posterior = log_posterior, 
