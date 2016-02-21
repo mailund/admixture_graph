@@ -891,8 +891,10 @@ log_likelihood <- function(f, concentration, matrix, graph, parameters = extract
   function(x, e) {
     # Evaluate the column reduced edge optimisation matrix at admix values x.
     evaluated_matrix <- matrix(0, NROW(matrix), NCOL(matrix))
-    for (i in seq(1, length(parameters$admix_prop))) {
-      assign(parameters$admix_prop[i], x[i])
+    if (length(parameters$admix_prop) > 0) {
+      for (i in seq(1, length(parameters$admix_prop))) {
+        assign(parameters$admix_prop[i], x[i])
+      }
     }
     if (NCOL(matrix) > 0) {
       for (i in seq(1, NROW(matrix))) {

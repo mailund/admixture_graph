@@ -36,15 +36,8 @@ make_mcmc_model <- function(graph, data) {
   }
   
   log_prior <- function(state) {
-    return(sum(log(dnorm(state)))) # FIXME
-    
-    # here I'm just using a uniform prior on [0,1] for all parameters. Can always change that later.
-    if (any(state < 0 || state > 1)) {
-      prior <- 0
-    } else {
-      prior <- 1
-    }
-    log(prior)
+    # just a reasonably wide normal dist in log space...
+    sum(log(dnorm(state, sd=1)))
   }
   
   log_likelihood <- function(state) {
@@ -55,18 +48,16 @@ make_mcmc_model <- function(graph, data) {
     tryCatch(-logL(admix, edges), finally = -Inf)
   }
   
-  log_posterior <- function(state) {
-    log_prior(state) + log_likelihood(state)
-  }
-
   proposal <- function(state) {
-    rnorm(length(state), mean = state, sd = 0.001)
+    rnorm(length(state), mean = state, sd = 0.01)
   }
   
-  list(log_posterior = log_posterior, 
+  list(log_prior = log_prior, log_likelihood = log_likelihood,
+       
        admixture_parameters = admixture_parameters,
        edge_parmeters = edge_parameters, 
        parameter_names = parameter_names,
+       
        proposal = proposal,
        transform_to_graph_space = transform_to_graph_space,
        transform_to_mcmc_space = transform_to_mcmc_space)
@@ -90,21 +81,32 @@ run_metropolis_hasting <- function(model, initial_state, iterations) {
   }
   
   mcmc_initial <- model$transform_to_mcmc_space(initial_state)
-  trace <- matrix(nrow = iterations, ncol = length(model$parameter_names) + 1)
-  colnames(trace) <- c(model$parameter_names, "posterior")
+  trace <- matrix(nrow = iterations, ncol = length(model$parameter_names) + 3)
+  colnames(trace) <- c(model$parameter_names, "prior", "likelihood", "posterior")
   
   current_state <- mcmc_initial
-  current_posterior <- model$log_posterior(current_state)
+  current_prior = model$log_prior(current_state)
+  current_likelihood = model$log_likelihood(current_state)
+  current_posterior <- current_prior + current_likelihood
   
+  pb <- utils::txtProgressBar(min = 1, max = iterations, style=3)
   for (i in 1:iterations) {
-    trace[i,] <- c(model$transform_to_graph_space(current_state), current_posterior)
+    trace[i,] <- c(model$transform_to_graph_space(current_state), current_prior, current_likelihood, current_posterior)
+    
     proposal_state <- model$proposal(current_state)
-    proposal_posterior <- model$log_posterior(proposal_state)
+    proposal_prior = model$log_prior(proposal_state)
+    proposal_likelihood = model$log_likelihood(proposal_state)
+    proposal_posterior <- proposal_prior + proposal_likelihood
+    
     log_accept_prob <- proposal_posterior - current_posterior
     if (log(runif(1)) < log_accept_prob) {
       current_state <- proposal_state
+      current_prior <- proposal_prior
+      current_likelihood <- proposal_likelihood
       current_posterior <- proposal_posterior
     }
+    
+    utils::setTxtProgressBar(pb, i)
   }
   
   trace 
