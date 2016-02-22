@@ -17,8 +17,12 @@ make_mcmc_model <- function(graph, data) {
   parameter_names <- c(admixture_parameters, edge_parameters)
     
   n_admix <- length(admixture_parameters)
-  n_edges <- length(edge_parameters)
-  admix_idx <- 1:n_admix
+  if (n_admix > 0) {
+    admix_idx <- 1:n_admix
+  } else {
+    admix_idx <- c()
+  }
+    
   edges_idx <- (n_admix+1):length(parameter_names)
                                                      
   logL <- log_likelihood(f, concentration, matrix, graph, params)
@@ -26,6 +30,9 @@ make_mcmc_model <- function(graph, data) {
   transform_to_mcmc_space <- function(state) {
     admix <- state[admix_idx]
     edges <- state[edges_idx]
+    # this is necessary to avoid -Inf in the calculations
+    admix[admix == 0] <- 1e-16
+    edges[edges == 0] <- 1e-16
     c(qnorm(admix), log(edges))
   }
   
