@@ -1,11 +1,3 @@
-# TODO:
-#
-# 1) Take the covariance matrix into account. When covariance matrix not given,
-#    assume independence and build one from data$Z.
-# 2) Find out how the f-statistics depend on one another. Find out what subsets of
-#    the set of all statistics have no implied weight on some data. Preferably make
-#    a program to remove extra data from already sufficient data in some fair way.
-
 ## Graph fitting #################################################################
 
 #' Used to recognize similar expressions and to possibly simplify them.
@@ -693,7 +685,10 @@ calculate_concentration <- function(data, Z.value) {
 #' @param data  The data set.
 #' @param graph  The admixture graph.
 #' @param point  If the user wants to restrict admix variables somehow, like fixing some
-#'               of them. A list of two vectors: the lower and the upper bounds.
+#'               of them. A list of two vectors: the lower and the upper bounds. As a default the bounds
+#'               are just it little bit more than zero and less than one; this is because sometimes the
+#'               point non non-continuity and minimum of the cost function coincide, and zero and one
+#'               have several reasons to be problematic values in this respect.
 #' @param Z.value  Whether we calculate the default concentration from Z.values (default
 #'                 option) or just use the identity matrix.
 #' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
@@ -708,8 +703,8 @@ calculate_concentration <- function(data, Z.value) {
 #'
 #' @export
 fast_fit <- function(data, graph,
-                     point = list(rep(0, length(extract_graph_parameters(graph)$admix_prop)),
-                                  rep(1, length(extract_graph_parameters(graph)$admix_prop))),
+                     point = list(rep(1e-5, length(extract_graph_parameters(graph)$admix_prop)),
+                                  rep(1 - 1e-5, length(extract_graph_parameters(graph)$admix_prop))),
                      Z.value = TRUE,
                      concentration = calculate_concentration(data, Z.value),
                      optimisation_options = NULL,
@@ -725,7 +720,7 @@ fast_fit <- function(data, graph,
     inner_fast_fit(data, graph, point, Z.value, concentration, optimisation_options,
                    parameters, iteration_multiplier)
   }, error = function(e) {
-    message("error")
+    message("Something went wrong, trying again.")
     invokeRestart("try_again")
   })
 }
@@ -748,8 +743,10 @@ inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisat
     } else {
       x0 <- 0.5*(point[[1]] + point[[2]])
       cfunc <- cost_function(data, concentration, reduced_matrix, graph, parameters, iteration_multiplier)
+      print("Trying nelder mead:")
       opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = point[[1]], xmax = point[[2]],
                                   options = optimisation_options)
+      print("Success!")
       # The value opti is a class "neldermead" object.
       best_error <- neldermead::neldermead.get(opti, "fopt") # Optimal error.
       best_fit <- neldermead::neldermead.get(opti, "xopt") # Optimal admix values.
@@ -781,7 +778,10 @@ inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisat
 #' @param data  The data set.
 #' @param graph  The admixture graph.
 #' @param point  If the user wants to restrict admix variables somehow, like fixing some
-#'               of them. A list of two vectors: the lower and the upper bounds.
+#'               of them. A list of two vectors: the lower and the upper bounds. As a default the bounds
+#'               are just it little bit more than zero and less than one; this is because sometimes the
+#'               point non non-continuity and minimum of the cost function coincide, and zero and one
+#'               have several reasons to be problematic values in this respect.
 #' @param Z.value  Whether we calculate the default concentration from Z.values (default
 #'                 option) or just use the identity matrix.
 #' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
@@ -797,8 +797,8 @@ inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisat
 #'
 #' @export
 fit_graph <- function(data, graph,
-                      point = list(rep(0, length(extract_graph_parameters(graph)$admix_prop)),
-                                   rep(1, length(extract_graph_parameters(graph)$admix_prop))),
+                      point = list(rep(1e-5, length(extract_graph_parameters(graph)$admix_prop)),
+                                   rep(1 - 1e-5, length(extract_graph_parameters(graph)$admix_prop))),
                       Z.value = TRUE,
                       concentration = calculate_concentration(data, Z.value),
                       optimisation_options = NULL,
@@ -814,6 +814,7 @@ fit_graph <- function(data, graph,
     inner_fit_graph(data, graph, point, Z.value, concentration, optimisation_options,
                     parameters, iteration_multiplier, qr_tol)
   }, error = function(e) {
+    message("Something went wrong, trying again.")
     invokeRestart("try_again")
   })
 }
