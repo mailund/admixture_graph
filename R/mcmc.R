@@ -72,7 +72,21 @@ make_mcmc_model <- function(graph, data) {
 
 #' Run a Metropolis-Hasting MCMC to sample graph parameters.
 #' 
+#' The MCMC performs a random walk in transformed parameter space (edge lengths are log transformed
+#' and admixture proportions inverse Normal distribution transformed) and from this
+#' explores the posterior distribution of graph parameters.
 #' 
+#' Using the posterior distribution of parameters is one approach to getting parameter estimates
+#' and a sense of their variability. Credibility intervals can directly be obtained from sampled
+#' parameters; to get confidence intervals from the likelihood maximisation approach requires
+#' either estimating the Hessian matrix for the likelihood or a boot-strapping approach
+#' to the data.
+#' 
+#' From sampling the likelihood values for each sample from the posterior we can also
+#' compute the model likelihood (the probability of the data when integrating over all the model
+#' parameters). This gives us a direct way of comparing graphs since the ratio of likelihoods
+#' is the Bayes factor between the models. Comparing models using maximum likelihood estimtates
+#' is more problematic since usually graphs are not nested models.
 #' 
 #' @param model          Object constructed with \code{\link{make_mcmc_model}}.
 #' @param initial_state  The initial set of graph parameters.
