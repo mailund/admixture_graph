@@ -7,6 +7,10 @@
 #' @export
 make_mcmc_model <- function(graph, data) {
   
+  if (!requireNamespace("MASS", quietly = TRUE)) {
+    stop("The MCMC functionality requires that the MASS packate is installed.")
+  }
+  
   f <- data$D
   concentration <- calculate_concentration(data, Z.value = TRUE) # FIXME: use the empirical covariance matrix
   params <- extract_graph_parameters(graph)
@@ -59,12 +63,19 @@ make_mcmc_model <- function(graph, data) {
     rnorm(length(state), mean = state, sd = 0.001)
   }
   
+  multnorm_proposal <- function(state, sigma){
+    #     print(paste("state",state))
+    #     print(paste("sigma",sigma))
+    MASS::mvrnorm(1, mu = state, Sigma = sigma)
+  }
+  
   list(log_prior = log_prior, log_likelihood = log_likelihood,
        
        admixture_parameters = admixture_parameters,
        edge_parmeters = edge_parameters, 
        parameter_names = parameter_names,
        
+       multnorm_proposal=multnorm_proposal,
        proposal = proposal,
        transform_to_graph_space = transform_to_graph_space,
        transform_to_mcmc_space = transform_to_mcmc_space)
@@ -91,9 +102,31 @@ make_mcmc_model <- function(graph, data) {
 #' @param model          Object constructed with \code{\link{make_mcmc_model}}.
 #' @param initial_state  The initial set of graph parameters.
 #' @param iterations     Number of iterations to sample.
-#' @return A matrix containing the trace of the MCMC run.
+#' @param no_temperaturesNumber of chains in the MC3 procedure
+#' @param cores          Number of cores to spread the chains across. Best performance is when cores=no_temperatures
+#' @param no_flips       Mean number of times a flip between two chains should be proposed after each step
+#' @param max_tmp        The highest temperature
+#' @return A matrix containing the trace of the chain with temperature 1.
+#' 
 #' @export
-run_metropolis_hasting <- function(model, initial_state, iterations) {
+run_metropolis_hasting <- function(model, initial_state, iterations, 
+                                   no_temperatures = 1, cores = 1, no_flips = 1, max_tmp = 100) {
+  
+  if (!requireNamespace("MASS", quietly = TRUE)) {
+    stop("The MCMC functionality requires that the MASS packate is installed.")
+  }
+  if (!requireNamespace("parallel", quietly = TRUE)) {
+    stop("The MCMC functionality requires that the parallel packate is installed.")
+  }
+  
+  # tlast=proc.time()
+  if(no_temperatures>1){
+    temperatures <- max_tmp^(0:(no_temperatures-1)/(no_temperatures-1))
+  }
+  else{
+    temperatures <- 1
+  }
+  
   
   if (length(initial_state) != length(model$parameter_names)) {
     stop(paste0("The length of the initial state, (", length(initial_state), 
@@ -105,27 +138,116 @@ run_metropolis_hasting <- function(model, initial_state, iterations) {
   trace <- matrix(nrow = iterations, ncol = length(model$parameter_names) + 3)
   colnames(trace) <- c(model$parameter_names, "prior", "likelihood", "posterior")
   
-  current_state <- mcmc_initial
-  current_prior = model$log_prior(current_state)
-  current_likelihood = model$log_likelihood(current_state)
+  current_states <- t(replicate(no_temperatures,mcmc_initial)) #
+  current_prior <- model$log_prior(mcmc_initial)
+  current_priors <- rep(current_prior,no_temperatures)
+  current_likelihood <- model$log_likelihood(mcmc_initial)
+  current_likelihoods <- rep(current_likelihood,no_temperatures)
   current_posterior <- current_prior + current_likelihood
+  current_posteriors <- rep(current_posterior,no_temperatures)
   
-  pb <- utils::txtProgressBar(min = 1, max = iterations, style=3)
-  for (i in 1:iterations) {
-    trace[i,] <- c(model$transform_to_graph_space(current_state), current_prior, current_likelihood, current_posterior)
-    
-    proposal_state <- model$proposal(current_state)
-    proposal_prior = model$log_prior(proposal_state)
-    proposal_likelihood = model$log_likelihood(proposal_state)
+  onestep <- function(l){
+    current_state <- l$current_state
+    current_posterior <- l$current_posterior
+    temperature <- l$temperature
+    sigma <- l$sigma
+    proposal_state <- model$multnorm_proposal(current_state,sigma=sigma)
+    proposal_prior <- model$log_prior(proposal_state)
+    proposal_likelihood <- model$log_likelihood(proposal_state)
     proposal_posterior <- proposal_prior + proposal_likelihood
     
-    log_accept_prob <- proposal_posterior - current_posterior
+    log_accept_prob <- proposal_posterior/temperature-current_posterior/temperature
     if (log(runif(1)) < log_accept_prob) {
       current_state <- proposal_state
       current_prior <- proposal_prior
       current_likelihood <- proposal_likelihood
       current_posterior <- proposal_posterior
     }
+    return(list(current_state = current_state,
+                current_prior = current_prior,
+                current_likelihood = current_likelihood, 
+                current_posterior = current_posterior, 
+                alpha = exp(log_accept_prob)))
+  }
+  
+  #initialise adaption parameters
+  ad_params <- rep(0.02,no_temperatures)
+  sigmas <- replicate(no_temperatures, diag(length(current_states[1,]))*0.1, simplify = F)
+  common_mean <- current_states[1,]
+  
+  
+  pb <- utils::txtProgressBar(min = 1, max = iterations, style=3)
+  
+  #variable used for monitoring
+  avg_temp_update_probability <- 0
+  
+  for (i in 1:iterations) {
+    
+    trace[i,] <- c(model$transform_to_graph_space(current_states[1,]), current_priors[1], current_likelihoods[1], current_posteriors[1])
+    
+    #making a list of lists of arguments for each chain
+    listOfStepInformation=list()
+    for(j in 1:no_temperatures){
+      stepOfInformation <- list(current_posterior = current_posteriors[j], current_state = current_states[j,], 
+                                temperature = temperatures[j], sigma = ad_params[j]*sigmas[[j]])
+      listOfStepInformation[[j]] <- stepOfInformation
+    }
+    
+    #making each step take a step
+    reses <- parallel::mclapply(listOfStepInformation, onestep, mc.cores=cores)
+    
+    #Here adaption takes place and the new step is saved
+    gamma <- 0.1/sqrt(i)
+    for(j in 1:no_temperatures){
+      
+      #the adaption parameter is updated
+      ad_params[j] <- ad_params[j]*exp(gamma*(reses[[j]]$alpha-0.234))
+      
+      #the new step is saved
+      current_states[j,] <- reses[[j]]$current_state
+      current_priors[j] <- reses[[j]]$current_prior
+      current_likelihoods[j] <- reses[[j]]$current_likelihood
+      current_posteriors[j] <- reses[[j]]$current_posterior
+      
+      #update of the covariance matrix
+      common_mean=common_mean+gamma*(current_states[j,]-common_mean)/no_temperatures
+      xbar <- current_states[j,]-common_mean
+      sigmas[[j]] <- sigmas[[j]]+gamma*(xbar %o% xbar - sigmas[[j]])
+    }
+    
+    #Here flips between temperatures are proposed
+    flips <- rpois(1,lambda=no_flips)
+    if (no_temperatures > 1) {
+      for (p in numeric(flips)) {
+        r <- sample(no_temperatures,2)
+        m <- r[1]
+        j <- r[2]
+        current <- current_posteriors[j]/temperatures[j]+current_posteriors[m]/temperatures[m]
+        new <- current_posteriors[m]/temperatures[j]+current_posteriors[j]/temperatures[m]
+        a <- exp(new-current)
+        if (runif(1) < a){
+          tmp_post <- current_posteriors[j]
+          tmp_lik <- current_likelihoods[j]
+          tmp_pri <- current_priors[j]
+          tmp_sta <- current_states[j,]
+          current_states[j,] <- current_states[m,]
+          current_priors[j] <- current_priors[m]
+          current_likelihoods[j] <- current_likelihoods[m]
+          current_posteriors[j] <- current_posteriors[m]
+          current_states[m,] <- tmp_sta
+          current_priors[m] <- tmp_pri
+          current_likelihoods[m] <- tmp_lik
+          current_posteriors[m] <- tmp_post
+        }
+        if (p==1) {
+          avg_temp_update_probability <- ((i-1)*avg_temp_update_probability+a)/i
+        }
+      }
+      
+    }
+    
+    #     t_flip=t_flip+proc.time()-tlast
+    #     tlast=proc.time()
     
     utils::setTxtProgressBar(pb, i)
   }

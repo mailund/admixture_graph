@@ -4,8 +4,8 @@
 \alias{fast_fit}
 \title{A fast version of graph fitting.}
 \usage{
-fast_fit(data, graph, point = list(rep(0,
-  length(extract_graph_parameters(graph)$admix_prop)), rep(1,
+fast_fit(data, graph, point = list(rep(1e-05,
+  length(extract_graph_parameters(graph)$admix_prop)), rep(1 - 1e-05,
   length(extract_graph_parameters(graph)$admix_prop))), Z.value = TRUE,
   concentration = calculate_concentration(data, Z.value),
   optimisation_options = NULL, parameters = extract_graph_parameters(graph),
@@ -17,7 +17,10 @@ fast_fit(data, graph, point = list(rep(0,
 \item{graph}{The admixture graph.}
 
 \item{point}{If the user wants to restrict admix variables somehow, like fixing some
-of them. A list of two vectors: the lower and the upper bounds.}
+of them. A list of two vectors: the lower and the upper bounds. As a default the bounds
+are just it little bit more than zero and less than one; this is because sometimes the
+point non non-continuity and minimum of the cost function coincide, and zero and one
+have several reasons to be problematic values in this respect.}
 
 \item{Z.value}{Whether we calculate the default concentration from Z.values (default
 option) or just use the identity matrix.}

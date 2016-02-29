@@ -4,7 +4,8 @@
 \alias{run_metropolis_hasting}
 \title{Run a Metropolis-Hasting MCMC to sample graph parameters.}
 \usage{
-run_metropolis_hasting(model, initial_state, iterations)
+run_metropolis_hasting(model, initial_state, iterations, no_temperatures = 1,
+  cores = 1, no_flips = 1, max_tmp = 100)
 }
 \arguments{
 \item{model}{Object constructed with \code{\link{make_mcmc_model}}.}
@@ -12,11 +13,34 @@ run_metropolis_hasting(model, initial_state, iterations)
 \item{initial_state}{The initial set of graph parameters.}
 
 \item{iterations}{Number of iterations to sample.}
+
+\item{cores}{Number of cores to spread the chains across. Best performance is when cores=no_temperatures}
+
+\item{no_flips}{Mean number of times a flip between two chains should be proposed after each step}
+
+\item{max_tmp}{The highest temperature}
+
+\item{no_temperaturesNumber}{of chains in the MC3 procedure}
 }
 \value{
-A matrix containing the trace of the MCMC run.
+A matrix containing the trace of the chain with temperature 1.
 }
 \description{
-Run a Metropolis-Hasting MCMC to sample graph parameters.
+The MCMC performs a random walk in transformed parameter space (edge lengths are log transformed
+and admixture proportions inverse Normal distribution transformed) and from this
+explores the posterior distribution of graph parameters.
+}
+\details{
+Using the posterior distribution of parameters is one approach to getting parameter estimates
+and a sense of their variability. Credibility intervals can directly be obtained from sampled
+parameters; to get confidence intervals from the likelihood maximisation approach requires
+either estimating the Hessian matrix for the likelihood or a boot-strapping approach
+to the data.
+
+From sampling the likelihood values for each sample from the posterior we can also
+compute the model likelihood (the probability of the data when integrating over all the model
+parameters). This gives us a direct way of comparing graphs since the ratio of likelihoods
+is the Bayes factor between the models. Comparing models using maximum likelihood estimtates
+is more problematic since usually graphs are not nested models.
 }
 
