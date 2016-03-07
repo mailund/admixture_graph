@@ -1681,7 +1681,7 @@ add_a_leaf <- function(graph, leaf_name) {
 }
 
 #' @export
-add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FALSE) {
+add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FALSE, outgroup = "") {
   graph_list <- list()
   broken_graph <- break_graph(graph)
   # We might have to choose a different root after adding the admixture, so we start by removing
@@ -1769,7 +1769,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
         starting_directed_edge <- c(admix_name, original_edges[[j]][2])
         flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
         # Direction [1]:
@@ -1785,7 +1785,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
         starting_directed_edge <- c(admix_name, original_edges[[j]][1])
         flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
       }
@@ -1856,7 +1856,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
         starting_directed_edge <- c(admix_name, original_directed_edges[[j]][2])
         flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
       }
@@ -1915,7 +1915,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
         starting_directed_edge <- c(admix_name, original_edges[[j]][2])
         flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
         # Direction [1]:
@@ -1943,7 +1943,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
         starting_directed_edge <- c(admix_name, original_edges[[j]][1])
         flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
       }
@@ -2032,7 +2032,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
           starting_directed_edge <- c(admix_name, original_directed_edges[[j]][2])
           flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
           if (flow_result$problem == FALSE) {
-            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
             graph_list[[length(graph_list) + 1]] <- graph
           }
         }
@@ -2043,7 +2043,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
 }
 
 #' @export
-add_an_admixture2 <- function(graph, admixture_variable_name) {
+add_an_admixture2 <- function(graph, admixture_variable_name, outgroup = "") {
   graph_list <- list()
   broken_graph <- break_graph(graph)
   # We might have to choose a different root after adding the admixture, so we start by removing
@@ -2131,7 +2131,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
           }
         }
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
       }
@@ -2153,7 +2153,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
             }
           }
             if (flow_result$problem == FALSE) {
-            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
             graph_list[[length(graph_list) + 1]] <- graph
           }
         }
@@ -2197,7 +2197,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
             }
           }
           if (flow_result$problem == FALSE) {
-            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
             graph_list[[length(graph_list) + 1]] <- graph
           }
         }
@@ -2221,7 +2221,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
               }
             }
             if (flow_result$problem == FALSE) {
-              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
               graph_list[[length(graph_list) + 1]] <- graph
             }
           }
@@ -2249,7 +2249,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
               }
             }
             if (flow_result$problem == FALSE) {
-              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
               graph_list[[length(graph_list) + 1]] <- graph
             }
           }
@@ -2299,7 +2299,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
           }
         }
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
       }
@@ -2321,7 +2321,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
             }
           }
           if (flow_result$problem == FALSE) {
-            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
             graph_list[[length(graph_list) + 1]] <- graph
           }
         }
@@ -2365,7 +2365,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
             }
           }
           if (flow_result$problem == FALSE) {
-            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
             graph_list[[length(graph_list) + 1]] <- graph
           }
         }
@@ -2389,7 +2389,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
               }
             }
             if (flow_result$problem == FALSE) {
-              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
               graph_list[[length(graph_list) + 1]] <- graph
             }
           }
@@ -2417,7 +2417,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
               }
             }
             if (flow_result$problem == FALSE) {
-              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
               graph_list[[length(graph_list) + 1]] <- graph
             }
           }
@@ -2472,7 +2472,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
             }
           }
           if (flow_result$problem == FALSE) {
-            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
             graph_list[[length(graph_list) + 1]] <- graph
           }
         }
@@ -2493,7 +2493,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
             }
           }
           if (flow_result$problem == FALSE) {
-            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
             graph_list[[length(graph_list) + 1]] <- graph
           }
         }
@@ -2537,7 +2537,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
               }
             }
             if (flow_result$problem == FALSE) {
-              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
               graph_list[[length(graph_list) + 1]] <- graph
             }
           }
@@ -2560,7 +2560,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
               }
             }
             if (flow_result$problem == FALSE) {
-              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
               graph_list[[length(graph_list) + 1]] <- graph
             }
           }
@@ -2586,7 +2586,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name) {
               }
             }
             if (flow_result$problem == FALSE) {
-              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
               graph_list[[length(graph_list) + 1]] <- graph
             }
           }
@@ -2622,15 +2622,27 @@ break_graph <- function(graph) {
 }
 
 # Given material for a graph known to been all right, choose a suitable root and build the graph.
-root_graph <- function(leaves, inner_nodes, edges, directed_edges, admixtures) {
+root_graph <- function(leaves, inner_nodes, edges, directed_edges, admixtures, outgroup = "") {
   for (admixture in admixtures) {
     flow_result <- flow(leaves, edges, directed_edges, c(admixture[2], admixture[1]))
     edges <- flow_result$edges
     directed_edges <- flow_result$directed_edges
   }
   inner_nodes <- c(inner_nodes, "R")
-  edge <- edges[[1]]
-  edges[[1]] <- NULL
+  if (nchar(outgroup) == 0) {
+    edge <- edges[[1]]
+    edges[[1]] <- NULL
+  } else {
+    root_index <- 1
+    for (j in seq(1, length(edges))) {
+      edge <- edges[[j]]
+      if (edge[1] == outgroup || edge[2] == outgroup) {
+        root_index <- j
+      }
+    }
+    edge <- edges[[root_index]]
+    edges[[root_index]] <- NULL
+  }
   directed_edges[[length(directed_edges) + 1]] <- c("R", edge[1])
   directed_edges[[length(directed_edges) + 1]] <- c("R", edge[2])
   flow_result <- flow(leaves, edges, directed_edges, c("R", edge[1]))
