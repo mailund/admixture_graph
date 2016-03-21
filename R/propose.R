@@ -1688,7 +1688,7 @@ add_a_leaf <- function(graph, leaf_name) {
 }
 
 #' @export
-add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FALSE) {
+add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FALSE, outgroup = "") {
   graph_list <- list()
   broken_graph <- break_graph(graph)
   # We might have to choose a different root after adding the admixture, so we start by removing
@@ -1776,7 +1776,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
         starting_directed_edge <- c(admix_name, original_edges[[j]][2])
         flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
         # Direction [1]:
@@ -1792,7 +1792,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
         starting_directed_edge <- c(admix_name, original_edges[[j]][1])
         flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
       }
@@ -1863,7 +1863,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
         starting_directed_edge <- c(admix_name, original_directed_edges[[j]][2])
         flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
       }
@@ -1922,7 +1922,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
         starting_directed_edge <- c(admix_name, original_edges[[j]][2])
         flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
         # Direction [1]:
@@ -1950,7 +1950,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
         starting_directed_edge <- c(admix_name, original_edges[[j]][1])
         flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
         if (flow_result$problem == FALSE) {
-          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
           graph_list[[length(graph_list) + 1]] <- graph
         }
       }
@@ -2039,8 +2039,563 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
           starting_directed_edge <- c(admix_name, original_directed_edges[[j]][2])
           flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge, default_problem)
           if (flow_result$problem == FALSE) {
-            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures)
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
             graph_list[[length(graph_list) + 1]] <- graph
+          }
+        }
+      }
+    }
+  }
+  return(graph_list)
+}
+
+#' @export
+add_an_admixture2 <- function(graph, admixture_variable_name, outgroup = "") {
+  graph_list <- list()
+  broken_graph <- break_graph(graph)
+  # We might have to choose a different root after adding the admixture, so we start by removing
+  # the original root and treating only the edges colliding in an admix event as directed and the
+  # rest as undirected.
+  leaves <- broken_graph$leaves
+  original_inner_nodes <- broken_graph$inner_nodes
+  original_edges <- broken_graph$edges
+  original_admixtures <- broken_graph$admixtures
+  root <- broken_graph$root
+  for (i in seq(1, length(original_inner_nodes))) {
+    node <- original_inner_nodes[i]
+    if (node == root) {
+      original_inner_nodes <- original_inner_nodes[-i]
+      break
+    }
+  }
+  memory <- ""
+  to_be_deleted <- nchar(0)
+  for (i in seq(1, length(original_edges))) {
+    edge <- original_edges[[i]]
+    if (edge[2] == root) {
+      if (nchar(memory) == 0) {
+        memory <- edge[1]
+        to_be_deleted <- i
+      } else {
+        original_edges[[i]] <- c(memory, edge[1])
+      }
+    }
+  }
+  original_edges[[to_be_deleted]] <- NULL
+  original_directed_edges <- list()
+  for (admixture in original_admixtures) {
+    original_directed_edges[[length(original_directed_edges) + 1]] <- c(admixture[2], admixture[1])
+    original_directed_edges[[length(original_directed_edges) + 1]] <- c(admixture[3], admixture[1])
+  }
+  first_name <- paste("first", admixture_variable_name, sep = "_")
+  second_name <- paste("second", admixture_variable_name, sep = "_")
+  admix_name <- paste("admix", admixture_variable_name, sep = "_")
+  # Lose the admixture events, let directed edges carry all the information.
+  original_directed_edges <- save_admixture_information(original_admixtures, original_directed_edges)
+  # Start:
+  for (i in seq(1, length(original_edges))) {
+    # Admixture event added in a normal edge:
+    # Direction [2]:
+    # Detach the selected edge from its old parent and merge some edges together.
+    we_can_continue <- TRUE
+    unnecessary_node <- original_edges[[i]][1]
+    temporary_directed_edges <- original_directed_edges
+    temporary_edges <- original_edges
+    starting_directed_edge <- c(admix_name, temporary_edges[[i]][2])
+    temporary_edges[[i]] <- NULL
+    delete_indices <- numeric(0)
+    endpoints <- character(0)
+    for (l in seq(1, length(temporary_edges))) {
+      if (temporary_edges[[l]][1] == unnecessary_node) {
+        delete_indices <- c(delete_indices, l)
+        endpoints <- c(endpoints, temporary_edges[[l]][2])
+      }
+      if (temporary_edges[[l]][2] == unnecessary_node) {
+        delete_indices <- c(delete_indices, l)
+        endpoints <- c(endpoints, temporary_edges[[l]][1])
+      }
+    }
+    if (length(delete_indices) == 0) {
+      we_can_continue <- FALSE
+      temporary_inner_nodes <- original_inner_nodes
+      temporary_inner_nodes <- c(temporary_inner_nodes, admix_name, second_name)
+      temporary_edges[[length(temporary_edges) + 1]] <- temporary_edges[[1]]
+      temporary_edges[[1]] <- starting_directed_edge
+      for (k in seq(2, length(temporary_edges))) {
+        # SPECIAL_N2-N
+        edges <- temporary_edges
+        directed_edges <- temporary_directed_edges
+        inner_nodes <- temporary_inner_nodes
+        edges[[length(edges) + 1]] <- c(temporary_edges[[k]][1], second_name)
+        edges[[k]][1] <- second_name
+        directed_edges[[length(directed_edges) + 1]] <- c(unnecessary_node, admix_name, admixture_variable_name, "")
+        directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+        flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+        admixtures <- load_admixture_information(directed_edges)
+        for (l in seq(1, length(admixtures))) {
+          if (admixtures[[l]][2] == admixtures[[l]][3]) {
+            flow_result$problem <- TRUE
+          }
+        }
+        if (flow_result$problem == FALSE) {
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+          graph_list[[length(graph_list) + 1]] <- graph
+        }
+      }
+      if (length(temporary_directed_edges) > 0) {
+        for (k in seq(1, length(temporary_directed_edges))) {
+          # SPECIAL_N2-D
+          edges <- temporary_edges
+          directed_edges <- temporary_directed_edges
+          inner_nodes <- temporary_inner_nodes
+          edges[[length(edges) + 1]] <- c(temporary_directed_edges[[k]][1], second_name)
+          directed_edges[[k]][1] <- second_name
+          directed_edges[[length(directed_edges) + 1]] <- c(unnecessary_node, admix_name, admixture_variable_name, "")
+          directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+          flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+          admixtures <- load_admixture_information(directed_edges)
+          for (l in seq(1, length(admixtures))) {
+            if (admixtures[[l]][2] == admixtures[[l]][3]) {
+              flow_result$problem <- TRUE
+            }
+          }
+            if (flow_result$problem == FALSE) {
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+            graph_list[[length(graph_list) + 1]] <- graph
+          }
+        }
+      }
+    } else if (length(delete_indices) == 1) {
+      for (l in seq(1, length(temporary_directed_edges))) {  
+        if (temporary_directed_edges[[l]][1] == unnecessary_node) {
+          temporary_edges[[delete_indices[1]]] <- NULL
+          temporary_directed_edges[[l]][1] <- endpoints[1]
+        }
+      }
+    } else if (length(delete_indices) == 2) {
+      temporary_edges[[delete_indices[2]]] <- NULL
+      temporary_edges[[delete_indices[1]]] <- NULL
+      temporary_edges[[length(temporary_edges) + 1]] <- c(endpoints[1], endpoints[2])
+    }
+    temporary_inner_nodes <- original_inner_nodes[original_inner_nodes != unnecessary_node]
+    temporary_inner_nodes <- c(temporary_inner_nodes, admix_name, first_name, second_name)
+    temporary_edges[[length(temporary_edges) + 1]] <- temporary_edges[[1]]
+    temporary_edges[[1]] <- starting_directed_edge
+    # Attach the selected egde to two new parents.
+    if (we_can_continue == TRUE) {
+      for (j in seq(2, length(temporary_edges))) {
+        for (k in seq(j, length(temporary_edges))) {
+          # N2-NN
+          edges <- temporary_edges
+          directed_edges <- temporary_directed_edges
+          inner_nodes <- temporary_inner_nodes
+          edges[[j]][2] <- first_name
+          edges[[length(edges) + 1]] <- c(first_name, temporary_edges[[j]][2])
+          edges[[length(edges) + 1]] <- c(temporary_edges[[k]][1], second_name)
+          edges[[k]][1] <- second_name
+          # Looks inconsistent but this way it works even when j = k.
+          directed_edges[[length(directed_edges) + 1]] <- c(first_name, admix_name, admixture_variable_name, "")
+          directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+          flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+          admixtures <- load_admixture_information(directed_edges)
+          for (l in seq(1, length(admixtures))) {
+            if (admixtures[[l]][2] == admixtures[[l]][3]) {
+              flow_result$problem <- TRUE
+            }
+          }
+          if (flow_result$problem == FALSE) {
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+            graph_list[[length(graph_list) + 1]] <- graph
+          }
+        }
+        if (length(temporary_directed_edges) > 0) {
+          for (k in seq(1, length(temporary_directed_edges))) {
+            # N2-ND
+            edges <- temporary_edges
+            directed_edges <- temporary_directed_edges
+            inner_nodes <- temporary_inner_nodes
+            edges[[j]] <- c(temporary_edges[[j]][1], first_name)
+            edges[[length(edges) + 1]] <- c(first_name, temporary_edges[[j]][2])
+            edges[[length(edges) + 1]] <- c(temporary_directed_edges[[k]][1], second_name)
+            directed_edges[[k]][1] <- second_name
+            directed_edges[[length(directed_edges) + 1]] <- c(first_name, admix_name, admixture_variable_name, "")
+            directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+            flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+            admixtures <- load_admixture_information(directed_edges)
+            for (l in seq(1, length(admixtures))) {
+              if (admixtures[[l]][2] == admixtures[[l]][3]) {
+                flow_result$problem <- TRUE
+              }
+            }
+            if (flow_result$problem == FALSE) {
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+              graph_list[[length(graph_list) + 1]] <- graph
+            }
+          }
+        }
+      }
+      if (length(temporary_directed_edges) > 0) {
+        for (j in seq(1, length(temporary_directed_edges))) {
+          for (k in seq(j, length(temporary_directed_edges))) {
+            # N2-DD
+            edges <- temporary_edges
+            directed_edges <- temporary_directed_edges
+            inner_nodes <- temporary_inner_nodes
+            edges[[length(edges) + 1]] <- c(directed_edges[[j]][1], first_name)
+            directed_edges[[j]][1] <- first_name
+            edges[[length(edges) + 1]] <- c(directed_edges[[k]][1], second_name)
+            directed_edges[[k]][1] <- second_name
+            # Looks inconsistent but this way it works even when j = k.
+            directed_edges[[length(directed_edges) + 1]] <- c(first_name, admix_name, admixture_variable_name, "")
+            directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+            flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+            admixtures <- load_admixture_information(directed_edges)
+            for (l in seq(1, length(admixtures))) {
+              if (admixtures[[l]][2] == admixtures[[l]][3]) {
+                flow_result$problem <- TRUE
+              }
+            }
+            if (flow_result$problem == FALSE) {
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+              graph_list[[length(graph_list) + 1]] <- graph
+            }
+          }
+        }
+      }
+    }
+    # Direction [1]:
+    # Detach the selected edge from its old parent and merge some edges together.
+    we_can_continue <- TRUE
+    unnecessary_node <- original_edges[[i]][2]
+    temporary_directed_edges <- original_directed_edges
+    temporary_edges <- original_edges
+    starting_directed_edge <- c(admix_name, temporary_edges[[i]][1])
+    temporary_edges[[i]] <- NULL
+    delete_indices <- numeric(0)
+    endpoints <- character(0)
+    for (l in seq(1, length(temporary_edges))) {
+      if (temporary_edges[[l]][1] == unnecessary_node) {
+        delete_indices <- c(delete_indices, l)
+        endpoints <- c(endpoints, temporary_edges[[l]][2])
+      }
+      if (temporary_edges[[l]][2] == unnecessary_node) {
+        delete_indices <- c(delete_indices, l)
+        endpoints <- c(endpoints, temporary_edges[[l]][1])
+      }
+    }
+    if (length(delete_indices) == 0) {
+      we_can_continue <- FALSE
+      temporary_inner_nodes <- original_inner_nodes
+      temporary_inner_nodes <- c(temporary_inner_nodes, admix_name, second_name)
+      temporary_edges[[length(temporary_edges) + 1]] <- temporary_edges[[1]]
+      temporary_edges[[1]] <- starting_directed_edge
+      for (k in seq(2, length(temporary_edges))) {
+        # SPECIAL_N1-N
+        edges <- temporary_edges
+        directed_edges <- temporary_directed_edges
+        inner_nodes <- temporary_inner_nodes
+        edges[[length(edges) + 1]] <- c(temporary_edges[[k]][1], second_name)
+        edges[[k]][1] <- second_name
+        directed_edges[[length(directed_edges) + 1]] <- c(unnecessary_node, admix_name, admixture_variable_name, "")
+        directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+        flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+        admixtures <- load_admixture_information(directed_edges)
+        for (l in seq(1, length(admixtures))) {
+          if (admixtures[[l]][2] == admixtures[[l]][3]) {
+            flow_result$problem <- TRUE
+          }
+        }
+        if (flow_result$problem == FALSE) {
+          graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+          graph_list[[length(graph_list) + 1]] <- graph
+        }
+      }
+      if (length(temporary_directed_edges) > 0) {
+        for (k in seq(1, length(temporary_directed_edges))) {
+          # SPECIAL_N1-D
+          edges <- temporary_edges
+          directed_edges <- temporary_directed_edges
+          inner_nodes <- temporary_inner_nodes
+          edges[[length(edges) + 1]] <- c(temporary_directed_edges[[k]][1], second_name)
+          directed_edges[[k]][1] <- second_name
+          directed_edges[[length(directed_edges) + 1]] <- c(unnecessary_node, admix_name, admixture_variable_name, "")
+          directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+          flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+          admixtures <- load_admixture_information(directed_edges)
+          for (l in seq(1, length(admixtures))) {
+            if (admixtures[[l]][2] == admixtures[[l]][3]) {
+              flow_result$problem <- TRUE
+            }
+          }
+          if (flow_result$problem == FALSE) {
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+            graph_list[[length(graph_list) + 1]] <- graph
+          }
+        }
+      }
+    } else if (length(delete_indices) == 1) {
+      for (l in seq(1, length(temporary_directed_edges))) {  
+        if (temporary_directed_edges[[l]][1] == unnecessary_node) {
+          temporary_edges[[delete_indices[1]]] <- NULL
+          temporary_directed_edges[[l]][1] <- endpoints[1]
+        }
+      }
+    } else if (length(delete_indices) == 2) {
+      temporary_edges[[delete_indices[2]]] <- NULL
+      temporary_edges[[delete_indices[1]]] <- NULL
+      temporary_edges[[length(temporary_edges) + 1]] <- c(endpoints[1], endpoints[2])
+    }
+    temporary_inner_nodes <- original_inner_nodes[original_inner_nodes != unnecessary_node]
+    temporary_inner_nodes <- c(temporary_inner_nodes, admix_name, first_name, second_name)
+    temporary_edges[[length(temporary_edges) + 1]] <- temporary_edges[[1]]
+    temporary_edges[[1]] <- starting_directed_edge
+    # Attach the selected egde to two new parents.
+    if (we_can_continue == TRUE) {
+      for (j in seq(2, length(temporary_edges))) {
+        for (k in seq(j, length(temporary_edges))) {
+          # N1-NN
+          edges <- temporary_edges
+          directed_edges <- temporary_directed_edges
+          inner_nodes <- temporary_inner_nodes
+          edges[[j]][2] <- first_name
+          edges[[length(edges) + 1]] <- c(first_name, temporary_edges[[j]][2])
+          edges[[length(edges) + 1]] <- c(temporary_edges[[k]][1], second_name)
+          edges[[k]][1] <- second_name
+          # Looks inconsistent but this way it works even when j = k.
+          directed_edges[[length(directed_edges) + 1]] <- c(first_name, admix_name, admixture_variable_name, "")
+          directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+          flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+          admixtures <- load_admixture_information(directed_edges)
+          for (l in seq(1, length(admixtures))) {
+            if (admixtures[[l]][2] == admixtures[[l]][3]) {
+              flow_result$problem <- TRUE
+            }
+          }
+          if (flow_result$problem == FALSE) {
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+            graph_list[[length(graph_list) + 1]] <- graph
+          }
+        }
+        if (length(temporary_directed_edges) > 0) {
+          for (k in seq(1, length(temporary_directed_edges))) {
+            # N1-ND
+            edges <- temporary_edges
+            directed_edges <- temporary_directed_edges
+            inner_nodes <- temporary_inner_nodes
+            edges[[j]] <- c(temporary_edges[[j]][1], first_name)
+            edges[[length(edges) + 1]] <- c(first_name, temporary_edges[[j]][2])
+            edges[[length(edges) + 1]] <- c(temporary_directed_edges[[k]][1], second_name)
+            directed_edges[[k]][1] <- second_name
+            directed_edges[[length(directed_edges) + 1]] <- c(first_name, admix_name, admixture_variable_name,"")
+            directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+            flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+            admixtures <- load_admixture_information(directed_edges)
+            for (l in seq(1, length(admixtures))) {
+              if (admixtures[[l]][2] == admixtures[[l]][3]) {
+                flow_result$problem <- TRUE
+              }
+            }
+            if (flow_result$problem == FALSE) {
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+              graph_list[[length(graph_list) + 1]] <- graph
+            }
+          }
+        }
+      }
+      if (length(temporary_directed_edges) > 0) {
+        for (j in seq(1, length(temporary_directed_edges))) {
+          for (k in seq(j, length(temporary_directed_edges))) {
+            # N1-DD
+            edges <- temporary_edges
+            directed_edges <- temporary_directed_edges
+            inner_nodes <- temporary_inner_nodes
+            edges[[length(edges) + 1]] <- c(directed_edges[[j]][1], first_name)
+            directed_edges[[j]][1] <- first_name
+            edges[[length(edges) + 1]] <- c(directed_edges[[k]][1], second_name)
+            directed_edges[[k]][1] <- second_name
+            # Looks inconsistent but this way it works even when j = k.
+            directed_edges[[length(directed_edges) + 1]] <- c(first_name, admix_name, admixture_variable_name, "")
+            directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+            flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+            admixtures <- load_admixture_information(directed_edges)
+            for (l in seq(1, length(admixtures))) {
+              if (admixtures[[l]][2] == admixtures[[l]][3]) {
+                flow_result$problem <- TRUE
+              }
+            }
+            if (flow_result$problem == FALSE) {
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+              graph_list[[length(graph_list) + 1]] <- graph
+            }
+          }
+        }
+      }
+    }
+  }
+  if (length(original_directed_edges) > 0) {
+    for (i in seq(1, length(original_directed_edges))) {
+      # Admixture event added in a directed edge:
+      # Detach the selected edge from its old parent and merge some edges together.
+      we_can_continue <- TRUE
+      unnecessary_node <- original_directed_edges[[i]][1]
+      temporary_directed_edges <- original_directed_edges
+      temporary_edges <- original_edges
+      starting_directed_edge <- temporary_directed_edges[[i]]
+      starting_directed_edge[1] <- admix_name
+      temporary_directed_edges[[i]] <- NULL
+      delete_indices <- numeric(0)
+      endpoints <- character(0)
+      for (l in seq(1, length(temporary_edges))) {
+        if (temporary_edges[[l]][1] == unnecessary_node) {
+          delete_indices <- c(delete_indices, l)
+          endpoints <- c(endpoints, temporary_edges[[l]][2])
+        }
+        if (temporary_edges[[l]][2] == unnecessary_node) {
+          delete_indices <- c(delete_indices, l)
+          endpoints <- c(endpoints, temporary_edges[[l]][1])
+        }
+      }
+      if (length(delete_indices) == 0) {
+        we_can_continue <- FALSE
+        temporary_inner_nodes <- original_inner_nodes
+        temporary_inner_nodes <- c(temporary_inner_nodes, admix_name, second_name)
+        temporary_directed_edges[[length(temporary_directed_edges) + 1]] <- temporary_directed_edges[[1]]
+        temporary_directed_edges[[1]] <- starting_directed_edge
+        starting_directed_edge <- starting_directed_edge[1:2]
+        for (k in seq(1, length(temporary_edges))) {
+          # SPECIAL_D-N
+          edges <- temporary_edges
+          directed_edges <- temporary_directed_edges
+          inner_nodes <- temporary_inner_nodes
+          edges[[length(edges) + 1]] <- c(temporary_edges[[k]][1], second_name)
+          edges[[k]][1] <- second_name
+          directed_edges[[length(directed_edges) + 1]] <- c(unnecessary_node, admix_name, admixture_variable_name, "")
+          directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+          flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+          admixtures <- load_admixture_information(directed_edges)
+          for (l in seq(1, length(admixtures))) {
+            if (admixtures[[l]][2] == admixtures[[l]][3]) {
+              flow_result$problem <- TRUE
+            }
+          }
+          if (flow_result$problem == FALSE) {
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+            graph_list[[length(graph_list) + 1]] <- graph
+          }
+        }
+        for (k in seq(2, length(temporary_directed_edges))) {
+          # SPECIAL_D-D
+          edges <- temporary_edges
+          directed_edges <- temporary_directed_edges
+          inner_nodes <- temporary_inner_nodes
+          edges[[length(edges) + 1]] <- c(temporary_directed_edges[[k]][1], second_name)
+          directed_edges[[k]][1] <- second_name
+          directed_edges[[length(directed_edges) + 1]] <- c(unnecessary_node, admix_name, admixture_variable_name, "")
+          directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+          flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+          admixtures <- load_admixture_information(directed_edges)
+          for (l in seq(1, length(admixtures))) {
+            if (admixtures[[l]][2] == admixtures[[l]][3]) {
+              flow_result$problem <- TRUE
+            }
+          }
+          if (flow_result$problem == FALSE) {
+            graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+            graph_list[[length(graph_list) + 1]] <- graph
+          }
+        }
+      } else if (length(delete_indices) == 1) {
+        for (l in seq(1, length(temporary_directed_edges))) {  
+          if (temporary_directed_edges[[l]][1] == unnecessary_node) {
+            temporary_edges[[delete_indices[1]]] <- NULL
+            temporary_directed_edges[[l]][1] <- endpoints[1]
+          }
+        }
+      } else if (length(delete_indices) == 2) {
+        temporary_edges[[delete_indices[2]]] <- NULL
+        temporary_edges[[delete_indices[1]]] <- NULL
+        temporary_edges[[length(temporary_edges) + 1]] <- c(endpoints[1], endpoints[2])
+      }
+      temporary_inner_nodes <- original_inner_nodes[original_inner_nodes != unnecessary_node]
+      temporary_inner_nodes <- c(temporary_inner_nodes, admix_name, first_name, second_name)
+      temporary_directed_edges[[length(temporary_directed_edges) + 1]] <- temporary_directed_edges[[1]]
+      temporary_directed_edges[[1]] <- starting_directed_edge
+      starting_directed_edge <- starting_directed_edge[1:2]
+      # Attach the selected egde to two new parents.
+      if (we_can_continue == TRUE) {
+        for (j in seq(1, length(temporary_edges))) {
+          for (k in seq(j, length(temporary_edges))) {
+            # D-NN
+            edges <- temporary_edges
+            directed_edges <- temporary_directed_edges
+            inner_nodes <- temporary_inner_nodes
+            edges[[j]][2] <- first_name
+            edges[[length(edges) + 1]] <- c(first_name, temporary_edges[[j]][2])
+            edges[[length(edges) + 1]] <- c(temporary_edges[[k]][1], second_name)
+            edges[[k]][1] <- second_name
+            # Looks inconsistent but this way it works even when j = k.
+            directed_edges[[length(directed_edges) + 1]] <- c(first_name, admix_name, admixture_variable_name, "")
+            directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+            flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+            admixtures <- load_admixture_information(directed_edges)
+            for (l in seq(1, length(admixtures))) {
+              if (admixtures[[l]][2] == admixtures[[l]][3]) {
+                flow_result$problem <- TRUE
+              }
+            }
+            if (flow_result$problem == FALSE) {
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+              graph_list[[length(graph_list) + 1]] <- graph
+            }
+          }
+          for (k in seq(2, length(temporary_directed_edges))) {
+            # D-ND
+            edges <- temporary_edges
+            directed_edges <- temporary_directed_edges
+            inner_nodes <- temporary_inner_nodes
+            edges[[j]] <- c(temporary_edges[[j]][1], first_name)
+            edges[[length(edges) + 1]] <- c(first_name, temporary_edges[[j]][2])
+            edges[[length(edges) + 1]] <- c(temporary_directed_edges[[k]][1], second_name)
+            directed_edges[[k]][1] <- second_name
+            directed_edges[[length(directed_edges) + 1]] <- c(first_name, admix_name, admixture_variable_name, "")
+            directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+            flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+            admixtures <- load_admixture_information(directed_edges)
+            for (l in seq(1, length(admixtures))) {
+              if (admixtures[[l]][2] == admixtures[[l]][3]) {
+                flow_result$problem <- TRUE
+              }
+            }
+            if (flow_result$problem == FALSE) {
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+              graph_list[[length(graph_list) + 1]] <- graph
+            }
+          }
+        }
+        for (j in seq(2, length(temporary_directed_edges))) {
+          for (k in seq(j, length(temporary_directed_edges))) {
+            # D-DD
+            edges <- temporary_edges
+            directed_edges <- temporary_directed_edges
+            inner_nodes <- temporary_inner_nodes
+            edges[[length(edges) + 1]] <- c(directed_edges[[j]][1], first_name)
+            directed_edges[[j]][1] <- first_name
+            edges[[length(edges) + 1]] <- c(directed_edges[[k]][1], second_name)
+            directed_edges[[k]][1] <- second_name
+            # Looks inconsistent but this way it works even when j = k.
+            directed_edges[[length(directed_edges) + 1]] <- c(first_name, admix_name, admixture_variable_name, "")
+            directed_edges[[length(directed_edges) + 1]] <- c(second_name, admix_name, "", admixture_variable_name)
+            flow_result <- flow(leaves, edges, directed_edges, starting_directed_edge)
+            admixtures <- load_admixture_information(directed_edges)
+            for (l in seq(1, length(admixtures))) {
+              if (admixtures[[l]][2] == admixtures[[l]][3]) {
+                flow_result$problem <- TRUE
+              }
+            }
+            if (flow_result$problem == FALSE) {
+              graph <- root_graph(leaves, inner_nodes, flow_result$edges, flow_result$directed_edges, admixtures, outgroup)
+              graph_list[[length(graph_list) + 1]] <- graph
+            }
           }
         }
       }
@@ -2074,15 +2629,27 @@ break_graph <- function(graph) {
 }
 
 # Given material for a graph known to been all right, choose a suitable root and build the graph.
-root_graph <- function(leaves, inner_nodes, edges, directed_edges, admixtures) {
+root_graph <- function(leaves, inner_nodes, edges, directed_edges, admixtures, outgroup = "") {
   for (admixture in admixtures) {
     flow_result <- flow(leaves, edges, directed_edges, c(admixture[2], admixture[1]))
     edges <- flow_result$edges
     directed_edges <- flow_result$directed_edges
   }
   inner_nodes <- c(inner_nodes, "R")
-  edge <- edges[[1]]
-  edges[[1]] <- NULL
+  if (nchar(outgroup) == 0) {
+    edge <- edges[[1]]
+    edges[[1]] <- NULL
+  } else {
+    root_index <- 1
+    for (j in seq(1, length(edges))) {
+      edge <- edges[[j]]
+      if (edge[1] == outgroup || edge[2] == outgroup) {
+        root_index <- j
+      }
+    }
+    edge <- edges[[root_index]]
+    edges[[root_index]] <- NULL
+  }
   directed_edges[[length(directed_edges) + 1]] <- c("R", edge[1])
   directed_edges[[length(directed_edges) + 1]] <- c("R", edge[2])
   flow_result <- flow(leaves, edges, directed_edges, c("R", edge[1]))
@@ -2190,4 +2757,52 @@ flow <- function(leaves, edges, directed_edges, starting_directed_edge, default_
     active_directed_edges[[1]] <- NULL
   }
   return(list(problem = problem, edges = edges, directed_edges = directed_edges))
+}
+
+# It is vastly more convenient to forget the admixture events for now and just let the directed edges carry
+# all the information.
+save_admixture_information <- function(admixtures, directed_edges) {
+  if (length(admixtures) > 0) {
+    for (i in seq(1, length(admixtures))) {
+      for (j in seq(1, length(directed_edges))) {
+        if (directed_edges[[j]][1] == admixtures[[i]][2] && directed_edges[[j]][2] == admixtures[[i]][1]) {
+          directed_edges[[j]][3] <- admixtures[[i]][4]
+          directed_edges[[j]][4] <- ""
+        }
+        if (directed_edges[[j]][1] == admixtures[[i]][3] && directed_edges[[j]][2] == admixtures[[i]][1]) {
+          directed_edges[[j]][3] <- ""
+          directed_edges[[j]][4] <- admixtures[[i]][4]
+        }
+      }
+    }
+  }
+  return(directed_edges)
+}
+
+# Then we can rebuild the admixture events from the directed edges.
+load_admixture_information <- function(directed_edges) {
+  admixtures <- list()
+  for (i in seq(1, length(directed_edges))) {
+    found_a_match <- FALSE
+    if (length(admixtures) > 0) {
+      for (j in seq(1, length(admixtures))) {
+        if (directed_edges[[i]][2] == admixtures[[j]][1]) {
+          found_a_match <- TRUE
+          if (directed_edges[[i]][3] == "") {
+            admixtures[[j]][3] <- directed_edges[[i]][1]
+          } else {
+            admixtures[[j]][2] <- directed_edges[[i]][1]
+          }
+        }
+      }
+    }
+    if (found_a_match == FALSE) {
+      if (directed_edges[[i]][3] == "") {
+        admixtures[[length(admixtures) + 1]] <- c(directed_edges[[i]][2], "", directed_edges[[i]][1], directed_edges[[i]][4])
+      } else {
+        admixtures[[length(admixtures) + 1]] <- c(directed_edges[[i]][2], directed_edges[[i]][1], "", directed_edges[[i]][3])
+      }
+    }
+  }
+  return(admixtures)
 }
