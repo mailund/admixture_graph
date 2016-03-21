@@ -884,7 +884,7 @@ inner_fit_graph <- function(data, graph, point, Z.value, concentration, optimisa
 #' @param parameters  We need to know variable names.
 #'
 #' @return  The output is a function. Given two input vectors of admix variables and edge variables,
-#'          this function calculates l = (F-f)^t*S^(-1)*(F-f). Up to a constant error and multiplier
+#'          this function calculates l = -1/2*(F-f)^t*S^(-1)*(F-f). Up to a constant error and multiplier
 #'          that is the log likelihood, as the likelihood is det(2*pi*S)^(-1/2)*exp(-l/2).
 #'
 #' @export
@@ -911,7 +911,7 @@ log_likelihood <- function(f, concentration, matrix, graph, parameters = extract
     } else {
       vector <- concentration %*% f
     }
-    likelihood <- sum(as.vector(vector)^2)
+    likelihood <- -0.5 * sum(as.vector(vector)^2)
     return(likelihood)
   }
 }

@@ -56,7 +56,7 @@ make_mcmc_model <- function(graph, data) {
     admix <- graph_space_state[admix_idx]
     edges <- graph_space_state[edges_idx]
     edges <- matrix(edges, ncol=1)
-    tryCatch(-logL(admix, edges), finally = -Inf)
+    tryCatch(logL(admix, edges), finally = -Inf)
   }
   
   proposal <- function(state) {
