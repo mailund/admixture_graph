@@ -1573,18 +1573,25 @@ eight_leaves_trees <- list(
 #'
 #' @export
 fit_permutations_and_graphs <- function(data, permutations, graphs) {
-  library(foreach)
-  library(doParallel)
-  cl <- makeCluster(2)
-  registerDoParallel(cl)
-  foreach(i = seq(1, length(permutations)), .combine = c, .packages = "admixturegraph") %:%
-  foreach(j = seq(1, length(graphs)), .packages = "admixturegraph") %dopar% { 
-    permutation <- permutations[[i]]
-    graph_function <- graphs[[j]]
-    graph <- graph_function(permutation)
-    result <- fast_fit(filter_on_leaves(data, graph), graph)
-    return(result)
+  if (!requireNamespace("parallel", quietly = TRUE)) {
+    stop("This function requires parallel to be installed.")
   }
+  if (!requireNamespace("foreach", quietly = TRUE)) {
+    stop("This function requires foreach to be installed.")
+  }
+  if (!requireNamespace("doParallel", quietly = TRUE)) {
+    stop("This function requires doParallel to be installed.")
+  }
+  cl <- parallel::makeCluster(2)
+  doParallel::registerDoParallel(cl)
+  foreach::foreach(i = seq(1, length(permutations)), .combine = c, .packages = "admixturegraph") %:%
+    foreach::foreach(j = seq(1, length(graphs)), .packages = "admixturegraph") %dopar% { 
+      permutation <- permutations[[i]]
+      graph_function <- graphs[[j]]
+      graph <- graph_function(permutation)
+      result <- fast_fit(filter_on_leaves(data, graph), graph)
+      return(result)
+    }
 }
 
 #' @export
