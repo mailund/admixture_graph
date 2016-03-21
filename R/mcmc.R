@@ -167,7 +167,7 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
                 current_prior = current_prior,
                 current_likelihood = current_likelihood, 
                 current_posterior = current_posterior, 
-                alpha = exp(log_accept_prob)))
+                alpha = min(1, exp(log_accept_prob))))
   }
   
   #initialise adaption parameters
