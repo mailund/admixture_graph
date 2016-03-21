@@ -273,3 +273,114 @@ thinning <- function(trace, k) {
   trace[seq(1,nrow(trace), by=k),]
 }
 
+
+
+## Model likelihoods ####
+
+#' Computes the log of a sum of numbers all given in log-space.
+#' 
+#' Given a sequence of numbers \eqn{[\log(x_1), \log(x_2), ..., \log(x_n)]}, computes \eqn{\log(\sum_{i=1}^n x_i)}.
+#' For adding two numbers that are given in log space we use the expression \code{max(x, y) + log1p(exp( -abs(x - y) ))}
+#' which is a good approximation if \code{x} and \code{y} are of the same order of magnitude, but if they
+#' are of very different sizes just returns the maximum of the two. To prevent adding numbers of very different
+#' magnitude we iteratively add the numbers pairwise. Because of nummerical issues with doing this, the order
+#' of the input values can affect the result.
+#' 
+#' @param log_values    Sequence of numbers in log space \eqn{[\log(x_1), \log(x_2), ..., \log(x_n)]}
+#' @return              \eqn{\log(\sum_{i=1}^n x_i)}
+#' 
+#' @export
+log_sum_of_logs <- function(log_values) {
+
+  # computes log(x),log(y) |-> log(x+y)
+  log_add <- function(x, y) {
+    if (x == -Inf)
+      return(y)
+    if (y == -Inf)
+      return(x)
+    max(x, y) + log1p(exp( -abs(x - y) ))
+  }
+  
+  # We do this for short enough vectors to make the rest work
+  # It won't quite work for long sequences because we will end up adding
+  # very small numbers to very large numbers. There we want to add them pairwise
+  # so we keep the magnitude of the numbers roughly equal.
+  if (length(log_values) < 3)
+    return(Reduce(log_add, log_values))
+  
+  # get an even number of values
+  if (length(log_values) %% 2 == 1) {
+    log_values <- 
+      c(log_add(log_values[1], log_values[2]), log_values[3:length(log_values)])
+  }
+  
+  # permute to avoid problems with low and high values clustering
+  log_values <- sample(log_values, replace = FALSE)
+  while(length(log_values) > 1) {
+    #cat(log_values[1:min(10,length(log_values))], "\n")
+    indices <- 2*seq_len(length(log_values) / 2) - 1
+    log_values <- 
+      unlist(Map(function(idx) log_add(log_values[idx], log_values[idx+1]), indices))  
+  }
+  log_values
+}
+
+#' Computes the likelihood of a model from samples from its posterior distribution.
+#' 
+#' The likelihood of a graph can be computed by integrating over all the graph parameters (with appropriate priors).
+#' Doing this by sampling from priors is very inefficient, so we use samples from the posteriors to importance
+#' sample the likelihood.
+#' 
+#' @param log_likelihoods    Samples of log likelihoods from the posterior distribution of the graph.
+#' @return                   The likelihood of a graph where graph parameters are integrated out.
+#' @export
+model_likelihood <- function(log_likelihoods) {
+  log_mean_inverse_log <- log_sum_of_logs(-log_likelihoods) - log(length(log_likelihoods))
+  -log_mean_inverse_log
+}
+
+
+#' Computes the likelihood of a model from samples from its posterior distribution.
+#' 
+#' The likelihood of a graph can be computed by integrating over all the graph parameters (with appropriate priors).
+#' Doing this by sampling from priors is very inefficient, so we use samples from the posteriors to importance
+#' sample the likelihood.
+#' 
+#' The numerical issues with adding a lot of numbers in log space is unstable
+#' so we get a better estimate by doing it several times on different permutations
+#' of the data.This function calculates the mean of the likelihoods over different permutations of the
+#' input and estimates the standard devition.
+#'
+#' @param log_likelihoods    Samples of log likelihoods from the posterior distribution of the graph.
+#' @param no_samples         Number of permutations to sample when computing the result.
+#' @return                   The likelihood of a graph where graph parameters are integrated out given as the mean and standard
+#'                           deviation over \code{no_samples} different permutations of the input.
+#' @export
+model_likelihood_n <- function(log_likelihoods, no_samples = 100) {
+  samples <- replicate(no_samples, model_likelihood(log_likelihoods))
+  cbind(mean = mean(samples), sd = sd(samples))
+}
+
+#' Computes the Bayes factor between two models from samples from their posterior distributions.
+#' 
+#' The likelihood of a graph can be computed by integrating over all the graph parameters (with appropriate priors).
+#' Doing this by sampling from priors is very inefficient, so we use samples from the posteriors to importance
+#' sample the likelihood. Given two graphs, and samples from their posteriors, we can estimate the Bayes factor
+#' between them.
+#' 
+#' The numerical issues with adding a lot of numbers in log space is unstable
+#' so we get a better estimate by doing it several times on different permutations
+#' of the data. This function calculates the mean of the Bayes factors over different permutations of the
+#' input and estimates the standard devition.
+#'
+#' @param logL1              Samples of log likelihoods from the posterior distribution of the first graph.
+#' @param logL2              Samples of log likelihoods from the posterior distribution of the second graph.
+#' @param no_samples         Number of permutations to sample when computing the result.
+#' @return                   The Bayes factor between the two graphs given as the mean and standard
+#'                           deviation over \code{no_samples} different permutations of the input.
+#' @export
+model_bayes_factor_n <- function(logL1, logL2, no_samples = 100) {
+  samples <- replicate(no_samples, model_likelihood(logL1) - model_likelihood(logL2))
+  cbind(mean = mean(samples), sd = sd(samples))
+}
+

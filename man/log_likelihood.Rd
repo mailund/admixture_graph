@@ -22,7 +22,7 @@ the edge_optimisation_matrix$column_reduced).}
 }
 \value{
 The output is a function. Given two input vectors of admix variables and edge variables,
-         this function calculates l = (F-f)^t*S^(-1)*(F-f). Up to a constant error and multiplier
+         this function calculates l = -1/2*(F-f)^t*S^(-1)*(F-f). Up to a constant error and multiplier
          that is the log likelihood, as the likelihood is det(2*pi*S)^(-1/2)*exp(-l/2).
 }
 \description{
