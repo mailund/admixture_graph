@@ -4,18 +4,37 @@
 \alias{fit_graph}
 \title{Fit the graph parameters to a data set.}
 \usage{
-fit_graph(data, graph, optimisation_options = NULL,
-  parameters = extract_graph_parameters(graph), iteration_multiplier = 3,
-  qr_tol = 1e-08)
+fit_graph(data, graph, point = list(rep(1e-05,
+  length(extract_graph_parameters(graph)$admix_prop)), rep(1 - 1e-05,
+  length(extract_graph_parameters(graph)$admix_prop))), Z.value = TRUE,
+  concentration = calculate_concentration(data, Z.value),
+  optimisation_options = NULL, parameters = extract_graph_parameters(graph),
+  iteration_multiplier = 3, qr_tol = 1e-08)
 }
 \arguments{
 \item{data}{The data set.}
 
 \item{graph}{The admixture graph.}
 
+\item{point}{If the user wants to restrict admix variables somehow, like fixing some
+of them. A list of two vectors: the lower and the upper bounds. As a default the bounds
+are just it little bit more than zero and less than one; this is because sometimes the
+point non non-continuity and minimum of the cost function coincide, and zero and one
+have several reasons to be problematic values in this respect.}
+
+\item{Z.value}{Whether we calculate the default concentration from Z.values (default
+option) or just use the identity matrix.}
+
+\item{concentration}{The Cholesky decomposition of the inverted covariance matrix.
+Default matrix determined by parameter Z.value.}
+
 \item{optimisation_options}{Options to the optimisation algorithm.}
 
 \item{parameters}{In case one wants to tweak something in the graph.}
+
+\item{iteration_multiplier}{Given to mynonneg().}
+
+\item{qr_tol}{Given to examine_edge_optimisation_matrix().}
 }
 \value{
 A list containing everything about the fit.

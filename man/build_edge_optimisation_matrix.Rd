@@ -6,7 +6,7 @@
 have been fixed.}
 \usage{
 build_edge_optimisation_matrix(data, graph,
-  parameters = extract_graph_parameters(graph), tolerance = 1e-08)
+  parameters = extract_graph_parameters(graph))
 }
 \arguments{
 \item{data}{The data set.}

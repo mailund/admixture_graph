@@ -4,7 +4,7 @@
 \alias{summary.agraph_fit}
 \title{Print function for a fitted graph.}
 \usage{
-summary.agraph_fit(object, ...)
+\method{summary}{agraph_fit}(object, ...)
 }
 \arguments{
 \item{object}{The fitted object.}

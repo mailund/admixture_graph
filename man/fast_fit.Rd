@@ -4,20 +4,38 @@
 \alias{fast_fit}
 \title{A fast version of graph fitting.}
 \usage{
-fast_fit(data, graph, optimisation_options = NULL,
-  parameters = extract_graph_parameters(graph), iteration_multiplier = 3)
+fast_fit(data, graph, point = list(rep(1e-05,
+  length(extract_graph_parameters(graph)$admix_prop)), rep(1 - 1e-05,
+  length(extract_graph_parameters(graph)$admix_prop))), Z.value = TRUE,
+  concentration = calculate_concentration(data, Z.value),
+  optimisation_options = NULL, parameters = extract_graph_parameters(graph),
+  iteration_multiplier = 3)
 }
 \arguments{
 \item{data}{The data set.}
 
 \item{graph}{The admixture graph.}
 
+\item{point}{If the user wants to restrict admix variables somehow, like fixing some
+of them. A list of two vectors: the lower and the upper bounds. As a default the bounds
+are just it little bit more than zero and less than one; this is because sometimes the
+point non non-continuity and minimum of the cost function coincide, and zero and one
+have several reasons to be problematic values in this respect.}
+
+\item{Z.value}{Whether we calculate the default concentration from Z.values (default
+option) or just use the identity matrix.}
+
+\item{concentration}{The Cholesky decomposition of the inverted covariance matrix.
+Default matrix determined by parameter Z.value.}
+
 \item{optimisation_options}{Options to the optimisation algorithm.}
 
 \item{parameters}{In case one wants to tweak something in the graph.}
+
+\item{iteration_multiplier}{Given to mynonneg().}
 }
 \value{
-A list containing someselected stuff about the fit.
+A list containing some selected stuff about the fit.
 }
 \description{
 Like fit_graph() but only gives the very basics, dropping the analysis

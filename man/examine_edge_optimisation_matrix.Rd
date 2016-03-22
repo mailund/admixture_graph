@@ -8,6 +8,8 @@ examine_edge_optimisation_matrix(matrix, tol = 1e-08)
 }
 \arguments{
 \item{matrix}{Not really a matrix but two (an output of build_edge_optimisation_matrix())}
+
+\item{tol}{Calulating the rank with qr.rank sometimes crashes (it shouldn't!).}
 }
 \value{
 An indicator of warning ($complaint), coding all the possibilities in a way that

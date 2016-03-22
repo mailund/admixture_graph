@@ -10,6 +10,8 @@ mynonneg(C, d, iteration_multiplier = 3)
 \item{C}{The matrix.}
 
 \item{d}{The vector.}
+
+\item{iteration_multiplier}{The definition of "too many steps".}
 }
 \value{
 A vector ($x) and the error ($resid.norm).
