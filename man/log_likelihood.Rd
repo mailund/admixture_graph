@@ -22,11 +22,6 @@ is the covariance matrix, this is \eqn{C = chol(S^{-1})}{C = chol(S^(-1))} satis
 \item{parameters}{Just because we need to know variable names.}
 }
 \value{
-<<<<<<< cbd389b77859a77a9fc12eae1c9dc09a0fc39c56
-The output is a function. Given two input vectors of admix variables and edge variables,
-         this function calculates l = -1/2*(F-f)^t*S^(-1)*(F-f). Up to a constant error and multiplier
-         that is the log likelihood, as the likelihood is det(2*pi*S)^(-1/2)*exp(-l/2).
-=======
 The output is a function. Given admixture proportions \code{x} and edge lengths \code{e}, the graph
         topology \eqn{T} implies an estimate \eqn{F} for the statistics \eqn{f}. This output function
         calculates
@@ -35,7 +30,6 @@ The output is a function. Given admixture proportions \code{x} and edge lengths 
         \deqn{\det(2 \pi S)^{-1/2} e^{-l/2}}{det(2*\pi*S)^(-1/2)*exp(-l/2)}
         can be seen as a likelihood of a graph with parameters, given the observation, or the other way around
         (possibly up to a normalization constant).
->>>>>>> 1ec4f111e33df53a20fc9a062a9d28e4e18ed53b
 }
 \description{
 Or the log likelihood of the observation, given graph with parameters, depending how things are modeled.

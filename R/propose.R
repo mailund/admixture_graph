@@ -1804,11 +1804,6 @@ eight_leaves_trees <- list(
 #' @import doParallel
 #'
 #' @export
-<<<<<<< cbd389b77859a77a9fc12eae1c9dc09a0fc39c56
-fit_permutations_and_graphs <- function(data, permutations, graphs) {
-  if (!requireNamespace("parallel", quietly = TRUE)) {
-    stop("This function requires parallel to be installed.")
-=======
 fit_permutations_and_graphs <- function(data, permutations, graphs, cores) {
   cl <- makeCluster(cores)
   registerDoParallel(cl)
@@ -1819,24 +1814,7 @@ fit_permutations_and_graphs <- function(data, permutations, graphs, cores) {
     graph <- graph_function(permutation)
     result <- fast_fit(filter_on_leaves(data, graph), graph)
     return(result)
->>>>>>> 1ec4f111e33df53a20fc9a062a9d28e4e18ed53b
   }
-  if (!requireNamespace("foreach", quietly = TRUE)) {
-    stop("This function requires foreach to be installed.")
-  }
-  if (!requireNamespace("doParallel", quietly = TRUE)) {
-    stop("This function requires doParallel to be installed.")
-  }
-  cl <- parallel::makeCluster(2)
-  doParallel::registerDoParallel(cl)
-  foreach::foreach(i = seq(1, length(permutations)), .combine = c, .packages = "admixturegraph") %:%
-    foreach::foreach(j = seq(1, length(graphs)), .packages = "admixturegraph") %dopar% { 
-      permutation <- permutations[[i]]
-      graph_function <- graphs[[j]]
-      graph <- graph_function(permutation)
-      result <- fast_fit(filter_on_leaves(data, graph), graph)
-      return(result)
-    }
 }
 
 #' Adds a new leaf to a graph

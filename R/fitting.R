@@ -1023,15 +1023,9 @@ inner_fit_graph <- function(data, graph, point, Z.value, concentration, optimisa
 #'         can be seen as a likelihood of a graph with parameters, given the observation, or the other way around
 #'         (possibly up to a normalization constant).
 #'
-<<<<<<< cbd389b77859a77a9fc12eae1c9dc09a0fc39c56
-#' @return  The output is a function. Given two input vectors of admix variables and edge variables,
-#'          this function calculates l = -1/2*(F-f)^t*S^(-1)*(F-f). Up to a constant error and multiplier
-#'          that is the log likelihood, as the likelihood is det(2*pi*S)^(-1/2)*exp(-l/2).
-=======
 #' @seealso \code{\link{cost_function}}
 #' @seealso \code{\link{edge_optimisation_function}}
 #' @seealso \code{\link{calculate_concentration}}
->>>>>>> 1ec4f111e33df53a20fc9a062a9d28e4e18ed53b
 #'
 #' @export
 log_likelihood <- function(f, concentration, matrix, graph, parameters = extract_graph_parameters(graph)) {
