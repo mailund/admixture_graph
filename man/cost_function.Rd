@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{cost_function}
 \alias{cost_function}
-\title{The cost function fed to nelder mead.}
+\title{The cost function fed to Nelder-Mead}
 \usage{
 cost_function(data, concentration, matrix, graph,
   parameters = extract_graph_parameters(graph), iteration_multiplier = 3)
@@ -10,22 +10,32 @@ cost_function(data, concentration, matrix, graph,
 \arguments{
 \item{data}{The data set.}
 
-\item{concentration}{The Cholesky decomposition of the inverted covariance matrix.}
+\item{concentration}{The Cholesky decomposition of the inverted covariance
+matrix.}
 
-\item{matrix}{A column reduced edge optimisation matrix (typically given by
-the edge_optimisation_matrix$column_reduced).}
+\item{matrix}{A column reduced edge optimisation matrix (typically given
+by the function \code{\link{edge_optimisation_matrix}}).}
 
 \item{graph}{The admixture graph.}
 
 \item{parameters}{In case one wants to tweak something in the graph.}
+
+\item{iteration_multiplier}{Given to \code{\link{mynonneg}}.}
 }
 \value{
 Given an input vector of admix variables, returns the smallest error
          regarding the edge variables.
 }
 \description{
-We want nelder mead to run fast so the cost function operates with the column
-rduced edge optimisation matrix and does not give any extar information about
-the fit. For the details, use edge_optimisation_function() instead.
+We want Nelder-Mead to run fast so the cost function operates with the column
+reduced edge optimisation matrix and does not give any extra information about
+the fit. For the details, use \code{\link{edge_optimisation_function}} instead.
+}
+\seealso{
+\code{\link{mynonneg}}
+
+\code{\link{edge_optimisation_function}}
+
+\code{\link{log_likelihood}}
 }
 

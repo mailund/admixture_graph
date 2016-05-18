@@ -2,13 +2,48 @@
 % Please edit documentation in R/propose.R
 \name{make_permutations}
 \alias{make_permutations}
-\title{Make a list of all permutations of populations.}
+\title{List of permutations}
 \usage{
 make_permutations(populations)
 }
+\arguments{
+\item{x}{A vector (of populations for example) of length between 4 and 8.}
+}
+\value{
+A list of different permutations of the elements of \code{x}.
+}
 \description{
-Right now it is hardwired to create permutations for four or five populations because
-I just copied code from the two fit functions, but this should be generalized if we
-need that at some point.
+List of permutations of given elements.
+}
+\examples{
+# The number of permutations of n elements is n!. Take 0! = 1, 1! = 1, 2! = 2
+# and 3! = 6 for granted. Now we can estimate e:
+FOUR <- length(make_permutations(c(1, 2, 3, 4)))
+FIVE <- length(make_permutations(c(1, 2, 3, 4, 5)))
+SIX <- length(make_permutations(c(1, 2, 3, 4, 5, 6)))
+SEVEN <- length(make_permutations(c(1, 2, 3, 4, 5, 6, 7)))
+EIGHT <- length(make_permutations(c(1, 2, 3, 4, 5, 6, 7, 8)))
+1/1 + 1/1 + 1/2 + 1/6 + 1/FOUR + 1/FIVE + 1/SIX + 1/SEVEN + 1/EIGHT
+# Hey that was pretty close!
+
+}
+\seealso{
+\code{\link{four_leaves_graphs}}
+
+\code{\link{five_leaves_graphs}}
+
+\code{\link{six_leaves_graphs}}
+
+\code{\link{seven_leaves_trees}}
+
+\code{\link{eight_leaves_trees}}
+
+\code{\link{fit_permutations_and_graphs}}
+
+\code{\link{add_a_leaf}}
+
+\code{\link{add_an_admixture}}
+
+\code{\link{add_an_admixture2}}
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{coef.agraph_fit}
 \alias{coef.agraph_fit}
-\title{Get fitted parameters for a fitted graph.}
+\title{Parameters for the fitted graph}
 \usage{
 \method{coef}{agraph_fit}(object, ...)
 }
@@ -12,6 +12,10 @@
 \item{...}{Additional parameters.}
 }
 \description{
-Extract the graph parameters for a graph fitted to data.
+Extracts the graph parameters for the graph fitted to data. Note that the optimal 
+parameters are generally not unique.
+}
+\seealso{
+\code{link{summary.agraph_fit}}
 }
 

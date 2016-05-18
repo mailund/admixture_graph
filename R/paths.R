@@ -1,7 +1,7 @@
-#' Create a path data frame from a list of nodes.
+#' Create a path data frame from a list of nodes
 #'
-#' @param graph The admixture graph the path is in.
-#' @param nodes A list of nodes on a path.
+#' @param graph  The admixture graph the path is in.
+#' @param nodes  A list of nodes on a path.
 #'
 #' @return A data frame capturing the path and the probabilities/weights on the edges.
 format_path <- function(graph, nodes) {
@@ -12,13 +12,14 @@ format_path <- function(graph, nodes) {
   path
 }
 
-#' Computes all paths from one leaf to another.
+#' Computes all paths from one leaf to another
 #'
-#' @param graph The admixture graph.
-#' @param src   The starting leaf.
-#' @param dst   The destination leaf.
+#' @param graph  The admixture graph.
+#' @param src    The starting leaf.
+#' @param dst    The destination leaf.
 #'
 #' @return A list containing all the paths from \code{src} to \code{dst}.
+#' 
 #' @export
 all_paths <- function(graph, src, dst) {
   if (!(src %in% graph$leaves)) stop(paste(src, "is not a leaf in the graph."))

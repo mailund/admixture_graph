@@ -7,12 +7,9 @@
 admixture_proportions(admix_props)
 }
 \arguments{
-\item{admix_props}{The admixture proportions}
+\item{admix_props}{The admixture proportions.}
 }
 \description{
 Syntactic suggar for constructing edges in an admixture graph.
-}
-\seealso{
-admix_props
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/symbolic-f-statistics.R
 \name{sf2}
 \alias{sf2}
-\title{Calculate the \eqn{f_2(A,B)} statistics.}
+\title{Calculate the f_2(A, B) statistics}
 \usage{
 sf2(graph, A, B)
 }
@@ -15,9 +15,9 @@ sf2(graph, A, B)
 }
 \value{
 A symbolic representation of the equation for the \eqn{f_2}
-  statistics given by the admixture graph.
+        statistics given by the admixture graph.
 }
 \description{
-Calculate the \eqn{f_2(A,B)} statistics.
+Calculate the f_2(A, B) statistics
 }
 

@@ -7,18 +7,15 @@
 admix_props(child, parent1, parent2, prop)
 }
 \arguments{
-\item{child}{The child node}
+\item{child}{The child node.}
 
-\item{parent1}{The first parent}
+\item{parent1}{The first parent.}
 
-\item{parent2}{The second parent}
+\item{parent2}{The second parent.}
 
-\item{prop}{The admixture proportions coming from the first parent}
+\item{prop}{The admixture proportions coming from the first parent.}
 }
 \description{
 Syntactic suggar for constructing edges in an admixture graph.
-}
-\seealso{
-admix_props
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/signs.R
 \name{overlaps_sign}
 \alias{overlaps_sign}
-\title{Get the sign of overlapping paths.}
+\title{Get the sign of overlapping paths}
 \usage{
 overlaps_sign(overlaps)
 }
@@ -11,6 +11,6 @@ overlaps_sign(overlaps)
 by \code{\link{all_path_overlaps}}.}
 }
 \description{
-Get the sign of overlapping paths.
+Get the sign of overlapping paths
 }
 

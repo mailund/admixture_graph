@@ -2,14 +2,14 @@
 % Please edit documentation in R/project_and_split.R
 \name{project_to_population}
 \alias{project_to_population}
-\title{Map sample names to population names.}
+\title{Map sample names to population names}
 \usage{
 project_to_population(data, f)
 }
 \arguments{
-\item{data}{The data frame to modify}
+\item{data}{The data frame to modify.}
 
-\item{f}{Function mapping sample names to population names}
+\item{f}{Function mapping sample names to population names.}
 }
 \description{
 This function maps the sample names in \code{W}, \code{X}, \code{Y}, and

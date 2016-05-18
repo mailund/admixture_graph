@@ -2,16 +2,16 @@
 % Please edit documentation in R/agraph.R
 \name{agraph_weights}
 \alias{agraph_weights}
-\title{Build matrix of admixture proportions from an edge list.}
+\title{Build the matrix of admixture proportions from an edge list}
 \usage{
 agraph_weights(nodes, admixture_weights, parents)
 }
 \arguments{
 \item{nodes}{The name of the nodes in the admxture graph.}
 
-\item{admixture_weights}{An \eqn{n \times 3} matrix where the first column is
-the child node, the second the parent. and the third the admixture weight
-on that edge.}
+\item{admixture_weights}{An \eqn{n \times 3}{n x 3} matrix where the first column is
+the child node, the second isthe parent and the third
+is the admixture weight on that edge.}
 
 \item{parents}{The parent edge list. Used for checking graph consistency.}
 }
@@ -19,6 +19,6 @@ on that edge.}
 A matrix containing the admixture weights.
 }
 \description{
-Build matrix of admixture proportions from an edge list.
+Build the matrix of admixture proportions from an edge list
 }
 

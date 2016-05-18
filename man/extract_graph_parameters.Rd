@@ -2,16 +2,16 @@
 % Please edit documentation in R/evaluate-f-statistics.R
 \name{extract_graph_parameters}
 \alias{extract_graph_parameters}
-\title{Extract all the parameters a graph contains.}
+\title{Extract all the parameters a graph contains}
 \usage{
 extract_graph_parameters(graph)
 }
 \arguments{
-\item{graph}{The admixture graph}
+\item{graph}{The admixture graph.}
 }
 \value{
 A list containing two values: \code{edges}, a vector of edges and 
-  \code{admix_prop}, a vector containing admixture proportions.
+        \code{admix_prop}, a vector containing admixture proportions.
 }
 \description{
 The graph is parameterized by edge lengths and admixture proportions. This 

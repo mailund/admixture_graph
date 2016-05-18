@@ -2,19 +2,19 @@
 % Please edit documentation in R/summary-statistics.R
 \name{no_poor_fits}
 \alias{no_poor_fits}
-\title{Get the number of tests in the fit where the predictions fall outside of the error bars.}
+\title{Get the number of tests in the fit where the predictions fall outside of the error bars}
 \usage{
 no_poor_fits(fit, sigma = 6)
 }
 \arguments{
-\item{fit}{The fitted graph}
+\item{fit}{The fitted graph.}
 
-\item{sigma}{the width of the error bars.}
+\item{sigma}{The width of the error bars.}
 }
 \value{
 The poorly fitted tests.
 }
 \description{
-Get the number of tests in the fit where the predictions fall outside of the error bars.
+Get the number of tests in the fit where the predictions fall outside of the error bars
 }
 

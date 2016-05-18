@@ -1,24 +1,20 @@
-## Graph fitting #################################################################
-
-#' Used to recognize similar expressions and to possibly simplify them.
+#' Used to recognize similar expressions and to possibly simplify them
 #'
-#' This is not pretty but let's see if it speeds up the program.
+#' It's best to simplify algebraic expression a little before evaluating.
 #'
-#' @param x   Input is assumed to be a char consisting of one or more terms. Each term
-#'            starts with either \code{+} or \code{-} and after that contains one or
-#'            more factors separated by \code{*}. Each factor is either an admix variable,
-#'            a number or a clause \code{(1 - x)} (mind the spaces, this is how the
-#'            f4-function outputs), where x is again either an admix variable or a
-#'            number.
-#'            Everything is pretty much ruined if variable names are numbers or contain
-#'            forbidden symbols \code{+, -, *, (, )}.
+#' @param x  The input is assumed to be a \code{\link{character}} consisting of one or
+#'           more terms. Each term starts with either \code{+} or \code{-} and after that
+#'           contains one or more factors separated by \code{*}. Each factor is either
+#'           an admix variable, a number or a clause \code{(1 - x)} (mind the spaces,
+#'           this is how the function \code{\link{f4}} outputs), where \code{x} is again
+#'           either an admix variable or a number.
+#'           Everything is pretty much ruined if variable names are numbers or contain
+#'           forbidden symbols \code{+, -, *, (, )}.
 #'
-#' @return   A polynomial in a canonical form with no parenthesis or spaces and the
-#'           monomials in lexicographical order. If everything is cancelled out then "+0".
-#'
-#' @export
+#' @return A polynomial in a canonical form with no parenthesis or spaces and the
+#'         monomials in lexicographical order. If everything is cancelled out then \code{+0}.
 canonise_expression <- function(x) {
-  # First remove the symbols 1 and - from inside the parenthesis to make things easier.
+  # First remove the symbols "1" and "-" from inside the parenthesis to make things easier.
   l <- nchar(x)
   for (i in seq(0, l - 1)) {
     if (substring(x, l - i, l - i) == "(") {
@@ -136,7 +132,7 @@ canonise_expression <- function(x) {
     }
   }
   # Put elements in lexicographic order, unless the list in empty in which case we want
-  # to return "+0" for later use (because as.numeric() does not interpret "" as zero).
+  # to return "+0" for later use (because as.numeric does not interpret "" as zero).
   if (length(math_list) == 0) {
     result <- "+0"
   } else {
@@ -159,21 +155,21 @@ canonise_expression <- function(x) {
 }
 
 #' Build a matrix coding the linear system of edges once the admix variables
-#' have been fixed.
+#' have been fixed
 #'
-#' The elements are characters containing numerals, admix variable names,
+#' The elements are characters containing numbers, admix variable names,
 #' parenthesis and arithmetical operations. (Transform into expressions with
-#' parse and then evaluate with eval). The default column names are the edge names
-#' from extract_graph_parameter$edges, the rows have no names.
+#' \code{\link{parse}} and then evaluate with \code{\link{eval}}). The default
+#' column names are the edge names from \code{\link{extract_graph_parameters}},
+#' the rows have no names.
 #'
 #' @param data        The data set.
 #' @param graph       The admixture graph.
 #' @param parameters  In case one wants to tweak something in the graph.
 #'
-#' @return A list containing the full matrix ($full),a version with zero columns
-#'         removed ($column_reduced) and parameters to pass forward ($parameters).
-#'
-#' @export
+#' @return A list containing the full matrix (\code{full}), a version with zero
+#'         columns removed (\code{column_reduced}) and parameters to pass forward
+#'        (\code{parameters}).
 build_edge_optimisation_matrix <- function(data, graph, parameters
                                            = extract_graph_parameters(graph)) {
   m <- NROW(data) # Number of equations is the number of f4-statistics.
@@ -194,7 +190,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
         }
         admix_product <- substring(admix_product, 2)
         # Yeah I know this is a bit silly but the matrix is only created once.
-        if (NROW(statistic[[j]]$positive) > 0) { # Insert the positive stuff
+        if (NROW(statistic[[j]]$positive) > 0) { # Insert the positive stuff.
           for (k in seq(1, NROW(statistic[[j]]$positive))) {
             edge_name1 <- paste("edge", statistic[[j]]$positive[k, 1],
                                 statistic[[j]]$positive[k, 2], sep = "_")
@@ -210,7 +206,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
                     admix_product, sep = "+")
           }
         }
-        if (NROW(statistic[[j]]$negative) > 0) { # Insert the negative stuff
+        if (NROW(statistic[[j]]$negative) > 0) { # Insert the negative stuff.
           for (k in seq(1, NROW(statistic[[j]]$negative))) {
             edge_name1 <- paste("edge", statistic[[j]]$negative[k, 1],
                                 statistic[[j]]$negative[k, 2], sep = "_")
@@ -254,28 +250,28 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
        parameters = parameters)
 }
 
-#' Examine the edge optimisation matrix to detect unfitted admix variables.
+#' Examine the edge optimisation matrix to detect unfitted admix variables
 #'
 #' If the essential number of equations is not higher than the essential number of
 #' edge variables, the quality of edge optimisation will not depend on the admix
 #' variables (expect possibly in isolated special cases where the quality can be worse),
 #' and a complaint will be given.
-#' Note: the admix variable not being fitted does not mean there is no evidence of an
-#' admix event! Isolated values of the admix variables, that could very well be 0 or 1,
-#' still might give significantly worse fit than a typical value (but not the other way
-#' around).
+#' Note: The admix variable not being fitted does not mean that there is no evidence of
+#' an admix event! Isolated values of the admix variables, possibly \eqn{0} or \eqn{1},
+#' might give significantly worse fit than a typical value (but not the other way around).
 #'
-#' @param matrix  Not really a matrix but two (an output of build_edge_optimisation_matrix())
-#' @param tol  Calulating the rank with qr.rank sometimes crashes (it shouldn't!).
+#' @param matrix  Not really a matrix but two (should be an output of
+#'                \code{\link{build_edge_optimisation_matrix}}).
+#' @param tol     Calulating the rank with \code{\link{qr.solve}} sometimes crashes.
+#'                Default \eqn{10^{-8}}{10^(-8)}.
 #'
-#' @return An indicator of warning ($complaint), coding all the possibilities in a way that
-#'         is interpreted elsewhere (in summary()).
+#' @return An indicator of warning (\code{complaint}), coding all the possibilities in
+#'         a way that is interpreted elsewhere (in \code{\link{summary.agraph_fit}}).
 #'
-#' @export
+#' @seealso \code{\link{qr.solve}}
+#'
+#' @import pracma
 examine_edge_optimisation_matrix <- function(matrix, tol = 1e-8) {
-  if (!requireNamespace("pracma", quietly = TRUE)) {
-    stop("This function requires pracma to be installed.")
-  }
   # In order to indentify which admix variables are trurly fitted and which are
   # not, we assign a random value to some of them, not all but maybe none. We can
   # accurately detect if none of the admix variables affect the fit, but if some
@@ -423,39 +419,38 @@ examine_edge_optimisation_matrix <- function(matrix, tol = 1e-8) {
   complaint
 }
 
-#' Non negative least square solution.
+#' Non negative least square solution
 #'
-#' This is lsqnonneg-function from the package pracma, just changed qr.solve into
-#' using Moore-Penrose inverse instead (ginv from MASS) as qr.solve crashes for
+#' This is the function \code{\link{lsqnonneg}} from the package \code{pracma}, 
+#' I just changed \code{\link{qr.solve}} into using Moore-Penrose inverse instead
+#' (\code{\link{ginv}} from \code{MASS}) as \code{\link{qr.solve}} crashes for
 #' some singular inputs. Now it won't crash but it's sometimes running for very long
 #' time (forever?), presumably with those problematic inputs. After too many steps
 #' the function halts and lies that the fit was terrible. I don't think this will
 #' cause problems.
 #'
-#' @param C  The matrix.
-#' @param d  The vector.
-#' @param iteration_multiplier  The definition of "too many steps".
+#' @param C                     The matrix.
+#' @param d                     The vector.
+#' @param iteration_multiplier  The definition of "too many steps". Default value is \eqn{3}
+#'                              (times \eqn{10} times the matrix height).
 #'
-#' @return A vector ($x) and the error ($resid.norm).
+#' @return A vector (\code{x}) and the error (\code{resid.norm}).
 #'
-#' @export
+#' @seealso \code{\link[pracma]{lsqnonneg}}
+#' @seealso \code{\link{qr.solve}}
+#' @seealso \code{\link[MASS]{ginv}}
+#'
+#' @import MASS
 mynonneg <- function(C, d, iteration_multiplier = 3) {
-  if (!requireNamespace("MASS", quietly = TRUE)) {
-    stop("This function requires MASS to be installed.")
-  }
-  stopifnot(is.numeric(C), is.numeric(d))
-  if (!is.matrix(C) || !is.vector(d))
-    stop("Argument 'C' must be a matrix, 'd' a vector.")
-  m <- NROW(C); n <- NCOL(C)
-  if (m != length(d))
-    stop("Arguments 'C' and 'd' have nonconformable dimensions.")
+  m <- NROW(C)
+  n <- NCOL(C)
   tol <- 10 * 2.220446e-16 * norm(C, "F") * (max(n, m) + 1)
-  x  <- rep(0, n)             # initial point
-  P  <- logical(n); Z <- !P   # non-active / active columns
+  x  <- rep(0, n)             # Initial point.
+  P  <- logical(n); Z <- !P   # Non-active/active columns.
   resid <- d - C %*% x
   w <- t(C) %*% resid
   wz <- numeric(n)
-  # iteration parameters
+  # Iteration parameters.
   outeriter <- 0; it <- 0
   itmax <- 10 * iteration_multiplier * n; exitflag <- 1
   while (any(Z) && any(w[Z] > tol)) {
@@ -487,29 +482,30 @@ mynonneg <- function(C, d, iteration_multiplier = 3) {
   return(list(x = x, resid.norm = sum(resid*resid)))
 }
 
-#' The cost function fed to nelder mead.
+#' The cost function fed to Nelder-Mead
 #'
-#' We want nelder mead to run fast so the cost function operates with the column
-#' rduced edge optimisation matrix and does not give any extar information about
-#' the fit. For the details, use edge_optimisation_function() instead.
+#' We want Nelder-Mead to run fast so the cost function operates with the column
+#' reduced edge optimisation matrix and does not give any extra information about
+#' the fit. For the details, use \code{\link{edge_optimisation_function}} instead.
 #'
-#' @param data  The data set.
-#' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
-#' @param matrix  A column reduced edge optimisation matrix (typically given by
-#'                the edge_optimisation_matrix$column_reduced).
-#' @param graph  The admixture graph.
-#' @param parameters  In case one wants to tweak something in the graph.
+#' @param data                  The data set.
+#' @param concentration         The Cholesky decomposition of the inverted covariance
+#'                              matrix.
+#' @param matrix                A column reduced edge optimisation matrix (typically given
+#'                              by the function \code{\link{edge_optimisation_matrix}}).
+#' @param graph                 The admixture graph.
+#' @param parameters            In case one wants to tweak something in the graph.
+#' @param iteration_multiplier  Given to \code{\link{mynonneg}}.
 #'
 #' @return  Given an input vector of admix variables, returns the smallest error
 #'          regarding the edge variables.
 #'
-#' @export
+#' @seealso \code{\link{mynonneg}}
+#' @seealso \code{\link{edge_optimisation_function}}
+#' @seealso \code{\link{log_likelihood}}
 cost_function <- function(data, concentration, matrix, graph,
                           parameters = extract_graph_parameters(graph),
                           iteration_multiplier = 3) {
-  if (!requireNamespace("pracma", quietly = TRUE)) {
-    stop("This function requires pracma to be installed.")
-  }
   goal <- cbind(data$D)
   function(x) {
     # Evaluate the column reduced edge optimisation matrix at x.
@@ -540,34 +536,35 @@ cost_function <- function(data, concentration, matrix, graph,
   }
 }
 
-#' More detailed edge fitting than mere \code{cost_function}.
+#' More detailed edge fitting than mere cost_function
 #'
 #' Returning the cost, an example edge solution of an optimal fit, and linear
 #' relations describing the set of all edge solutions. Operating with the full
-#' edge optimisation matrix.
+#' edge optimisation matrix, not the column reduced one.
 #'
-#' @param data  The data set.
-#' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
-#' @param matrix  A full edge optimisation matrix (typically given by the
-#'                function \code{edge_optimisation_matrix$full}).
-#' @param graph  The admixture graph.
-#' @param parameters  In case one wants to tweak something in the graph.
-#' @param iteration_multiplier Given to mynonneg().
+#' @param data                  The data set.
+#' @param concentration         The Cholesky decomposition of the inverted covariance matrix.
+#' @param matrix                A full edge optimisation matrix (typically given by the
+#'                              function \code{\link{edge_optimisation_matrix}}).
+#' @param graph                 The admixture graph.
+#' @param parameters            In case one wants to tweak something in the graph.
+#' @param iteration_multiplier  Given to \code{\link{mynonneg}}.
 #'
-#' @return  Given an input vector of admix variables, returns a list \code{x} containing
-#'          the minimal error (\code{x$cost}), the graph-f4-statistics
-#'          (\code{x$approximation}), an example solution (\code{x$edge_fit}), linear
-#'          relations describing all the solutions (\code{x$homogeneous}) and one
-#'          way to choose the free (\code{x$free_edges}) and bounded
-#'          (\code{x$bounded_edges}) edge variables.
+#' @return  Given an input vector of admix variables, returns a list containing
+#'          the minimal error (\code{cost}), the graph-\eqn{f4} statistics
+#'          (\code{approximation}), an example solution (\code{edge_fit}), linear
+#'          relations describing all the solutions (\code{homogeneous}) and one
+#'          way to choose the free (\code{free_edges}) and bounded
+#'          (\code{bounded_edges}) edge variables.
 #'
-#' @export
+#' @seealso \code{\link{mynonneg}}
+#' @seealso \code{\link{cost_function}}
+#' @seealso \code{\link{log_likelihood}}
+#'
+#' @import pracma
 edge_optimisation_function <- function(data, concentration, matrix, graph,
                                        parameters = extract_graph_parameters(graph),
                                        iteration_multiplier = 3) {
-  if (!requireNamespace("pracma", quietly = TRUE)) {
-    stop("This function requires pracma to be installed.")
-  }
   goal <- cbind(data$D)
   function(x) {
     # Evaluate the full edge otimisation matrix at x, if we even have admix variables.
@@ -660,7 +657,21 @@ edge_optimisation_function <- function(data, concentration, matrix, graph,
   }
 }
 
-#' @export
+#' Building a proxy concentration matrix
+#' 
+#' If we don't have the true concentration matrix of the data rows calculated,
+#' but at least have the \eqn{Z} scores of individual rows, (unrealistically) assuming
+#' independence and calculating the concentration matrix from those is still better
+#' than nothing (\emph{i. e.} the identity matrix).
+#' 
+#' @param data     The data containing at least the expected values of \eqn{f} statistics
+#'                 (column \code{D}) and possibly also products of expected values and \eqn{f}
+#'                 statistics divided by standard deviations of (the \eqn{Z} scores,
+#'                 column \code{Z.value}).
+#' @param Z.value  Tells whether the \eqn{Z} scores are available or should we just use the
+#'                 identity matrix.
+#' 
+#' @return The Cholesky decomposition of the inverted covariance matrix.
 calculate_concentration <- function(data, Z.value) {
   concentration <- matrix(0, NROW(data), NROW(data))
   if (Z.value == TRUE) {
@@ -676,30 +687,89 @@ calculate_concentration <- function(data, Z.value) {
   concentration
 }
 
-#' A fast version of graph fitting.
+#' A fast version of graph fitting
 #'
-#' Like fit_graph() but only gives the very basics, dropping the analysis
-#' of free/bounded edge variables and fitted/non-fitted admix variables.
+#' Given a table of observed \eqn{f} statistics and a graph, uses Nelder-Mead algorithm to
+#' find the graph parameters (edge lengths and admixture proportions) that minimize the value
+#' of \code{\link{cost_function}}, \emph{i. e.} maximizes the likelihood of a graph with
+#' parameters given the observed data.
+#' Like \code{\link{fit_graph}} but dropping most of the analysis on the result.
 #' Intended for use in big iteration loops.
 #'
-#' @param data  The data set.
-#' @param graph  The admixture graph.
-#' @param point  If the user wants to restrict admix variables somehow, like fixing some
-#'               of them. A list of two vectors: the lower and the upper bounds. As a default the bounds
-#'               are just it little bit more than zero and less than one; this is because sometimes the
-#'               point non non-continuity and minimum of the cost function coincide, and zero and one
-#'               have several reasons to be problematic values in this respect.
-#' @param Z.value  Whether we calculate the default concentration from Z.values (default
-#'                 option) or just use the identity matrix.
-#' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
-#'                       Default matrix determined by parameter Z.value.
-#' @param optimisation_options  Options to the optimisation algorithm.
-#' @param parameters  In case one wants to tweak something in the graph.
-#' @param iteration_multiplier  Given to mynonneg().
+#' @param data                  The data table, must contain columns \code{W}, \code{X},
+#'                              \code{Y}, \code{Z} for sample names and \code{D} for the
+#'                              observed \eqn{f_4(W, X; Y, Z)}. May contain an optional
+#'                              column \code{Z.value} for the \eqn{Z} scores (the \eqn{f}
+#'                              statistics divided by the standard deviations).
+#' @param graph                 The admixture graph (an \code{\link{agraph}} object).
+#' @param point                 If the user wants to restrict the admixture proportions somehow,
+#'                              like to fix some of them. A list of two vectors: the lower and the
+#'                              upper bounds. As a default the bounds are just it little bit more
+#'                              than zero and less than one; this is because sometimes the
+#'                              infimum of the values of cost function is at a point of
+#'                              non-continuity, and zero and one have reasons to be problematic
+#'                              values in this respect.
+#' @param Z.value               Whether we calculate the default concentration from \eqn{Z} scores
+#'                              (the default option \code{TRUE}) or just use the identity matrix.
+#' @param concentration         The Cholesky decomposition of the inverted covariance matrix.
+#'                              Default matrix determined by the parameter \code{Z.value}.
+#' @param optimisation_options  Options to the Nelder-Mead algorithm.
+#' @param parameters            In case one wants to tweak something in the graph.
+#' @param iteration_multiplier  Given to \code{\link{mynonneg}}.
 #'
-#' @return A list containing some selected stuff about the fit.
+#' @return A list containing only the essentials about the fit:
+#'         \code{graph} is the graph input,
+#'         \code{best_error} is the minimal value if \code{\link{cost_function}},
+#'         obtained when the admixture proportions are \code{best_fit}.
 #'
+#' @seealso \code{\link{cost_function}}
+#' @seealso \code{\link{agraph}}
+#' @seealso \code{\link{calculate_concentration}}
 #' @seealso \code{\link[neldermead]{optimset}}
+#' @seealso \code{\link{fit_graph}}
+#'#'
+#' @examples
+#' # For example, let's fit the following two admixture graph to an example data on bears:
+#' 
+#' load("data/bears.rda")
+#' bears <- bears[-19, ] # One statistics is twice in the data but we don't want that bias.
+#' View(bears)
+#' 
+#' leaves <- c("BLK", "PB", "Bar", "Chi1", "Chi2", "Adm1", "Adm2", "Denali", "Kenai", "Sweden") 
+#' inner_nodes <- c("R", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "M", "N")
+#' edges <- parent_edges(c(edge("BLK", "R"),
+#'                         edge("PB", "v"),
+#'                         edge("Bar", "x"),
+#'                         edge("Chi1", "y"),
+#'                         edge("Chi2", "y"),
+#'                         edge("Adm1", "z"),
+#'                         edge("Adm2", "z"),
+#'                         edge("Denali", "t"),
+#'                         edge("Kenai", "s"),
+#'                         edge("Sweden", "r"),
+#'                         edge("q", "R"),
+#'                         edge("r", "q"),
+#'                         edge("s", "r"),
+#'                         edge("t", "s"),
+#'                         edge("u", "q"),
+#'                         edge("v", "u"),
+#'                         edge("w", "M"),
+#'                         edge("x", "N"),
+#'                         edge("y", "x"),
+#'                         edge("z", "w"),
+#'                         admixture_edge("M", "u", "t"),
+#'                         admixture_edge("N", "v", "w")))
+#' admixtures <- admixture_proportions(c(admix_props("M", "u", "t", "a"),
+#'                                       admix_props("N", "v", "w", "b")))
+#' bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
+#' plot(bears_graph, show_admixture_labels = TRUE)
+#'
+#' fit <- fast_fit(bears, bears_graph)
+#' print(fit$best_error)
+#' 
+#' # The result is just the minimal value of the cost function, no deeper analysis of the fit.
+#' 
+#' @import neldermead
 #'
 #' @export
 fast_fit <- function(data, graph,
@@ -743,10 +813,8 @@ inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisat
     } else {
       x0 <- 0.5*(point[[1]] + point[[2]])
       cfunc <- cost_function(data, concentration, reduced_matrix, graph, parameters, iteration_multiplier)
-      print("Trying nelder mead:")
       opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = point[[1]], xmax = point[[2]],
                                   options = optimisation_options)
-      print("Success!")
       # The value opti is a class "neldermead" object.
       best_error <- neldermead::neldermead.get(opti, "fopt") # Optimal error.
       best_fit <- neldermead::neldermead.get(opti, "xopt") # Optimal admix values.
@@ -761,39 +829,107 @@ inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisat
   })
 }
 
-#' Fit the graph parameters to a data set.
+#' Fit the graph parameters to a data set
 #'
-#' Tries to minimize the squared distance between statistics in \code{data} and
-#' statistics given by the graph.
+#' Given a table of observed \eqn{f} statistics and a graph, uses Nelder-Mead algorithm to
+#' find the graph parameters (edge lengths and admixture proportions) that minimize the value
+#' of \code{\link{cost_function}}, \emph{i. e.} maximizes the likelihood of a graph with
+#' parameters given the observed data.
+#' Like \code{\link{fast_fit}} but outputs a more detailed analysis on the results.
 #'
-#' The data frame, \code{data}, must contain columns \code{W}, \code{X},
-#' \code{Y}, and \code{Z}. The function then computes the \eqn{f_4(W,X;Y,Z)}
-#' statistics for all rows from these to obtain the prediction made by the
-#' graph.
+#' @param data                  The data table, must contain columns \code{W}, \code{X},
+#'                              \code{Y}, \code{Z} for sample names and \code{D} for the
+#'                              observed \eqn{f_4(W, X; Y, Z)}. May contain an optional
+#'                              column \code{Z.value} for the \eqn{Z} scores (the \eqn{f}
+#'                              statistics divided by the standard deviations).
+#' @param graph                 The admixture graph (an \code{\link{agraph}} object).
+#' @param point                 If the user wants to restrict the admixture proportions somehow,
+#'                              like to fix some of them. A list of two vectors: the lower and the
+#'                              upper bounds. As a default the bounds are just it little bit more
+#'                              than zero and less than one; this is because sometimes the
+#'                              infimum of the values of cost function is at a point of
+#'                              non-continuity, and zero and one have reasons to be problematic
+#'                              values in this respect.
+#' @param Z.value               Whether we calculate the default concentration from \eqn{Z} scores
+#'                              (the default option \code{TRUE}) or just use the identity matrix.
+#' @param concentration         The Cholesky decomposition of the inverted covariance matrix.
+#'                              Default matrix determined by the parameter \code{Z.value}.
+#' @param optimisation_options  Options to the Nelder-Mead algorithm.
+#' @param parameters            In case one wants to tweak something in the graph.
+#' @param iteration_multiplier  Given to \code{\link{mynonneg}}.
+#' @param qr_tol                Given to \code{\link{examine_edge_optimisation_matrix}}.
 #'
-#' The data frame must also contain a column, \code{D}, containing the
-#' statistics observed in the data. The fitting algorithm attempts to minimize
-#' the distance from this column and the predictions made by the graph.
+#' @return A class \code{agraph_fit} list containing a lot of information about the fit: \cr
+#'         \code{data} is the input data, \cr
+#'         \code{graph} is the input graph, \cr
+#'         \code{matrix} is the output of \code{\link{build_edge_optimisation_matrix}},
+#'         containing the \code{full} matrix, the \code{column_reduced} matrix without zero
+#'         columns, and graph \code{parameters}, \cr
+#'         \code{complaint} coding wchich subsets of admixture proportions are trurly fitted, \cr
+#'         \code{best_fit} is the optimal admixture proportions (might not be unique if they
+#'         are not trurly fitted), \cr
+#'         \code{best_edge_fit} is an example of optimal edge lengths, \cr
+#'         \code{homogeneous} is the reduced row echelon form of the matrix describing when
+#'         a vector of edge lengths have no effect on the prediced statistics \eqn{F}, \cr
+#'         \code{free_edges} is one way to choose a subset of edge lengths in such a vector as
+#'         free variables, \cr
+#'         \code{bounded_edges} is how we calculate the reamining edge lengths from the free ones, \cr
+#'         \code{best_error} is the minimum value of the \code{\link{cost_function}}, \cr
+#'         \code{approximation} is the predicted statistics \eqn{F} with the optimal graph parameters, \cr
+#'         \code{parameters} is jsut a shortcut for the graph parameters. \cr
+#'         See \code{\link{summary.agraph_fit}} for the interpretation of some of these results.
 #'
-#' @param data  The data set.
-#' @param graph  The admixture graph.
-#' @param point  If the user wants to restrict admix variables somehow, like fixing some
-#'               of them. A list of two vectors: the lower and the upper bounds. As a default the bounds
-#'               are just it little bit more than zero and less than one; this is because sometimes the
-#'               point non non-continuity and minimum of the cost function coincide, and zero and one
-#'               have several reasons to be problematic values in this respect.
-#' @param Z.value  Whether we calculate the default concentration from Z.values (default
-#'                 option) or just use the identity matrix.
-#' @param concentration  The Cholesky decomposition of the inverted covariance matrix.
-#'                       Default matrix determined by parameter Z.value.
-#' @param optimisation_options  Options to the optimisation algorithm.
-#' @param parameters  In case one wants to tweak something in the graph.
-#' @param iteration_multiplier  Given to mynonneg().
-#' @param qr_tol  Given to examine_edge_optimisation_matrix().
-#'
-#' @return A list containing everything about the fit.
-#'
+#' @seealso \code{\link{cost_function}}
+#' @seealso \code{\link{agraph}}
+#' @seealso \code{\link{calculate_concentration}}
 #' @seealso \code{\link[neldermead]{optimset}}
+#' @seealso \code{\link{fast_fit}}
+#'
+#' @examples
+#' # For example, let's fit the following two admixture graph to an example data on bears:
+#' 
+#' load("data/bears.rda")
+#' bears <- bears[-19, ] # One statistics is twice in the data but we don't want that bias.
+#' View(bears)
+#' 
+#' leaves <- c("BLK", "PB", "Bar", "Chi1", "Chi2", "Adm1", "Adm2", "Denali", "Kenai", "Sweden") 
+#' inner_nodes <- c("R", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "M", "N")
+#' edges <- parent_edges(c(edge("BLK", "R"),
+#'                         edge("PB", "v"),
+#'                         edge("Bar", "x"),
+#'                         edge("Chi1", "y"),
+#'                         edge("Chi2", "y"),
+#'                         edge("Adm1", "z"),
+#'                         edge("Adm2", "z"),
+#'                         edge("Denali", "t"),
+#'                         edge("Kenai", "s"),
+#'                         edge("Sweden", "r"),
+#'                         edge("q", "R"),
+#'                         edge("r", "q"),
+#'                         edge("s", "r"),
+#'                         edge("t", "s"),
+#'                         edge("u", "q"),
+#'                         edge("v", "u"),
+#'                         edge("w", "M"),
+#'                         edge("x", "N"),
+#'                         edge("y", "x"),
+#'                         edge("z", "w"),
+#'                         admixture_edge("M", "u", "t"),
+#'                         admixture_edge("N", "v", "w")))
+#' admixtures <- admixture_proportions(c(admix_props("M", "u", "t", "a"),
+#'                                       admix_props("N", "v", "w", "b")))
+#' bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
+#' plot(bears_graph, show_admixture_labels = TRUE)
+#'
+#' fit <- fit_graph(bears, bears_graph)
+#' summary(fit)
+#' 
+#' # It turned out the values of admixture proportions had no effect on the cost function. This is not
+#' # too surprising because the huge graph contains a lot of edge variables compared to the tiny amount 
+#' # of data we used! Note however that the mere existence of the admixture event with non-trivial 
+#' # (not zero or one) admixture proportion might still decrease the cost function.
+#'
+#' @import neldermead
 #'
 #' @export
 fit_graph <- function(data, graph,
@@ -804,12 +940,6 @@ fit_graph <- function(data, graph,
                       optimisation_options = NULL,
                       parameters = extract_graph_parameters(graph), 
                       iteration_multiplier = 3, qr_tol = 1e-8) {
-  if (!requireNamespace("neldermead", quietly = TRUE)) {
-    stop("This function requires neldermead to be installed.")
-  }
-  if (!requireNamespace("pracma", quietly = TRUE)) {
-    stop("This function requires pracma to be installed.")
-  }
   withCallingHandlers({
     inner_fit_graph(data, graph, point, Z.value, concentration, optimisation_options,
                     parameters, iteration_multiplier, qr_tol)
@@ -869,23 +999,39 @@ inner_fit_graph <- function(data, graph, point, Z.value, concentration, optimisa
   })
 }
 
-#' Calculate the log likelihood of a graph with parameters, given observation.
+#' Calculate (essentially) the log likelihood of a graph with parameters, given the observation
 #'
-#' So basically this is just cost_function() that doesn't optimize the edge variables but has them as
-#' an argument instead. We use the edge optimisation matrix again because it can be calculated beforehand 
-#' and evaluating it for various values of admix variables is fast.
+#' Or the log likelihood of the observation, given graph with parameters, depending how things are modeled.
+#' Basically this is just \code{\link{cost_function}} that doesn't optimize the edge variables
+#' but has them as an argument instead.
 #' 
-#' @param f  The observed f-statistics (the column D from data).
-#' @param concentration  The Cholesky decomposition of the inverted covariance matrix. So if S is the
-#'                       covariance matrix, this is C = chol(S^(-1)) satisfying S^(-1) = C^t*C.
-#' @param matrix  A column reduced edge optimisation matrix (typically given by
-#'                the edge_optimisation_matrix$column_reduced).
-#' @param graph  The admixture graph. Here to give default value for:
-#' @param parameters  We need to know variable names.
+#' @param f              The observed \eqn{f} statistics (the column \code{D} from \code{data}).
+#' @param concentration  The Cholesky decomposition of the inverted covariance matrix. So if \eqn{S}
+#'                       is the covariance matrix, this is \eqn{C = chol(S^{-1})}{C = chol(S^(-1))} satisfying
+#'                       \eqn{S^{-1} = C^t C}{S^(-1) = C^t*C}.
+#' @param matrix         A column reduced edge optimisation matrix (typically given by the function
+#'                       \code{\link{build_edge_optimisation_matrix}}).
+#' @param graph          The admixture graph. Here to give default value for:
+#' @param parameters     Just because we need to know variable names.
 #'
+#' @return The output is a function. Given admixture proportions \code{x} and edge lengths \code{e}, the graph
+#'         topology \eqn{T} implies an estimate \eqn{F} for the statistics \eqn{f}. This output function
+#'         calculates
+#'         \deqn{l = (F-f)^t S^{-1}(F-f)}{l = (F-f)^t*S^(-1)*(F-f)}
+#'         from \code{x} and \code{e}. Up to a constant error and multiplier that is a log likelihood function, as
+#'         \deqn{\det(2 \pi S)^{-1/2} e^{-l/2}}{det(2*\pi*S)^(-1/2)*exp(-l/2)}
+#'         can be seen as a likelihood of a graph with parameters, given the observation, or the other way around
+#'         (possibly up to a normalization constant).
+#'
+<<<<<<< cbd389b77859a77a9fc12eae1c9dc09a0fc39c56
 #' @return  The output is a function. Given two input vectors of admix variables and edge variables,
 #'          this function calculates l = -1/2*(F-f)^t*S^(-1)*(F-f). Up to a constant error and multiplier
 #'          that is the log likelihood, as the likelihood is det(2*pi*S)^(-1/2)*exp(-l/2).
+=======
+#' @seealso \code{\link{cost_function}}
+#' @seealso \code{\link{edge_optimisation_function}}
+#' @seealso \code{\link{calculate_concentration}}
+>>>>>>> 1ec4f111e33df53a20fc9a062a9d28e4e18ed53b
 #'
 #' @export
 log_likelihood <- function(f, concentration, matrix, graph, parameters = extract_graph_parameters(graph)) {
@@ -916,14 +1062,17 @@ log_likelihood <- function(f, concentration, matrix, graph, parameters = extract
   }
 }
 
-## Interface for accessing fitted data ############################################
-
-#' Print function for a fitted graph.
+#' Print function for the fitted graph
 #'
-#' Print summary of the result of a fit.
+#' Prints the value of \code{\link{cost_function}} of the fitted graph, and complains
+#' if some or all of the admixture proportions aren't trurly fitted.
+#' Note: the admixture proportion not being trurly fitted does not necessarily mean that
+#' there is no evidence of an admix event!
 #'
-#' @param x       The fitted object.
-#' @param ...     Additional parameters.
+#' @param x    The fitted object.
+#' @param ...  Additional parameters.
+#'
+#' @seealso \code{link{summary.agraph_fit}}
 #'
 #' @export
 print.agraph_fit <- function(x, ...) {
@@ -933,13 +1082,13 @@ print.agraph_fit <- function(x, ...) {
   cat("\n")
   R <- max(2^(length(x$best_fit)) - 1, 1)
   if (length(x$complaint) > 0) {
-    cat("None of the admix variables are properly fitted!")
+    cat("None of the admixture proportions are properly fitted!")
     cat("\n")
   }
   if (R %in% x$complaint) {
-    cat("Not all the admix variables are properly fitted!")
+    cat("Not all of the admixture proportions are properly fitted!")
     cat("\n")
-    cat("See summary() for a more detailed analysis.")
+    cat("See summary.agraph_fit for a more detailed analysis.")
     cat("\n")
     cat("\n")
   }
@@ -948,21 +1097,40 @@ print.agraph_fit <- function(x, ...) {
   cat("\n")
 }
 
-#' Get fitted parameters for a fitted graph.
+#' Parameters for the fitted graph
 #'
-#' Extract the graph parameters for a graph fitted to data.
+#' Extracts the graph parameters for the graph fitted to data. Note that the optimal 
+#' parameters are generally not unique.
 #'
 #' @param object  The fitted object.
 #' @param ...     Additional parameters.
+#' 
+#' @seealso \code{link{summary.agraph_fit}}
 #'
 #' @export
 coef.agraph_fit <- function(object, ...) {
   c(object$best_edge_fit, object$best_fit)
 }
 
-#' Print function for a fitted graph.
+#' Summary for the fitted graph
 #'
-#' Print summary of the result of a fit.
+#' Prints: \cr
+#' Optimal admixture proportions and a complaint if some of them are not trurly fitted,
+#' \emph{i. e.} if after fixing a (possibly empty) subset of them, the rest have typically
+#' no effect on the cost function. Here typically means that some isolated values of the 
+#' admixture proportions, like \eqn{0} or \eqn{1}, might actually give a significantly worse
+#' fit than the constant fit given by any other values (but not better).
+#' Thus, an admixture proportion not being fitted does not always mean that there is no
+#' evidence of an admix event, as fixing them at \eqn{0} or \eqn{1} could make the fit
+#' worse while the exact value won't matter otherwise. \cr
+#' The optimal edge lengths give one of the solutions for the best fit. It is generally not
+#' unique, as after fixing the admixture proportions, the best edge lengths are a non-negative
+#' least square solution for a system of linear equations. To get all the solutions one has
+#' to add any solution of the corresponding homogeneous system to the given exaple solution
+#' (and exclude possible negative values). The solutions of the homogeneous system are given
+#' as a set of free edge lengths that may obtain any non-negative value, and bounded edge
+#' lengths that linearly depend on the free ones. \cr
+#' Minimal error is the value of the \code{\link{cost_function}} at the fit.
 #'
 #' @param object  The fitted object.
 #' @param ...     Additional parameters.
@@ -993,9 +1161,9 @@ summary.agraph_fit <- function(object, ...) {
       complement <- paste("{", substring(complement, 3), "}", sep = "")
       if (r != R) {
         cat(fixed)
-        cat(" none of the remaining variables ")
+        cat(" none of the remaining proportions ")
       } else {
-        cat("None of the variables ")
+        cat("None of the proportions ")
       }
       cat(complement)
       cat(" affect the quality of the fit!")
@@ -1003,24 +1171,24 @@ summary.agraph_fit <- function(object, ...) {
     }
   }
   cat("\n")
-  cat("Optimal admix variables:")
+  cat("Optimal admixture proportions:")
   cat("\n")
   print(object$best_fit)
   cat("\n")
-  cat("Optimal edge variables:")
+  cat("Optimal edge lengths:")
   cat("\n")
   print(object$best_edge_fit)
   cat("\n")
-  cat("Solution to a homogeneous system of edges with the optimal admix variables:")
+  cat("Solution to a homogeneous system of edge lengths with the optimal admixture proportions:")
   cat("\n")
   cat("Adding any such solution to the optimal one will not affect the error.")
   cat("\n")
   cat("\n")
-  cat("Free edge variables:")
+  cat("Free edge lengths:")
   cat("\n")
   cat(object$free_edges, sep = "\n")
   cat("\n")
-  cat("Bounded edge variables:")
+  cat("Bounded edge lengths:")
   cat("\n")
   cat(object$bounded_edges, sep = "\n")
   cat("\n")
@@ -1029,24 +1197,29 @@ summary.agraph_fit <- function(object, ...) {
   cat(object$best_error)
 }
 
-#' Extract fitted data for a fitted graph.
+#' Predicted f statistics for the fitted graph
 #'
-#' Get the predicted f4 statistics for a fitted graph.
+#' Gets the predicted \eqn{f} statistics \eqn{F} for the fitted graph.
 #'
 #' @param object  The fitted object.
 #' @param ...     Additional parameters.
+#' 
+#' @seealso \code{link{summary.agraph_fit}}
 #'
 #' @export
 fitted.agraph_fit <- function(object, ...) {
   object$data
 }
 
-#' Extract the individual errors in a fitted graph.
+#' Errors of prediction in the fitted graph
 #'
-#' Get D - graph_f4 for each data point used in the fit.
+#' Gets \eqn{f - F}, the difference between predicted and observed  statistics,
+#' for each data point used in the fit.
 #'
 #' @param object  The fitted object.
 #' @param ...     Additional parameters.
+#' 
+#' @seealso \code{link{summary.agraph_fit}}
 #'
 #' @export
 residuals.agraph_fit <- function(object, ...) {

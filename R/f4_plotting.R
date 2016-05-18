@@ -1,9 +1,11 @@
-#' Make a data frame an f4 statistics object.
+#' Make a data frame an f_4 statistics object
 #' 
 #' This is mostly just a convinience function to set the class of a data frame such that 
 #' we plot data as error bars in a meaningful way for statistics for admixture graphs.
 #' 
-#' @param x       Data frame with observed D (f4) statistics
+#' @param x  Data frame with observed \eqn{D} (\eqn{f_4}) statistics.
+#' 
+#' @return Something about classes.
 #' 
 #' @export
 f4stats <- function(x) {
@@ -11,17 +13,18 @@ f4stats <- function(x) {
   x
 }
 
-#' Plot the fit of a graph to data.
+#' Plot the fit of a graph to data
 #' 
-#' @param x       Data frame with observed D (f4) statistics
-#' @param sigma   How many sigmas the error bars should be wide.
-#' @param ...     Additional parameters.
+#' @param x      Data frame with observed \eqn{D} (\eqn{f_4}) statistics
+#' @param sigma  How many sigmas the error bars should be wide.
+#' @param ...    Additional parameters.
 #' 
 #' @import ggplot2
 #' @import dplyr
+#' 
 #' @export
 plot.f4stats <- function(x, sigma = 6, ...) {
-  
+
   # I know this is not the 'dplyr' way of doing it, but package check doesn't like
   # non standard evaluation, so this is what is needed.
   x$stderr <- with(x, D / Z.value)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/overlaps.R
 \name{all_path_overlaps}
 \alias{all_path_overlaps}
-\title{Get the list of overlaps of all paths.}
+\title{Get the list of overlaps of all paths}
 \usage{
 all_path_overlaps(paths1, paths2)
 }
@@ -12,10 +12,10 @@ all_path_overlaps(paths1, paths2)
 \item{paths2}{Paths between another pair of leaves.}
 }
 \value{
-A list of the overlaps of all combinations of paths from
-  \code{paths1} and \code{paths2}.
+A list of the overlaps of all combinations of paths from \code{paths1}
+        and \code{paths2}.
 }
 \description{
-Get the list of overlaps of all paths.
+Get the list of overlaps of all paths
 }
 

@@ -1,11 +1,12 @@
-#' Plot the fit of a graph to data.
+#' Plot the fit of a graph to data
 #' 
-#' @param x       Fitted graph object.
-#' @param sigma   How many sigmas the error bars should be wide.
-#' @param ...     Additional parameters.
+#' @param x      Fitted graph object.
+#' @param sigma  How many standard deviations the error bars should be wide.
+#' @param ...    Additional parameters.
 #' 
 #' @import ggplot2
 #' @import dplyr
+#' 
 #' @export
 plot.agraph_fit <- function(x, sigma = 6, ...) {
   
@@ -39,8 +40,6 @@ plot.agraph_fit <- function(x, sigma = 6, ...) {
           panel.grid.major.y = element_line(color = '#eeeeee'))
 }
 
-
-
 unpack_environment <- function(parameters, x) {
   n_edges <- length(parameters$edges)
   n_admix_prop <- length(parameters$admix_prop)
@@ -64,60 +63,82 @@ make_predict_function <- function(data, graph, parameters = extract_graph_parame
   }
 }
 
-#' A contour plot of the cost function around the best (admix variable) fit with respect to 2
-#' admix variables specified by the user.
-#' 
-#' Note that the other admix variables remain unchanged, so the plotted value of the cost
-#' function might only be optimal in one point if there are more than 2 admix variables!
-#' The edge variables are re-optimized at every pont.
+#' A contour plot of the cost function around the best (admix variable) fit with respect to two
+#' admix variables specified by the user
 #' 
 #' @param object      The fitted object.
 #' @param X           An admix variable name (remember quotation marks).
 #' @param Y           An admix variable name (remember quotation marks).
 #' @param resolution  How densely is the function evaluated.
-#' @param show_fit    Should the function plot the number of tests where the graph fits
-#'                    the data instead of the sum of squared errors?
-#' @param sigma       If the function plots the fit, it is considered a hit if the difference
-#'                    between a prediction and the observed statistics is no more than sigma/2.
-#' @param ...         Additional parameters passed to the plotting function filled.contour.
+#' @param show_fit    Should the function plot the number of statistics where the graph fits
+#'                    the data instead of the \code{\link{cost_function}}?
+#' @param sigma       If \code{show_fit} is \code{TRUE} then each statistic is considered fitted
+#'                    if the difference between a prediction and the observation statistics is no
+#'                    more than \eqn{D*\sigma/(2*Z)}. Notice that even when plotting the number of
+#'                    fitted statistics, we have no guarantee that the chosen variables maximize
+#'                    this number as the fitting function still optimizes \code{\link{cost_function}}.
+#' @param ...         Additional parameters passed to the plotting function
+#'                    \code{\link{filled.contour}}.
 #'   
-#' @return  The matrix of values computed and plotted.
-#'   
+#' @return The matrix of values computed and plotted.
+#'
+#' @seealso \code{\link{filled.contour}}
+#' @seealso \code{\link{one_dimensional_plot}}
+#'
 #' @export
 contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 6, ...) {
-  fitted_parameters <- coef(object)
-  if (! X %in% names(fitted_parameters)) {
-    stop(paste("'", X,"' is not a parameter of the fitted graph.", sep = ""))
-  }
-  if (! Y %in% names(fitted_parameters)) {
-    stop(paste("'", Y,"' is not a parameter of the fitted graph.", sep = ""))
-  }
+  fitted_parameters <- coef(object) # We draw a little plus sign on the best point.
   best_x <- fitted_parameters[X]
   best_y <- fitted_parameters[Y]
-  x <- seq(0, resolution)
-  y <- seq(0, resolution)
-  z <- matrix(0, resolution, resolution)
+  x <- 0:resolution/resolution
+  y <- 0:resolution/resolution
+  z <- matrix(0, resolution + 1, resolution + 1)
   data <- object$data
   reduced_matrix <- object$matrix$column_reduced
   graph <- object$graph
   parameters <- object$parameters
-  
-  evaluate_point <- function(point) {
+  min <- rep(0, length(object$best_fit))
+  names(min) <- names(object$best_fit)
+  max <- rep(1, length(object$best_fit))
+  names(max) <- names(object$best_fit)
+  point <- list(min, max)
+  evaluate_point_cost <- function(point) { # Plotting the cost function:
     fast_fit(data, graph, point)$best_error
   }
-  
-  point <- list(rep(0, length(object$best_fit)), rep(1, length(object$best_fit)))
+  if (show_fit == TRUE) {
+    if("Z.value" %in% colnames(data) == TRUE) {
+      zvalues <- data$Z.value
+    } else {
+      cat("No column called \"Z.value\", using default value one for each. \n")
+      zvalues <- rep(1, length(data$D))
+    }
+    tol <- data$D/zvalues
+    tol <- sigma*tol/2
+  }
+  evaluate_point_fits <- function(point) { # Plotting the number of fits:
+    residuals <- residuals(fit_graph(data, graph, point))
+    number <- 0
+    for (i in seq(1, length(tol))) {
+      if (abs(residuals[i]) < tol[i]) {
+        number <- number + 1
+      }
+    }
+    number
+  }
+  if (show_fit == TRUE) {
+    evaluate_point <- evaluate_point_fits
+  } else {
+    evaluate_point <- evaluate_point_cost
+  }
   for (i in seq (1, resolution)) {
     for (j in seq(1, resolution)) {
       point[[1]][X] <- i/resolution
       point[[2]][X] <- i/resolution
       point[[1]][Y] <- j/resolution
       point[[2]][Y] <- j/resolution
-      z[i, j] <- evaluate_point(point)
+      z[i + 1, j + 1] <- evaluate_point(point)
     }
   }
-  x <- 1:resolution/resolution
-  y <- 1:resolution/resolution
   image(x, y, z, xlab = X, ylab = Y, col = rev(heat.colors(12)), ...)
   contour(x, y, z, add = TRUE, ...)
   points(best_x, best_y, pch = 3)
@@ -125,55 +146,83 @@ contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma 
 }
 
 #' A plot of the cost function around the best fit with respect to one admix variable specified
-#' by the user. 
+#' by the user
 #' 
-#' Note that the other admix variables and the edge variables remain unchanged, so the plotted
-#' value of the cost function is only optimal at the fit!
-#' Sorry about the name, all the good ones were taken, and the fact that the word "graph" means
-#' two different things does't help any.
+#' Sorry about the name, all the good ones were taken and the fact that the word "graph" means
+#' two different things doesn't help any.
 #' 
 #' @param object      The fitted object.
 #' @param X           An admix variable name (remember quotation marks).
 #' @param resolution  How densely is the function evaluated.
-#' @param show_fit    Should the function plot the number of tests where the graph fits
-#'                    the data instead of the sum of squared errors?
-#' @param sigma       If the function plots the fit, it is considered a hit if the difference
-#'                    between a prediction and the observed statistics is no more than sigma/2.
+#' @param show_fit    Should the function plot the number of statistics where the graph fits
+#'                    the data instead of the \code{\link{cost_function}}?
+#' @param sigma       If \code{show_fit} is \code{TRUE} then each statistic is considered fitted
+#'                    if the difference between a prediction and the observation statistics is no
+#'                    more than \eqn{D*\sigma/(2*Z)}. Notice that even when plotting the number of
+#'                    fitted statistics, we have no guarantee that the chosen variables maximize
+#'                    this number as the fitting function still optimizes \code{\link{cost_function}}.
 #' @param ...         Additional parameters.
 #'
-#' @return  Values for optimal cost function for values of X between zero and one, plotted.
+#' @return Values for optimal cost function for values of \code{X} between zero and one, plotted.
+#'
+#' @seealso \code{\link{contour_plot}}
 #'
 #' @export
 one_dimensional_plot <- function(object, X, resolution = 100, show_fit = FALSE, sigma = 6, ...) {
-  fitted_parameters <- coef(object)
-  if (! X %in% names(fitted_parameters)) {
-    stop(paste("'", X,"' is not a parameter of the fitted graph.", sep = ""))
-  }
+  fitted_parameters <- coef(object) # We draw a little plus sign on the best point.
   best_x <- fitted_parameters[X]
-  x <- seq(0, 1, length.out = resolution)
-  y <- x
-  evaluate_point_fits <- function(point) {
-    # Under construction!
-  }
+  x <- 0:resolution/resolution
+  y <- rep(0, resolution + 1)
   data <- object$data
   reduced_matrix <- object$matrix$column_reduced
   graph <- object$graph
   parameters <- object$parameters
-  evaluate_point_SSE <- function(point) {
-    cost_function(data, reduced_matrix, graph, parameters)(point)
+  min <- rep(0, length(object$best_fit))
+  names(min) <- names(object$best_fit)
+  max <- rep(1, length(object$best_fit))
+  names(max) <- names(object$best_fit)
+  point <- list(min, max)
+  evaluate_point_cost <- function(point) { # Plotting the cost function:
+    fast_fit(data, graph, point)$best_error
   }
-  if (show_fit) {
-    evaluate_point <- evaluate_point_fits # I'll get back to this.
+  if (show_fit == TRUE) {
+    if("Z.value" %in% colnames(data) == TRUE) {
+      zvalues <- data$Z.value
+    } else {
+      cat("No column called \"Z.value\", using default value one for each. \n")
+      zvalues <- rep(1, length(data$D))
+    }
+    tol <- data$D/zvalues
+    tol <- sigma*tol/2
+  }
+  evaluate_point_fits <- function(point) { # Plotting the number of fits:
+    residuals <- residuals(fit_graph(data, graph, point))
+    number <- 0
+    for (i in seq(1, length(tol))) {
+      if (abs(residuals[i]) < tol[i]) {
+        number <- number + 1
+      }
+    }
+    number
+  }
+  if (show_fit == TRUE) {
+    evaluate_point <- evaluate_point_fits
   } else {
-    evaluate_point <- evaluate_point_SSE
+    evaluate_point <- evaluate_point_cost
   }
-  point <- object$best_fit
-  best_error <- evaluate_point(point)
-  for (i in seq_along(x)) {
-    point[X] <- x[i]
-    y[i] <- evaluate_point(point)
+  best_error <- evaluate_point(list(object$best_fit, object$best_fit))
+  for (i in seq (0, resolution)) {
+    point[[1]][X] <- i/resolution
+    point[[2]][X] <- i/resolution
+    y[i + 1] <- evaluate_point(point)
   }
-  plot(x, y, xlab = X, ylab = "cost", type = "l", col = "red", ...)
-  points(best_x, best_error, pch = 3)
-  invisible(y)
+  if (show_fit == TRUE) {
+    plot(x, y, xlab = X, ylab = "cost", type = "h", col = "red", ...)
+    points(best_x, best_error, pch = 3)
+    invisible(y)
+  } else {
+    plot(x, y, xlab = X, ylab = "cost", type = "l", col = "red", ...)
+    points(best_x, best_error, pch = 3)
+    invisible(y)
+  }
 }

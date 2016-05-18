@@ -2,7 +2,7 @@
 % Please edit documentation in R/symbolic-f-statistics.R
 \name{sf3}
 \alias{sf3}
-\title{Calculate the \eqn{f_3(A;B,C)} statistics.}
+\title{Calculate the f_3(A; B, C) statistics}
 \usage{
 sf3(graph, A, B, C)
 }
@@ -17,9 +17,9 @@ sf3(graph, A, B, C)
 }
 \value{
 A symbolic representation of the equation for the \eqn{f_3}
-  statistics given by the admixture graph.
+        statistics given by the admixture graph.
 }
 \description{
-Calculate the \eqn{f_3(A;B,C)} statistics.
+Calculate the f_3(A; B, C) statistics
 }
 

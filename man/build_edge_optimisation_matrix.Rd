@@ -3,7 +3,7 @@
 \name{build_edge_optimisation_matrix}
 \alias{build_edge_optimisation_matrix}
 \title{Build a matrix coding the linear system of edges once the admix variables
-have been fixed.}
+have been fixed}
 \usage{
 build_edge_optimisation_matrix(data, graph,
   parameters = extract_graph_parameters(graph))
@@ -16,13 +16,15 @@ build_edge_optimisation_matrix(data, graph,
 \item{parameters}{In case one wants to tweak something in the graph.}
 }
 \value{
-A list containing the full matrix ($full),a version with zero columns
-        removed ($column_reduced) and parameters to pass forward ($parameters).
+A list containing the full matrix (\code{full}), a version with zero
+        columns removed (\code{column_reduced}) and parameters to pass forward
+       (\code{parameters}).
 }
 \description{
-The elements are characters containing numerals, admix variable names,
+The elements are characters containing numbers, admix variable names,
 parenthesis and arithmetical operations. (Transform into expressions with
-parse and then evaluate with eval). The default column names are the edge names
-from extract_graph_parameter$edges, the rows have no names.
+\code{\link{parse}} and then evaluate with \code{\link{eval}}). The default
+column names are the edge names from \code{\link{extract_graph_parameters}},
+the rows have no names.
 }
 

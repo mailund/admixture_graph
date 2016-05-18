@@ -2,7 +2,7 @@
 % Please edit documentation in R/project_and_split.R
 \name{split_population.data.frame}
 \alias{split_population.data.frame}
-\title{Reverse a projection of samples to populations.}
+\title{Reverse a projection of samples to populations}
 \usage{
 \method{split_population}{data.frame}(x)
 }
@@ -10,6 +10,6 @@
 \item{x}{The projected data or a fitted object on projected data.}
 }
 \description{
-Reverse a projection of samples to populations.
+Reverse a projection of samples to populations
 }
 

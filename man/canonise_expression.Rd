@@ -2,25 +2,25 @@
 % Please edit documentation in R/fitting.R
 \name{canonise_expression}
 \alias{canonise_expression}
-\title{Used to recognize similar expressions and to possibly simplify them.}
+\title{Used to recognize similar expressions and to possibly simplify them}
 \usage{
 canonise_expression(x)
 }
 \arguments{
-\item{x}{Input is assumed to be a char consisting of one or more terms. Each term
-starts with either \code{+} or \code{-} and after that contains one or
-more factors separated by \code{*}. Each factor is either an admix variable,
-a number or a clause \code{(1 - x)} (mind the spaces, this is how the
-f4-function outputs), where x is again either an admix variable or a
-number.
+\item{x}{The input is assumed to be a \code{\link{character}} consisting of one or
+more terms. Each term starts with either \code{+} or \code{-} and after that
+contains one or more factors separated by \code{*}. Each factor is either
+an admix variable, a number or a clause \code{(1 - x)} (mind the spaces,
+this is how the function \code{\link{f4}} outputs), where \code{x} is again
+either an admix variable or a number.
 Everything is pretty much ruined if variable names are numbers or contain
 forbidden symbols \code{+, -, *, (, )}.}
 }
 \value{
 A polynomial in a canonical form with no parenthesis or spaces and the
-          monomials in lexicographical order. If everything is cancelled out then "+0".
+        monomials in lexicographical order. If everything is cancelled out then \code{+0}.
 }
 \description{
-This is not pretty but let's see if it speeds up the program.
+It's best to simplify algebraic expression a little before evaluating.
 }
 

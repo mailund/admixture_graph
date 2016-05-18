@@ -2,7 +2,7 @@
 % Please edit documentation in R/paths.R
 \name{format_path}
 \alias{format_path}
-\title{Create a path data frame from a list of nodes.}
+\title{Create a path data frame from a list of nodes}
 \usage{
 format_path(graph, nodes)
 }
@@ -15,6 +15,6 @@ format_path(graph, nodes)
 A data frame capturing the path and the probabilities/weights on the edges.
 }
 \description{
-Create a path data frame from a list of nodes.
+Create a path data frame from a list of nodes
 }
 

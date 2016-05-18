@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{residuals.agraph_fit}
 \alias{residuals.agraph_fit}
-\title{Extract the individual errors in a fitted graph.}
+\title{Errors of prediction in the fitted graph}
 \usage{
 \method{residuals}{agraph_fit}(object, ...)
 }
@@ -12,6 +12,10 @@
 \item{...}{Additional parameters.}
 }
 \description{
-Get D - graph_f4 for each data point used in the fit.
+Gets \eqn{f - F}, the difference between predicted and observed  statistics,
+for each data point used in the fit.
+}
+\seealso{
+\code{link{summary.agraph_fit}}
 }
 

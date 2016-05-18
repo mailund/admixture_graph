@@ -2,28 +2,122 @@
 % Please edit documentation in R/plot.R
 \name{plot.agraph}
 \alias{plot.agraph}
-\title{Plot an admixture graph.}
+\title{Plot an admixture graph}
 \usage{
-\method{plot}{agraph}(x, ordered_leaves = NULL,
-  show_admixture_labels = FALSE, show_inner_node_labels = FALSE, ...)
+\method{plot}{agraph}(x, show_leaf_labels = TRUE, draw_leaves = TRUE,
+  color = "yellowgreen", show_inner_node_labels = FALSE,
+  draw_inner_nodes = draw_leaves, inner_node_color = color,
+  show_admixture_labels = FALSE, parent_order = list(),
+  child_order = list(), leaf_order = NULL, platform = 1, title = NULL,
+  ...)
 }
 \arguments{
 \item{x}{The admixture graph.}
 
-\item{ordered_leaves}{The leaf-nodes in the left to right order they should
-be drawn. I don't have a good algorithm for figuring out that order so for
-now it is required as a function argument.}
+\item{show_leaf_labels}{A flag determining if leaf names are shown.}
+
+\item{draw_leaves}{A flag determining if leaf nodes are drawn as
+little circles.}
+
+\item{color}{Color of all drawn nodes unless overriden by
+\code{inner_node_color}.}
+
+\item{show_inner_node_labels}{A flag determining if the plot should include
+the names of inner nodes.}
+
+\item{draw_inner_nodes}{A flag determining if inner nodes are drawn as
+little circles.}
+
+\item{inner_node_color}{Color of inner node circles, if drawn.}
 
 \item{show_admixture_labels}{A flag determining if the plot should include
 the names of admixture proportions.}
 
-\item{show_inner_node_labels}{A flat determining if the plot should include
-the names of inner nodes.}
+\item{parent_order}{An optional list of instuctions on which order
+from left to right to draw the parents of nodes.
+The list should contain character vectors of parents
+with the name of the child, \emph{e.g.}
+\code{child = c("left_parent", "right_parent")}.
+Using automated heuristics for nodes not specified.}
 
-\item{...}{Additional plotting options}
+\item{child_order}{An optional list of instuctions on which order
+from left to right to draw the children of nodes.
+The list should contain character vectors of children
+with the name of the parent, \emph{e.g.}
+\code{parent = c("left_child", "right_child")}.
+Using automated heuristics for nodes not specified.}
+
+\item{leaf_order}{An optional vector describing in which order should
+the leaves be drawn. Using automated heuristic
+depending on \code{parent_order} and \code{child_order}
+if not specified. Accepts both a character vector of
+the leaves or a numeric vector interpreted as a
+permutation of the default order.}
+
+\item{platform}{By default admixture nodes are drawn with a horizontal
+platform for proportion labels, the width of which is
+half the distance between any two leaves. The number
+\code{platform} tells how many default platform widths
+should the platforms be wide, \emph{i. e.} zero means no
+platform.}
+
+\item{title}{Optional title for the plot.}
+
+\item{...}{Additional plotting options.}
+}
+\value{
+A plot.
 }
 \description{
-This is a basic drawing routine for visualising the graph. For publication
-quality graphs a lot more tweaking is probably needed.
+This is a basic drawing routine for visualising the graph. Uses Nelder-Mead
+algorithm and complicated heuristic approach to find aestethic node coordinates,
+but due to bad luck or an oversight in the heuristics, especially with larger
+graphs, might sometimes produce a weird looking result. Usually plotting again
+helps and if not, use the optional parameters to help the algorithm or try the
+faster and deterministic function \code{\link{fast_plot}} (which unfortunately is
+not very good at handling multiple admixture events).
+}
+\examples{
+leaves <- c("salmon", "sea horse", "mermaid", "horse", "human", "lobster")
+inner_nodes <- c("R", "s", "t", "u", "v", "w", "x", "y", "z")
+edges <- parent_edges(c(edge("salmon", "t"),
+                        edge("sea horse", "y"),
+                        edge("mermaid", "z"),
+                        edge("horse", "w"),
+                        edge("human", "x"),
+                        edge("lobster", "R"),
+                        edge("s", "R"),
+                        edge("t", "s"),
+                        edge("u", "t"),
+                        edge("v", "s"),
+                        edge("w", "v"),
+                        edge("x", "v"),
+                        admixture_edge("y", "u", "w"),
+                        admixture_edge("z", "u", "x")))
+admixtures <- admixture_proportions(c(admix_props("y", "u", "w", "a"),
+                                      admix_props("z", "u", "x", "b")))
+graph <- agraph(leaves, inner_nodes, edges, admixtures)
+plot(graph, show_inner_node_labels = T)
+
+# Suppose now that we prefer to have the outgroup "lobster" on the right side.
+# This is achieved by telling the algorithm that the children of "R" should be in
+# the order ("s", "lobster"), from left to right:
+
+plot(graph, child_order = list(R = c("s", "lobster")))
+
+# Suppose further that we prefer to have "mermaid" and "human" next to each other,
+# as well as "sea horse" and "horse". This is easily achieved by rearranging the leaf
+# order proposed by the algorithm. We can also make the admixture platforms a bit
+# shorter, color the nodes, show the admixture proportions and give the plot a title:
+
+plot(graph, child_order = list(R = c("s", "lobster")), leaf_order = c(1, 2, 4, 3, 5, 6),
+     platform = 0.8, color = "deepskyblue", inner_node_color = "skyblue",
+     show_admixture_labels = TRUE, title = "Evolution of fish/mammal hybrids")
+
+}
+\seealso{
+\code{\link{agraph}}
+
+\code{\link{fast_plot}}
 }
 

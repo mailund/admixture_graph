@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{mynonneg}
 \alias{mynonneg}
-\title{Non negative least square solution.}
+\title{Non negative least square solution}
 \usage{
 mynonneg(C, d, iteration_multiplier = 3)
 }
@@ -11,17 +11,26 @@ mynonneg(C, d, iteration_multiplier = 3)
 
 \item{d}{The vector.}
 
-\item{iteration_multiplier}{The definition of "too many steps".}
+\item{iteration_multiplier}{The definition of "too many steps". Default value is \eqn{3}
+(times \eqn{10} times the matrix height).}
 }
 \value{
-A vector ($x) and the error ($resid.norm).
+A vector (\code{x}) and the error (\code{resid.norm}).
 }
 \description{
-This is lsqnonneg-function from the package pracma, just changed qr.solve into
-using Moore-Penrose inverse instead (ginv from MASS) as qr.solve crashes for
+This is the function \code{\link{lsqnonneg}} from the package \code{pracma}, 
+I just changed \code{\link{qr.solve}} into using Moore-Penrose inverse instead
+(\code{\link{ginv}} from \code{MASS}) as \code{\link{qr.solve}} crashes for
 some singular inputs. Now it won't crash but it's sometimes running for very long
 time (forever?), presumably with those problematic inputs. After too many steps
 the function halts and lies that the fit was terrible. I don't think this will
 cause problems.
+}
+\seealso{
+\code{\link[pracma]{lsqnonneg}}
+
+\code{\link{qr.solve}}
+
+\code{\link[MASS]{ginv}}
 }
 

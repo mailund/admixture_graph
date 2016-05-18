@@ -1,9 +1,31 @@
-
-#' Make a list of all permutations of populations.
+#' List of permutations
 #' 
-#' Right now it is hardwired to create permutations for four or five populations because
-#' I just copied code from the two fit functions, but this should be generalized if we
-#' need that at some point.
+#' List of permutations of given elements.
+#' 
+#' @param x  A vector (of populations for example) of length between 4 and 8.
+#' 
+#' @return A list of different permutations of the elements of \code{x}.
+#'
+#' @seealso \code{\link{four_leaves_graphs}}
+#' @seealso \code{\link{five_leaves_graphs}}
+#' @seealso \code{\link{six_leaves_graphs}}
+#' @seealso \code{\link{seven_leaves_trees}}
+#' @seealso \code{\link{eight_leaves_trees}}
+#' @seealso \code{\link{fit_permutations_and_graphs}}
+#' @seealso \code{\link{add_a_leaf}}
+#' @seealso \code{\link{add_an_admixture}}
+#' @seealso \code{\link{add_an_admixture2}}
+#'
+#' @examples
+#' # The number of permutations of n elements is n!. Take 0! = 1, 1! = 1, 2! = 2
+#' # and 3! = 6 for granted. Now we can estimate e:
+#' FOUR <- length(make_permutations(c(1, 2, 3, 4)))
+#' FIVE <- length(make_permutations(c(1, 2, 3, 4, 5)))
+#' SIX <- length(make_permutations(c(1, 2, 3, 4, 5, 6)))
+#' SEVEN <- length(make_permutations(c(1, 2, 3, 4, 5, 6, 7)))
+#' EIGHT <- length(make_permutations(c(1, 2, 3, 4, 5, 6, 7, 8)))
+#' 1/1 + 1/1 + 1/2 + 1/6 + 1/FOUR + 1/FIVE + 1/SIX + 1/SEVEN + 1/EIGHT
+#' # Hey that was pretty close!
 #'
 #' @export
 make_permutations <- function(populations) {
@@ -107,6 +129,41 @@ make_permutations <- function(populations) {
   return(P)
 }
 
+#' Four leaves graphs
+#' 
+#' A comprehensive listing of all the \eqn{35} admixture graphs with four leaves and
+#' at most two admixture events. Our convention is that the position of the root does
+#' not matter (as long as it's not after an admixture event) and that graphs that have
+#' \emph{eyes}, two inner nodes with the property that all the paths between any two
+#' leaves visits both or neither of them, are excluded. The reason is that the \eqn{f}
+#' statistics  can't detect the exact position of the root or distinguish between an
+#' eye and a simple branch. The position of the root can be moved later with the function
+#' \code{\link{make_an_outgroup}}.
+#' 
+#' @return A list of functions on four leaves.
+#'         The outputs of these functions are \code{\link{agraph}} objects.
+#' 
+#' @seealso \code{\link{make_permutations}}
+#' @seealso \code{\link{five_leaves_graphs}}
+#' @seealso \code{\link{six_leaves_graphs}}
+#' @seealso \code{\link{seven_leaves_trees}}
+#' @seealso \code{\link{eight_leaves_trees}}
+#' @seealso \code{\link{fit_permutations_and_graphs}}
+#' @seealso \code{\link{add_a_leaf}}
+#' @seealso \code{\link{add_an_admixture}}
+#' @seealso \code{\link{add_an_admixture2}}
+#' @seealso \code{\link{make_an_outgroup}}
+#'
+#' @examples
+#' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
+#' # just for browsing.
+#' for (i in seq(1, length(four_leaves_graphs))) {
+#'   graph <- four_leaves_graphs[[i]](c("A", "B", "C", "D"))
+#'   # This is how you include quotation marks in strings by the way:
+#'   title <- paste("four_leaves_graphs[[", i, "]](c(\"A\", \"B\", \"C\", \"D\"))", sep = "")
+#'   plot(graph, color = "tomato3", title = title)
+#' }
+#'
 #' @export
 four_leaves_graphs <- list(
   # single tree
@@ -149,7 +206,7 @@ four_leaves_graphs <- list(
       edge("y", "R"),
       edge("z", "R"),
       edge("w", "z"),
-      edge(leaves[1], "R"), 
+      edge(leaves[1], "y"), 
       edge(leaves[2], "M"), 
       edge(leaves[3], "w"),
       edge(leaves[4], "w"),
@@ -832,6 +889,42 @@ four_leaves_graphs <- list(
   }
 )
 
+#' Five leaves graphs
+#' 
+#' A comprehensive listing of all the \eqn{8} admixture graphs with five leaves and
+#' at most one admixture event. Our convention is that the position of the root does
+#' not matter (as long as it's not after an admixture event) and that graphs that have
+#' \emph{eyes}, two inner nodes with the property that all the paths between any two
+#' leaves visits both or neither of them, are excluded. The reason is that the \eqn{f}
+#' statistics can't detect the exact position of the root or distinguish between an eye
+#' and a simple branch. The position of the root can be moved later with the function
+#' \code{\link{make_an_outgroup}}.
+#' 
+#' @return A list of functions on five leaves.
+#'         The outputs of these functions are \code{\link{agraph}} objects.
+#' 
+#' @seealso \code{\link{make_permutations}}
+#' @seealso \code{\link{four_leaves_graphs}}
+#' @seealso \code{\link{six_leaves_graphs}}
+#' @seealso \code{\link{seven_leaves_trees}}
+#' @seealso \code{\link{eight_leaves_trees}}
+#' @seealso \code{\link{fit_permutations_and_graphs}}
+#' @seealso \code{\link{add_a_leaf}}
+#' @seealso \code{\link{add_an_admixture}}
+#' @seealso \code{\link{add_an_admixture2}}
+#' @seealso \code{\link{make_an_outgroup}}
+#'
+#' @examples
+#' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
+#' # just for browsing.
+#' for (i in seq(1, length(five_leaves_graphs))) {
+#'   graph <- five_leaves_graphs[[i]](c("A", "B", "C", "D", "E"))
+#'   # This is how you include quotation marks in strings by the way:
+#'   title <- paste("five_leaves_graphs[[", i, "]](c(\"A\", \"B\", \"C\", \"D\", \"E\"))",
+#'                  sep = "")
+#'   plot(graph, color = "purple", title = title)
+#' }
+#'
 #' @export
 five_leaves_graphs <- list(
   # tree
@@ -993,6 +1086,42 @@ five_leaves_graphs <- list(
   }
 )
 
+#' Six leaves graphs
+#' 
+#' A comprehensive listing of all the \eqn{21} admixture graphs with six leaves and
+#' at most one admixture event. Our convention is that the position of the root does
+#' not matter (as long as it's not after an admixture event) and that graphs that have
+#' \emph{eyes}, two inner nodes with the property that all the paths between any two
+#' leaves visits both or neither of them, are excluded. The reason  is that the \eqn{f}
+#' statistics can't detect the exact position of the root or distinguish between an
+#' eye and a simple branch. The position of the root can be moved later with the function
+#' \code{\link{make_an_outgroup}}.
+#' 
+#' @return A list of functions on six leaves.
+#'         The outputs of these functions are \code{\link{agraph}} objects.
+#' 
+#' @seealso \code{\link{make_permutations}}
+#' @seealso \code{\link{four_leaves_graphs}}
+#' @seealso \code{\link{five_leaves_graphs}}
+#' @seealso \code{\link{seven_leaves_trees}}
+#' @seealso \code{\link{eight_leaves_trees}}
+#' @seealso \code{\link{fit_permutations_and_graphs}}
+#' @seealso \code{\link{add_a_leaf}}
+#' @seealso \code{\link{add_an_admixture}}
+#' @seealso \code{\link{add_an_admixture2}}
+#' @seealso \code{\link{make_an_outgroup}}
+#'
+#' @examples
+#' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
+#' # just for browsing.
+#' for (i in seq(1, length(six_leaves_graphs))) {
+#'   graph <- six_leaves_graphs[[i]](c("A", "B", "C", "D", "E", "F"))
+#'   # This is how you include quotation marks in strings by the way:
+#'   title <- paste("six_leaves_graphs[[", i,
+#'                  "]](c(\"A\", \"B\", \"C\", \"D\", \"E\", \"F\"))", sep = "")
+#'   plot(graph, color = "yellow4", title = title)
+#' }
+#'
 #' @export
 six_leaves_graphs <- list(
   # tree
@@ -1452,6 +1581,37 @@ six_leaves_graphs <- list(
   }
 )
 
+#' Seven leaves trees
+#' 
+#' A comprehensive listing of\ldots well\ldots both unrooted trees with seven leaves.
+#' The position of the root can be moved later with the function
+#' \code{\link{make_an_outgroup}}.
+#' 
+#' @return A list of functions on seven leaves.
+#'         The outputs of these functions are \code{\link{agraph}} objects.
+#' 
+#' @seealso \code{\link{make_permutations}}
+#' @seealso \code{\link{four_leaves_graphs}}
+#' @seealso \code{\link{five_leaves_graphs}}
+#' @seealso \code{\link{six_leaves_graphs}}
+#' @seealso \code{\link{eight_leaves_trees}}
+#' @seealso \code{\link{fit_permutations_and_graphs}}
+#' @seealso \code{\link{add_a_leaf}}
+#' @seealso \code{\link{add_an_admixture}}
+#' @seealso \code{\link{add_an_admixture2}}
+#' @seealso \code{\link{make_an_outgroup}}
+#'
+#' @examples
+#' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
+#' # just for browsing.
+#' for (i in seq(1, length(seven_leaves_trees))) {
+#'   graph <- seven_leaves_trees[[i]](c("A", "B", "C", "D", "E", "F", "G"))
+#'   # This is how you include quotation marks in strings by the way:
+#'   title <- paste("seven_leaves_trees[[", i,
+#'                  "]](c(\"A\", \"B\", \"C\", \"D\", \"E\", \"F\", \"G\"))", sep = "")
+#'   plot(graph, color = "seagreen", title = title)
+#' }
+#'
 #' @export
 seven_leaves_trees <- list(
   tree_1 = function(leaves) {
@@ -1495,6 +1655,37 @@ seven_leaves_trees <- list(
   }
 )
 
+#' Eight leaves trees
+#' 
+#' A comprehensive listing of three unrooted trees with eight leaves.
+#' The position of the root can be moved later with the function
+#' \code{\link{make_an_outgroup}}.
+#' 
+#' @return A list of functions on eight leaves.
+#'         The outputs of these functions are \code{\link{agraph}} objects.
+#' 
+#' @seealso \code{\link{make_permutations}}
+#' @seealso \code{\link{four_leaves_graphs}}
+#' @seealso \code{\link{five_leaves_graphs}}
+#' @seealso \code{\link{six_leaves_graphs}}
+#' @seealso \code{\link{seven_leaves_trees}}
+#' @seealso \code{\link{fit_permutations_and_graphs}}
+#' @seealso \code{\link{add_a_leaf}}
+#' @seealso \code{\link{add_an_admixture}}
+#' @seealso \code{\link{add_an_admixture2}}
+#' @seealso \code{\link{make_an_outgroup}}
+#'
+#' @examples
+#' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
+#' # just for browsing.
+#' for (i in seq(1, length(eight_leaves_trees))) {
+#'   graph <- eight_leaves_trees[[i]](c("A", "B", "C", "D", "E", "F", "G", "H"))
+#'   # This is how you include quotation marks in strings by the way:
+#'   title <- paste("eight_leaves_trees[[", i,
+#'                  "]](c(\"A\", \"B\", \"C\", \"D\", \"E\", \"F\", \"G\", \"H\"))", sep = "")
+#'   plot(graph, color = "brown", title = title)
+#' }
+#'
 #' @export
 eight_leaves_trees <- list(
   tree_1 = function(leaves) {
@@ -1564,17 +1755,71 @@ eight_leaves_trees <- list(
   }
 )
 
-#' Combine a list of permutations with a list of (parameterized) graphs to fit them
+#' Fit lots of graphs to data
+#'
+#' Combines a list of (population) permutations and a list of graph topologies
+#' to a big list of graphs, then fits those graphs to given data using parallel
+#' computation.
+#'   
+#' @param data          The data table.
+#' @param permutations  List of population permutations.
+#' @param graphs        List of functions for producing graphs.
+#' @param cores         Number of cores used.
 #' 
-#' @param permutations List of population permutations
-#' @param graphs       List of functions for producing graphs
+#' @return A list of \code{\link{fast_fit}} results.
+#'
+#' @seealso \code{\link{make_permutations}}
+#' @seealso \code{\link{four_leaves_graphs}}
+#' @seealso \code{\link{five_leaves_graphs}}
+#' @seealso \code{\link{six_leaves_graphs}}
+#' @seealso \code{\link{seven_leaves_trees}}
+#' @seealso \code{\link{eight_leaves_trees}}
 #' 
-#' @return a list of fitted graphs.
+#' @examples
+#' # Let's experiment by fitting all the graphs with five leaves and at most one admixture
+#' # event to a five population subset of the bear data. Note that with three data rows only
+#' # we do wisely by not concluding too much about the actual bear family tree; this is to
+#' # illustrate the function usage only!
+#' 
+#' load("data/bears.rda")
+#' data <- bears[16:18, ]
+#' View(data)
+#' permutations <- make_permutations(c("PB", "BLK", "Sweden", "Denali", "Kenai"))
+#' graphs <- five_leaves_graphs
+#' 
+#' # We go with one core only as I don't know what kind of machine you are using.
+#' 
+#' fitted_graphs <- fit_permutations_and_graphs(data, permutations, graphs, 1)
+#' 
+#' # Now sort the fitted objects by best_error and see how the best graph looks like.
+#' 
+#' errors <- sapply(fitted_graphs, function(x) x$best_error)
+#' best_graphs <- fitted_graphs[order(errors)]
+#' plot(best_graphs[[1]], color = "goldenrod", title = best_graphs[[1]]$best_error)
+#'
+#' # The same value for best_error actually occurs in the list 152 times because of our
+#' # unsufficient data.
+#'
+#' @import foreach
+#' @import doParallel
 #'
 #' @export
+<<<<<<< cbd389b77859a77a9fc12eae1c9dc09a0fc39c56
 fit_permutations_and_graphs <- function(data, permutations, graphs) {
   if (!requireNamespace("parallel", quietly = TRUE)) {
     stop("This function requires parallel to be installed.")
+=======
+fit_permutations_and_graphs <- function(data, permutations, graphs, cores) {
+  cl <- makeCluster(cores)
+  registerDoParallel(cl)
+  foreach(i = seq(1, length(permutations)), .combine = c, .packages = "admixturegraph") %:%
+  foreach(j = seq(1, length(graphs)), .packages = "admixturegraph") %dopar% {
+    permutation <- permutations[[i]]
+    graph_function <- graphs[[j]]
+    graph <- graph_function(permutation)
+    result <- fast_fit(filter_on_leaves(data, graph), graph)
+    return(result)
+>>>>>>> 1ec4f111e33df53a20fc9a062a9d28e4e18ed53b
   }
   if (!requireNamespace("foreach", quietly = TRUE)) {
     stop("This function requires foreach to be installed.")
@@ -1594,8 +1839,55 @@ fit_permutations_and_graphs <- function(data, permutations, graphs) {
     }
 }
 
+#' Adds a new leaf to a graph
+#' 
+#' Given an admixture graph, selects an edge and branches off a new edge ending at a new leaf. 
+#' 
+#' @param graph      An admixture graph.
+#' @param leaf_name  A name for the new leaf.
+#' @param outgroup   An optional parameter for the preferred outgroup, which can be the new leaf.
+#' 
+#' @return A list of graphs made by adding a new leaf to the input graph. The list has no
+#'         duplicate elements.
+#'         
+#' @seealso \code{\link{make_permutations}}
+#' @seealso \code{\link{four_leaves_graphs}}
+#' @seealso \code{\link{five_leaves_graphs}}
+#' @seealso \code{\link{six_leaves_graphs}}
+#' @seealso \code{\link{seven_leaves_trees}}
+#' @seealso \code{\link{eight_leaves_trees}}
+#' @seealso \code{\link{fit_permutations_and_graphs}}
+#' @seealso \code{\link{add_an_admixture}}
+#' @seealso \code{\link{add_an_admixture2}}
+#' @seealso \code{\link{make_an_outgroup}}
+#' 
+#' @examples
+#' # Take a look at how much trees there are: 
+#' leaves <- c("1", "2")
+#' inner_nodes <- c("R")
+#' edges <- parent_edges(c(edge("1", "R"), edge("2", "R")))
+#' admixtures <- NULL
+#' Lambda <- agraph(leaves, inner_nodes, edges, admixtures)
+#' set <- list(Lambda)
+#' for (i in seq(1, 6)) {
+#'   new_set <- list()
+#'   for (tree in set) {
+#'     new_set <- c(new_set, add_a_leaf(tree, paste(i + 2)))
+#'   }
+#'   set <- new_set
+#'   cat("There are ")
+#'   cat(length(set))
+#'   cat(" different trees with ")
+#'   cat(i + 2)
+#'   cat(" labeled leaves.")
+#'   cat("\n")
+#' }
+#' # In general, there are 1*3*5*...*(2n - 5) different trees with n labeled leaves
+#' # (A001147 in the online encyclopedia of integer sequences).
+#' # Exhaustive search through the graph space is hard!
+#' 
 #' @export
-add_a_leaf <- function(graph, leaf_name) {
+add_a_leaf <- function(graph, leaf_name, outgroup = "") {
   graph_list <- list()
   broken_graph <- break_graph(graph)
   inner_name <- paste("inner", leaf_name, sep = "_")
@@ -1616,14 +1908,20 @@ add_a_leaf <- function(graph, leaf_name) {
     for (j in seq(1, length(new_edges))) {
       edge_argument <- c(edge_argument, edge(new_edges[[j]][1], new_edges[[j]][2]))
     }
-    for (k in seq(1, length(new_admixtures))) {
-      edge_argument <- c(edge_argument, admixture_edge(new_admixtures[[k]][1], new_admixtures[[k]][2],
-                                                       new_admixtures[[k]][3]))
-      admix_argument <- c(admix_argument, admix_props(new_admixtures[[k]][1], new_admixtures[[k]][2],
-                                                      new_admixtures[[k]][3], new_admixtures[[k]][4]))
+    if (length(broken_graph$admixtures) > 0) {
+      for (k in seq(1, length(new_admixtures))) {
+        edge_argument <- c(edge_argument, admixture_edge(new_admixtures[[k]][1], new_admixtures[[k]][2],
+                                                         new_admixtures[[k]][3]))
+        admix_argument <- c(admix_argument, admix_props(new_admixtures[[k]][1], new_admixtures[[k]][2],
+                                                        new_admixtures[[k]][3], new_admixtures[[k]][4]))
+      }
     }
     edges <- parent_edges(edge_argument)
-    admixtures <- admixture_proportions(admix_argument)
+    if (length(broken_graph$admixtures) > 0) {
+      admixtures <- admixture_proportions(admix_argument)
+    } else {
+      admixtures <- NULL
+    }
     skip <- FALSE
     if (chosen[2] == root) {
       if (forgive == TRUE) {
@@ -1633,7 +1931,8 @@ add_a_leaf <- function(graph, leaf_name) {
       }
     }
     if (skip == FALSE) {
-      graph_list[[length(graph_list) + 1]] <- agraph(leaves, inner_nodes, edges, admixtures)
+      new_graph <- agraph(leaves, inner_nodes, edges, admixtures)
+      graph_list[[length(graph_list) + 1]] <- make_an_outgroup(new_graph, outgroup)
     }
   }
   if (length(broken_graph$admixtures) > 0) {
@@ -1660,7 +1959,8 @@ add_a_leaf <- function(graph, leaf_name) {
       }
       edges <- parent_edges(edge_argument)
       admixtures <- admixture_proportions(admix_argument)
-      graph_list[[length(graph_list) + 1]] <- agraph(leaves, inner_nodes, edges, admixtures)
+      new_graph <- agraph(leaves, inner_nodes, edges, admixtures)
+      graph_list[[length(graph_list) + 1]] <- make_an_outgroup(new_graph, outgroup)
       new_edges <- broken_graph$edges
       edge_argument <- character(0)
       new_admixtures <- broken_graph$admixtures
@@ -1681,12 +1981,112 @@ add_a_leaf <- function(graph, leaf_name) {
       }
       edges <- parent_edges(edge_argument)
       admixtures <- admixture_proportions(admix_argument)
-      graph_list[[length(graph_list) + 1]] <- agraph(leaves, inner_nodes, edges, admixtures)
+      new_graph <- agraph(leaves, inner_nodes, edges, admixtures)
+      graph_list[[length(graph_list) + 1]] <- make_an_outgroup(new_graph, outgroup)
     }  
   }
   return(graph_list)
 }
 
+#' Adds a new admixture event to a graph
+#' 
+#' Given an admixture graph, selects a child edge and a parent edges and adds a new edge from the 
+#' parent edge to the childedge with an admixture event, if possible. 
+#' Thus, the resulting graph is an extension of the input graph in the sense that erasing one of
+#' the admixture edges (the new one) we get the original admixture graph. However, we know that 
+#' in practice when fitting data to admixture graphs, the best graph with \eqn{k} admixture events
+#' is not always an extension like that from the best graph with \eqn{k - 1} admixture events.
+#' For a more relaxed way of adding a new admixture event, try \code{\link{add_an_admixture2}}.
+#' 
+#' @param graph                    An admixture graph.
+#' @param admixture_variable_name  A name for the new admixture proportion.
+#' @param labels matter            When \code{FALSE} (the default value), we consider two admixture
+#'                                 graphs similar when they have the same topology but permuted
+#'                                 admixture proportion names. When \code{TRUE}, the already existing
+#'                                 admixture events and the edges leading to them are considered
+#'                                 labeled.
+#' @param outgroup                 An optional parameter for the preferred outgroup.
+#' 
+#' @return A list of graphs made by adding a new admixture event to the input graph. The list has
+#'         no duplicate elements (what that means depends on the value of \code{labels_matter}).
+#' 
+#' @seealso \code{\link{make_permutations}}
+#' @seealso \code{\link{four_leaves_graphs}}
+#' @seealso \code{\link{five_leaves_graphs}}
+#' @seealso \code{\link{six_leaves_graphs}}
+#' @seealso \code{\link{seven_leaves_trees}}
+#' @seealso \code{\link{eight_leaves_trees}}
+#' @seealso \code{\link{fit_permutations_and_graphs}}
+#' @seealso \code{\link{add_a_leaf}}
+#' @seealso \code{\link{add_an_admixture2}}
+#' @seealso \code{\link{make_an_outgroup}}
+#' 
+#' @examples
+#' # To illustrate what the parameter labels_matter does, consider the following graph:
+#' 
+#' leaves <- c("A", "B", "C")
+#' inner_nodes <- c("R", "x", "y", "M")
+#' edges <- parent_edges(c(edge("x", "R"),
+#'                         edge("y", "R"),
+#'                         edge("A", "x"),
+#'                         edge("B", "M"),
+#'                         edge("C", "y"),
+#'                         admixture_edge("M", "x", "y")))
+#' admixtures <- admixture_proportions(c(admix_props("M", "x", "y", "p")))
+#' graph <- agraph(leaves, inner_nodes, edges, admixtures)
+#' plot(graph, show_admixture_labels = TRUE, title = "graph")
+#' 
+#' # There are 15 ways this graph can be extended to a graph with two admixture events by
+#' # adding an admixture edge, as can be seeing by having the program explicitly construct
+#' # all the cases:
+#' 
+#' short_list <- add_an_admixture(graph, "q")
+#' print(length(short_list))
+#' 
+#' # However, maybe we already have a specific historical event in mind corresponding to the
+#' # original admixture event in graph, or a fixed value for the admixture proportion p.
+#' # Then, for example, it makes a difference to us whether we consider the possibility of
+#' # another admixture event occurring before that event,
+#' 
+#' leaves <- c("A", "B", "C")
+#' inner_nodes <- c("R", "x", "y", "z", "M", "N")
+#' edges <- parent_edges(c(edge("x", "R"),
+#'                         edge("z", "R"),
+#'                         edge("y", "z"),
+#'                         edge("A", "x"),
+#'                         edge("B", "M"),
+#'                         edge("C", "y"),
+#'                         admixture_edge("N", "x", "z"),
+#'                         admixture_edge("M", "N", "y")))
+#' admixtures <- admixture_proportions(c(admix_props("N", "x", "z", "q"),
+#'                                       admix_props("M", "N", "y", "p")))
+#' example1 <- agraph(leaves, inner_nodes, edges, admixtures)
+#' plot(example1, show_admixture_labels = TRUE, title = "example 1")
+#' 
+#' # or after that event,
+#' 
+#' leaves <- c("A", "B", "C")
+#' inner_nodes <- c("R", "x", "y", "z", "M", "N")
+#' edges <- parent_edges(c(edge("x", "R"),
+#'                         edge("y", "R"),
+#'                         edge("z", "y"),
+#'                         edge("A", "x"),
+#'                         edge("B", "N"),
+#'                         edge("C", "z"),
+#'                         admixture_edge("M", "x", "y"),
+#'                         admixture_edge("N", "M", "z")))
+#' admixtures <- admixture_proportions(c(admix_props("M", "x", "y", "p"),
+#'                                       admix_props("N", "M", "z", "q")))
+#' example2 <- agraph(leaves, inner_nodes, edges, admixtures)
+#' plot(example2, show_admixture_labels = TRUE, title = "example 2")
+#' 
+#' # even though as (acyclic) directed graphs with labeled leaves example 1
+#' # and example 2 are isomorphic.
+#' # Counting cases like that dirrerent, we get 21 possible extensions:
+#'
+#' long_list <- add_an_admixture(graph, "q", labels_matter = TRUE)
+#' print(length(long_list))
+#' 
 #' @export
 add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FALSE, outgroup = "") {
   graph_list <- list()
@@ -1733,7 +2133,6 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
       if (i != j) {
         # From edge to edge:
         # Weeding out half of the duplicated cases.
-        # (I'm planning to write a complete description of how this works as a pdf.)
         default_problem <- FALSE
         if (length(intersect(original_edges[[i]], original_edges[[j]])) > 0) {
           common_node <- intersect(original_edges[[i]], original_edges[[j]])
@@ -1884,7 +2283,10 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
             }
             if (common_node == original_directed_edges[[k]][2]) {
               # The only undirected not i, meeting at common node -> always choose the directed j.
-              default_problem <- TRUE
+              # Actually this is a matter of whether the labels matter.
+              if (labels_matter == FALSE) {
+                default_problem <- TRUE
+              }
             }
           }
         }
@@ -1964,7 +2366,10 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
             for (k in seq(1, length(original_directed_edges))) {
               if (original_directed_edges[[k]][2] == common_node && k != i && k != j) {
                 # All three directed -> choose i and j meeting at common node.
-                default_problem <- TRUE
+                # Actually this is a matter of whether the labels matter.
+                if (labels_matter == FALSE) {
+                  default_problem <- TRUE
+                }
               }
             }
           }
@@ -2049,6 +2454,36 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
   return(graph_list)
 }
 
+#' Adds a new admixture event to a graph
+#' 
+#' Given an admixture graph, selects a child edge and two parent edges, disconnects the child edge
+#' from its original parent node and connects it to the two parent edges with an admixture event,
+#' if possible. Thus, contrary to \code{\link{add_an_admixture}}, the resulting graph need not be an
+#' extension of the input graph in the sense that erasing one of the admixture edges we get
+#' the original admixture graph. In practice, we know that when fitting data to admixture graphs,
+#' the best graph with \eqn{k} admixture events is not always an extension like that from the best
+#' graph with \eqn{k - 1} admixture events. Most likely it doesn't need to be an extension like
+#' this (the two new admixture edges can both go where ever) either.
+#' 
+#' @param graph                    An admixture graph.
+#' @param admixture_variable_name  A name for the new admixture proportion.
+#' @param outgroup                 An optional parameter for the preferred outgroup.
+#' 
+#' @return A list of graphs made by adding a new admixture event to the input graph. The list contains
+#'         duplicate elements, and may even contain graphs with \emph{eyes} (two inner nodes with the
+#'         property that all the paths between any two leaves visits both or neither of them).
+#' 
+#' @seealso \code{\link{make_permutations}}
+#' @seealso \code{\link{four_leaves_graphs}}
+#' @seealso \code{\link{five_leaves_graphs}}
+#' @seealso \code{\link{six_leaves_graphs}}
+#' @seealso \code{\link{seven_leaves_trees}}
+#' @seealso \code{\link{eight_leaves_trees}}
+#' @seealso \code{\link{fit_permutations_and_graphs}}
+#' @seealso \code{\link{add_a_leaf}}
+#' @seealso \code{\link{add_an_admixture}}
+#' @seealso \code{\link{make_an_outgroup}}
+#' 
 #' @export
 add_an_admixture2 <- function(graph, admixture_variable_name, outgroup = "") {
   graph_list <- list()
@@ -2604,6 +3039,83 @@ add_an_admixture2 <- function(graph, admixture_variable_name, outgroup = "") {
   return(graph_list)
 }
 
+#' Make an outgroup
+#' 
+#' Given a graph and a leaf, tries to put the root of the graph on the edge leading to the leaf.
+#' If not possible (\emph{i. e.} if the leaf has admixture in its ancestry), puts the root
+#' somewhere else.
+#' 
+#' @param graph     An admixture graph.
+#' @param outgroup  A leaf we want to be the outgroup.
+#' 
+#' @return An admixture graph with the given leaf as an outgroup, if possible.
+#'
+#' @seealso \code{\link{make_permutations}}
+#' @seealso \code{\link{four_leaves_graphs}}
+#' @seealso \code{\link{five_leaves_graphs}}
+#' @seealso \code{\link{six_leaves_graphs}}
+#' @seealso \code{\link{seven_leaves_trees}}
+#' @seealso \code{\link{eight_leaves_trees}}
+#' @seealso \code{\link{fit_permutations_and_graphs}}
+#' @seealso \code{\link{add_a_leaf}}
+#' @seealso \code{\link{add_an_admixture}}
+#' @seealso \code{\link{make_an_outgroup}}
+#' 
+#' @examples
+#' # Here is a little family tree of some dinosaur-like animals.
+#' 
+#' species <- c("triceratops", "crocodile", "diplodocus", "tyrannosaurus", "chicken")
+#' graph <- five_leaves_graphs[[1]](species)
+#' plot(graph)
+#' 
+#' # Of course we know that while this is correct as an undirected graph, y-axis does
+#' # not correspond to time because "crocodile" should be the outgroup.
+#' 
+#' graph <- make_an_outgroup(graph, "crocodile")
+#' plot(graph)
+#' 
+#' # Strictly speaking the y-axis still doesn't correspond to time because unfortunately
+#' # the (non-bird) dinosaurs are extinct :-( But at least now the y-axis shows which
+#' # species evolved from which.
+#' 
+#' @export
+make_an_outgroup <- function(graph, outgroup) {
+  broken_graph <- break_graph(graph)
+  leaves <- broken_graph$leaves
+  inner_nodes <- broken_graph$inner_nodes
+  edges <- broken_graph$edges
+  admixtures <- broken_graph$admixtures
+  root <- broken_graph$root
+  for (i in seq(1, length(inner_nodes))) {
+    node <- inner_nodes[i]
+    if (node == root) {
+      inner_nodes <- inner_nodes[-i]
+      break
+    }
+  }
+  memory <- ""
+  to_be_deleted <- nchar(0)
+  for (i in seq(1, length(edges))) {
+    edge <- edges[[i]]
+    if (edge[2] == root) {
+      if (nchar(memory) == 0) {
+        memory <- edge[1]
+        to_be_deleted <- i
+      } else {
+        edges[[i]] <- c(memory, edge[1])
+      }
+    }
+  }
+  edges[[to_be_deleted]] <- NULL
+  directed_edges <- list()
+  for (admixture in admixtures) {
+    directed_edges[[length(directed_edges) + 1]] <- c(admixture[2], admixture[1])
+    directed_edges[[length(directed_edges) + 1]] <- c(admixture[3], admixture[1])
+  }
+  graph <- root_graph(leaves, inner_nodes, edges, directed_edges, admixtures, outgroup)
+  return(graph)
+}
+
 # Breaking up a graph back to its components.
 break_graph <- function(graph) {
   nodes <- graph$nodes
@@ -2664,14 +3176,20 @@ root_graph <- function(leaves, inner_nodes, edges, directed_edges, admixtures, o
   for (j in seq(1, length(directed_edges))) {
     edge_argument <- c(edge_argument, edge(directed_edges[[j]][2], directed_edges[[j]][1]))
   }
-  for (k in seq(1, length(admixtures))) {
-    edge_argument <- c(edge_argument, admixture_edge(admixtures[[k]][1], admixtures[[k]][2],
-                                                     admixtures[[k]][3]))
-    admix_argument <- c(admix_argument, admix_props(admixtures[[k]][1], admixtures[[k]][2],
-                                                    admixtures[[k]][3], admixtures[[k]][4]))
+  if (length(admixtures) > 0) {
+    for (k in seq(1, length(admixtures))) {
+      edge_argument <- c(edge_argument, admixture_edge(admixtures[[k]][1], admixtures[[k]][2],
+                                                       admixtures[[k]][3]))
+      admix_argument <- c(admix_argument, admix_props(admixtures[[k]][1], admixtures[[k]][2],
+                                                      admixtures[[k]][3], admixtures[[k]][4]))
+    }
   }
   edges <- parent_edges(edge_argument)
-  admixtures <- admixture_proportions(admix_argument)
+  if (length(admixtures) > 0) {
+    admixtures <- admixture_proportions(admix_argument)
+  } else {
+    admixtures <- NULL
+  }
   return(agraph(leaves, inner_nodes, edges, admixtures))
 }
 

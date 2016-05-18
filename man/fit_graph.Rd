@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{fit_graph}
 \alias{fit_graph}
-\title{Fit the graph parameters to a data set.}
+\title{Fit the graph parameters to a data set}
 \usage{
 fit_graph(data, graph, point = list(rep(1e-05,
   length(extract_graph_parameters(graph)$admix_prop)), rep(1 - 1e-05,
@@ -12,48 +12,118 @@ fit_graph(data, graph, point = list(rep(1e-05,
   iteration_multiplier = 3, qr_tol = 1e-08)
 }
 \arguments{
-\item{data}{The data set.}
+\item{data}{The data table, must contain columns \code{W}, \code{X},
+\code{Y}, \code{Z} for sample names and \code{D} for the
+observed \eqn{f_4(W, X; Y, Z)}. May contain an optional
+column \code{Z.value} for the \eqn{Z} scores (the \eqn{f}
+statistics divided by the standard deviations).}
 
-\item{graph}{The admixture graph.}
+\item{graph}{The admixture graph (an \code{\link{agraph}} object).}
 
-\item{point}{If the user wants to restrict admix variables somehow, like fixing some
-of them. A list of two vectors: the lower and the upper bounds. As a default the bounds
-are just it little bit more than zero and less than one; this is because sometimes the
-point non non-continuity and minimum of the cost function coincide, and zero and one
-have several reasons to be problematic values in this respect.}
+\item{point}{If the user wants to restrict the admixture proportions somehow,
+like to fix some of them. A list of two vectors: the lower and the
+upper bounds. As a default the bounds are just it little bit more
+than zero and less than one; this is because sometimes the
+infimum of the values of cost function is at a point of
+non-continuity, and zero and one have reasons to be problematic
+values in this respect.}
 
-\item{Z.value}{Whether we calculate the default concentration from Z.values (default
-option) or just use the identity matrix.}
+\item{Z.value}{Whether we calculate the default concentration from \eqn{Z} scores
+(the default option \code{TRUE}) or just use the identity matrix.}
 
 \item{concentration}{The Cholesky decomposition of the inverted covariance matrix.
-Default matrix determined by parameter Z.value.}
+Default matrix determined by the parameter \code{Z.value}.}
 
-\item{optimisation_options}{Options to the optimisation algorithm.}
+\item{optimisation_options}{Options to the Nelder-Mead algorithm.}
 
 \item{parameters}{In case one wants to tweak something in the graph.}
 
-\item{iteration_multiplier}{Given to mynonneg().}
+\item{iteration_multiplier}{Given to \code{\link{mynonneg}}.}
 
-\item{qr_tol}{Given to examine_edge_optimisation_matrix().}
+\item{qr_tol}{Given to \code{\link{examine_edge_optimisation_matrix}}.}
 }
 \value{
-A list containing everything about the fit.
+A class \code{agraph_fit} list containing a lot of information about the fit: \cr
+        \code{data} is the input data, \cr
+        \code{graph} is the input graph, \cr
+        \code{matrix} is the output of \code{\link{build_edge_optimisation_matrix}},
+        containing the \code{full} matrix, the \code{column_reduced} matrix without zero
+        columns, and graph \code{parameters}, \cr
+        \code{complaint} coding wchich subsets of admixture proportions are trurly fitted, \cr
+        \code{best_fit} is the optimal admixture proportions (might not be unique if they
+        are not trurly fitted), \cr
+        \code{best_edge_fit} is an example of optimal edge lengths, \cr
+        \code{homogeneous} is the reduced row echelon form of the matrix describing when
+        a vector of edge lengths have no effect on the prediced statistics \eqn{F}, \cr
+        \code{free_edges} is one way to choose a subset of edge lengths in such a vector as
+        free variables, \cr
+        \code{bounded_edges} is how we calculate the reamining edge lengths from the free ones, \cr
+        \code{best_error} is the minimum value of the \code{\link{cost_function}}, \cr
+        \code{approximation} is the predicted statistics \eqn{F} with the optimal graph parameters, \cr
+        \code{parameters} is jsut a shortcut for the graph parameters. \cr
+        See \code{\link{summary.agraph_fit}} for the interpretation of some of these results.
 }
 \description{
-Tries to minimize the squared distance between statistics in \code{data} and
-statistics given by the graph.
+Given a table of observed \eqn{f} statistics and a graph, uses Nelder-Mead algorithm to
+find the graph parameters (edge lengths and admixture proportions) that minimize the value
+of \code{\link{cost_function}}, \emph{i. e.} maximizes the likelihood of a graph with
+parameters given the observed data.
+Like \code{\link{fast_fit}} but outputs a more detailed analysis on the results.
 }
-\details{
-The data frame, \code{data}, must contain columns \code{W}, \code{X},
-\code{Y}, and \code{Z}. The function then computes the \eqn{f_4(W,X;Y,Z)}
-statistics for all rows from these to obtain the prediction made by the
-graph.
+\examples{
+# For example, let's fit the following two admixture graph to an example data on bears:
 
-The data frame must also contain a column, \code{D}, containing the
-statistics observed in the data. The fitting algorithm attempts to minimize
-the distance from this column and the predictions made by the graph.
+load("data/bears.rda")
+bears <- bears[-19, ] # One statistics is twice in the data but we don't want that bias.
+View(bears)
+
+leaves <- c("BLK", "PB", "Bar", "Chi1", "Chi2", "Adm1", "Adm2", "Denali", "Kenai", "Sweden") 
+inner_nodes <- c("R", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "M", "N")
+edges <- parent_edges(c(edge("BLK", "R"),
+                        edge("PB", "v"),
+                        edge("Bar", "x"),
+                        edge("Chi1", "y"),
+                        edge("Chi2", "y"),
+                        edge("Adm1", "z"),
+                        edge("Adm2", "z"),
+                        edge("Denali", "t"),
+                        edge("Kenai", "s"),
+                        edge("Sweden", "r"),
+                        edge("q", "R"),
+                        edge("r", "q"),
+                        edge("s", "r"),
+                        edge("t", "s"),
+                        edge("u", "q"),
+                        edge("v", "u"),
+                        edge("w", "M"),
+                        edge("x", "N"),
+                        edge("y", "x"),
+                        edge("z", "w"),
+                        admixture_edge("M", "u", "t"),
+                        admixture_edge("N", "v", "w")))
+admixtures <- admixture_proportions(c(admix_props("M", "u", "t", "a"),
+                                      admix_props("N", "v", "w", "b")))
+bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
+plot(bears_graph, show_admixture_labels = TRUE)
+
+fit <- fit_graph(bears, bears_graph)
+summary(fit)
+
+# It turned out the values of admixture proportions had no effect on the cost function. This is not
+# too surprising because the huge graph contains a lot of edge variables compared to the tiny amount 
+# of data we used! Note however that the mere existence of the admixture event with non-trivial 
+# (not zero or one) admixture proportion might still decrease the cost function.
+
 }
 \seealso{
+\code{\link{cost_function}}
+
+\code{\link{agraph}}
+
+\code{\link{calculate_concentration}}
+
 \code{\link[neldermead]{optimset}}
+
+\code{\link{fast_fit}}
 }
 

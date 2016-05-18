@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{summary.agraph_fit}
 \alias{summary.agraph_fit}
-\title{Print function for a fitted graph.}
+\title{Summary for the fitted graph}
 \usage{
 \method{summary}{agraph_fit}(object, ...)
 }
@@ -12,6 +12,22 @@
 \item{...}{Additional parameters.}
 }
 \description{
-Print summary of the result of a fit.
+Prints: \cr
+Optimal admixture proportions and a complaint if some of them are not trurly fitted,
+\emph{i. e.} if after fixing a (possibly empty) subset of them, the rest have typically
+no effect on the cost function. Here typically means that some isolated values of the 
+admixture proportions, like \eqn{0} or \eqn{1}, might actually give a significantly worse
+fit than the constant fit given by any other values (but not better).
+Thus, an admixture proportion not being fitted does not always mean that there is no
+evidence of an admix event, as fixing them at \eqn{0} or \eqn{1} could make the fit
+worse while the exact value won't matter otherwise. \cr
+The optimal edge lengths give one of the solutions for the best fit. It is generally not
+unique, as after fixing the admixture proportions, the best edge lengths are a non-negative
+least square solution for a system of linear equations. To get all the solutions one has
+to add any solution of the corresponding homogeneous system to the given exaple solution
+(and exclude possible negative values). The solutions of the homogeneous system are given
+as a set of free edge lengths that may obtain any non-negative value, and bounded edge
+lengths that linearly depend on the free ones. \cr
+Minimal error is the value of the \code{\link{cost_function}} at the fit.
 }
 

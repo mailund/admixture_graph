@@ -2,19 +2,14 @@
 % Please edit documentation in R/agraph.R
 \name{parent_edges}
 \alias{parent_edges}
-\title{Create the list of edges for an admixture graph.}
+\title{Create the list of edges for an admixture graph}
 \usage{
 parent_edges(edges)
 }
 \arguments{
-\item{edges}{List of edges}
+\item{edges}{List of edges.}
 }
 \description{
 Syntactic suggar for constructing edges in an admixture graph.
-}
-\seealso{
-admixture_edge
-
-parent_edges
 }
 

@@ -2,32 +2,51 @@
 % Please edit documentation in R/fitting.R
 \name{log_likelihood}
 \alias{log_likelihood}
-\title{Calculate the log likelihood of a graph with parameters, given observation.}
+\title{Calculate (essentially) the log likelihood of a graph with parameters, given the observation}
 \usage{
 log_likelihood(f, concentration, matrix, graph,
   parameters = extract_graph_parameters(graph))
 }
 \arguments{
-\item{f}{The observed f-statistics (the column D from data).}
+\item{f}{The observed \eqn{f} statistics (the column \code{D} from \code{data}).}
 
-\item{concentration}{The Cholesky decomposition of the inverted covariance matrix. So if S is the
-covariance matrix, this is C = chol(S^(-1)) satisfying S^(-1) = C^t*C.}
+\item{concentration}{The Cholesky decomposition of the inverted covariance matrix. So if \eqn{S}
+is the covariance matrix, this is \eqn{C = chol(S^{-1})}{C = chol(S^(-1))} satisfying
+\eqn{S^{-1} = C^t C}{S^(-1) = C^t*C}.}
 
-\item{matrix}{A column reduced edge optimisation matrix (typically given by
-the edge_optimisation_matrix$column_reduced).}
+\item{matrix}{A column reduced edge optimisation matrix (typically given by the function
+\code{\link{build_edge_optimisation_matrix}}).}
 
 \item{graph}{The admixture graph. Here to give default value for:}
 
-\item{parameters}{We need to know variable names.}
+\item{parameters}{Just because we need to know variable names.}
 }
 \value{
+<<<<<<< cbd389b77859a77a9fc12eae1c9dc09a0fc39c56
 The output is a function. Given two input vectors of admix variables and edge variables,
          this function calculates l = -1/2*(F-f)^t*S^(-1)*(F-f). Up to a constant error and multiplier
          that is the log likelihood, as the likelihood is det(2*pi*S)^(-1/2)*exp(-l/2).
+=======
+The output is a function. Given admixture proportions \code{x} and edge lengths \code{e}, the graph
+        topology \eqn{T} implies an estimate \eqn{F} for the statistics \eqn{f}. This output function
+        calculates
+        \deqn{l = (F-f)^t S^{-1}(F-f)}{l = (F-f)^t*S^(-1)*(F-f)}
+        from \code{x} and \code{e}. Up to a constant error and multiplier that is a log likelihood function, as
+        \deqn{\det(2 \pi S)^{-1/2} e^{-l/2}}{det(2*\pi*S)^(-1/2)*exp(-l/2)}
+        can be seen as a likelihood of a graph with parameters, given the observation, or the other way around
+        (possibly up to a normalization constant).
+>>>>>>> 1ec4f111e33df53a20fc9a062a9d28e4e18ed53b
 }
 \description{
-So basically this is just cost_function() that doesn't optimize the edge variables but has them as
-an argument instead. We use the edge optimisation matrix again because it can be calculated beforehand 
-and evaluating it for various values of admix variables is fast.
+Or the log likelihood of the observation, given graph with parameters, depending how things are modeled.
+Basically this is just \code{\link{cost_function}} that doesn't optimize the edge variables
+but has them as an argument instead.
+}
+\seealso{
+\code{\link{cost_function}}
+
+\code{\link{edge_optimisation_function}}
+
+\code{\link{calculate_concentration}}
 }
 

@@ -2,20 +2,23 @@
 % Please edit documentation in R/agraph.R
 \name{agraph_parents}
 \alias{agraph_parents}
-\title{Build a parent incidence matrix from an edge list.}
+\title{Build the parent incidence matrix from an edge list}
 \usage{
 agraph_parents(nodes, parent_edges)
 }
 \arguments{
-\item{nodes}{The name of the nodes in the admxture graph.}
+\item{nodes}{Nodes in the admxture graph.}
 
-\item{parent_edges}{An \eqn{n \times 2} matrix where the first column is the
-child node and the second the parent.}
+\item{parent_edges}{An \eqn{n \times 2}{n x 2} matrix where the first column is the
+child node and the second is the parent.}
 }
 \value{
 An incidence matrix for the parent structure of an admixture graph.
 }
 \description{
-Build a parent incidence matrix from an edge list.
+Build the parent incidence matrix from an edge list
+}
+\seealso{
+\code{\link{agraph_children}}
 }
 

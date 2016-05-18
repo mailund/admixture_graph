@@ -2,19 +2,19 @@
 % Please edit documentation in R/summary-statistics.R
 \name{poor_fits.agraph_fit_list}
 \alias{poor_fits.agraph_fit_list}
-\title{Get the tests in the fit where the predictions fall outside of the error bars.}
+\title{Get the tests in the fit where the predictions fall outside of the error bars}
 \usage{
 \method{poor_fits}{agraph_fit_list}(fit, sigma = 6)
 }
 \arguments{
-\item{fit}{The fitted graphs}
+\item{fit}{The fitted graphs.}
 
-\item{sigma}{the width of the error bars.}
+\item{sigma}{The width of the error bars.}
 }
 \value{
 The poorly fitted tests.
 }
 \description{
-Get the tests in the fit where the predictions fall outside of the error bars.
+Get the tests in the fit where the predictions fall outside of the error bars
 }
 
