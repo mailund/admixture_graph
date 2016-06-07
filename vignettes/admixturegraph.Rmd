@@ -1,6 +1,6 @@
 ---
 title: "Constructing and fitting admixture graphs to D statistics"
-author: "Thomas Mailund"
+author: "Thomas Mailund & Kalle Leppälä"
 date: "`r Sys.Date()`"
 bibliography: bibliography.bib
 output: rmarkdown::html_vignette
@@ -22,19 +22,20 @@ library(neldermead)
 
 This document describes the `admixturegraph` package, a package for fitting admixture graphs to genetic data.
 
-The package enables you to specify admixture graphs, extract the implied equations a given graph makes for predicting correlations of genetic drift as specified by the expected $f_2$, $f_3$ and $f_4$ statistics, or fit a graph to data summarized as $D$ statistics and test the goodness of fit.
+The package enables you to:
 
-The package does not (yet) support graph inference or functionality for exploring the graph space over a set of populations.
-
-
+  * specify and visualize admixture graphs
+  * extract the implied equations a given graph makes for predicting correlations of genetic drift as specified by     the expected $f_2$, $f_3$ and $f_4$ statistics
+  * fit a graph to data summarized as $D$ statistics and test the goodness of fit
+  * explore the graph space over a given set of populations with combination of brute force and heuristics
 
 # Admixture graphs and genetic drift
 
-Gene frequencies in related populations are correlated. If two populations split apart a certain time in the past, all gene frequencies were the same at that split time---where the populations were one and the same---and has since drifted apart in the time since---where the populations have evolved independently.
+Gene frequencies in related populations are correlated. If two populations split apart a certain time in the past, all gene frequencies were the same at that split time --- where the populations were one and the same --- and has since drifted apart in the time since --- where the populations have evolved independently.
 
 With three related populations where one branched off a common ancestor early and the other two later in time the two closest related populations will, all else being equal, have more correlated gene frequencies than they have with the third population. 
 
-All else being equal here means that the populations should have evolved at roughly the same speed---the gene frequency changes should not be more dramatic in one population than another. If we consider populations A, B and C, with A and B closest relatives but where population A has changed very rapidly since it split from population B, then gene frequencies in A and B could be less correlated than between B and C (but A and C would be even less correlated).
+All else being equal here means that the populations should have evolved at roughly the same speed --- the gene frequency changes should not be more dramatic in one population than another. If we consider populations A, B and C, with A and B closest relatives but where population A has changed very rapidly since it split from population B, then gene frequencies in A and B could be less correlated than between B and C (but A and C would be even less correlated).
 
 ```{r, echo=FALSE}
 leaves <- c("A", "B", "C")
@@ -44,17 +45,16 @@ edges <- parent_edges(c(edge("A", "AB"),
                         edge("AB", "ABC"),
                         edge("C", "ABC")))
 graph <- agraph(leaves, inner_nodes, edges, NULL)
-plot(graph)  
+plot(graph)
 ```
 
-The way gene frequencies change over time as a population evolve is called genetic drift and the way gene frequencies are correlated between populations is determined by how they are related. These relationships can be simple trees with ancestral populations split into descendant populations or be more complex with gene flow between diverged populations.
+The way gene frequencies change over time as a population evolve is called genetic drift and the way gene frequencies are correlated between populations is determined by how they are related. These relationships can be simple trees with ancestral populations split into descendant populations or more complex graphs with gene flow between diverged populations.
 
-Assuming that populations evolve by either splitting into descendant populations or merging in admixture events---but do not experience periods of continuous gene flow---their relationship can be described as a so-called *admixture graph* [@Patterson:ADMIXTOOLS]. Such a graph not only describes the history of the populations but can also be seen as a specification of how gene frequencies in the populations will be correlated. Different summary statistics can capture the correlations in gene frequencies between populations, extracting different aspects of this correlation, and the expected values of these statistics can be computed as polynomials over branch lengths and admixture proportions in the admixture graph.
+Assuming that populations evolve by either splitting into descendant populations or merging in admixture events --- but do not experience periods of continuous gene flow --- their relationship can be described as a so-called *admixture graph* [@Patterson:ADMIXTOOLS]. Such a graph not only describes the history of the populations but can also be seen as a specification of how gene frequencies in the populations will be correlated. Different summary statistics can capture the correlations in gene frequencies between populations, extracting different aspects of this correlation, and the expected values of these statistics can be computed as polynomials over branch lengths and admixture proportions in the admixture graph.
 
+# Building and visualizing admixture graphs
 
-# Building admixture graphs
-
-In the `admixturegraph` package, graphs are build by specifying the edges in the graph and naming the admixture proportions so these have a variable associated.
+In the `admixturegraph` package, graphs are built by specifying the edges in the graph and naming the admixture proportions so these have a variable associated.
 
 It is first necessary to specify the nodes in the graphs, where there is a distinction between leaves and inner nodes so leaves later can correspond to values in $f$ statistics computed from genetic data. It is necessary to name the nodes so we have something to refer to when specifying the edges.
 
@@ -84,7 +84,7 @@ By default the labels on inner nodes are not shown but this can be changed by:
 plot(graph, show_inner_node_labels = TRUE)  
 ```
 
-The left-to-right order of leaves in plots is always the same as the order given when constructing the graph; there is currently no good layout algorithm implemented for plotting so this is the only way of controlling the plots.
+The shape of the output of the plotting algorithm is determined by heuristics designed to make the graph visually pleasing. However, the user has the final say on the shape if what the heuristics propose is not satisfactory (like the non-alphabetical order of leaves in the example above).
 
 Admixture events are specified by having admixture edges. These are edges with two parents. Admixture edges really represent two different edges, capturing the drift between the two populations ancestral to the admixture event before the admixture took place, so we typically have to add inner nodes on the edges where these two ancestral populations branched off other lineages in the graph.
 
@@ -125,72 +125,47 @@ edges <- parent_edges(c(edge("A", "a"), edge("a", "ABC"),
                         edge("B", "b"),
                         admixture_edge("b", "a", "c")))
 admixtures <- admixture_proportions(c(
-    admix_props("b", "a", "c", "alpha")
+    admix_props("b", "a", "c", "x")
     ))
 graph <- agraph(leaves, inner_nodes, edges, admixtures)
 
 plot(graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 ```
 
-## A more complex example
+As a somewhat more complex example we build a graph for samples of polar and brown bears described in [@Cahill:2014fo].
+Although the brown bears from mainland Alaska and even from Sweden were found to have some polar bear ancestry, the 
+most remarkable episode of polar bear gene flow was into the population of brown bears that colonized 
+Admiralty, Baranof and Chichagof islands of Alaska (the ABC bears).
 
-As a somewhat more complex example we can build a graph for samples of polar and brown bears described in [@Cahill:2014fo]. Although the model suggested there for the relationship between polar bears and brown bears is more along the lines of gene flow from polar bears into one population of brown bears and then spread from there, we can also model the different levels of relatedness between the polar and brown bears by direct gene flow from polar bears into the ancestors of the different samples of brown bears with more and more such events in the ancestry of those that are closer related to polar bears.
-
-A graph constructed to capture this could look like:
+A graph constructed to capture this main gene flow could look like this (the parameter `platform` is to make the horizontal lines around the admixture node a bit wider to make room for the labels, for more options on customising the graph plots see the documentation of `plot.agraph`):
 
 ```{r bears_graph, fig.width=6, fig.height=5, cache=TRUE}
-leaves <- c("BLK", "PB",
-            "Bar", "Chi1", "Chi2", "Adm1", "Adm2",
-            "Denali", "Kenai", "Sweden") 
-inner_nodes <- c("R", "PBBB",
-                 "Adm", "Chi", "BC", "ABC",
-                 "x", "y", "z",
-                 "pb_a1", "pb_a2", "pb_a3", "pb_a4",
-                 "bc_a1", "abc_a2", "x_a3", "y_a4")
-
+leaves <- c("BLK", "PB", "Adm1", "Adm2", "Bar", "Chi1", "Chi2", "Denali", "Kenai", "Sweden") 
+inner_nodes <- c("R", "r", "s", "t", "u", "v", "w", "x", "y", "z", "M")
 edges <- parent_edges(c(edge("BLK", "R"),
-                        edge("PB", "pb_a1"),
-                        edge("pb_a1", "pb_a2"),
-                        edge("pb_a2", "pb_a3"),
-                        edge("pb_a3", "pb_a4"),
-                        edge("pb_a4", "PBBB"),
-                        
-                        edge("Chi1", "Chi"),
-                        edge("Chi2", "Chi"),
-                        edge("Chi", "BC"),
-                        edge("Bar", "BC"),
-                        edge("BC", "bc_a1"),
-                        
-                        edge("Adm1", "Adm"),
-                        edge("Adm2", "Adm"),
-                        
-                        admixture_edge("bc_a1", "pb_a1", "ABC"),
-                        edge("Adm", "ABC"),
-                        
-                        edge("ABC", "abc_a2"),
-                        admixture_edge("abc_a2", "pb_a2", "x"),
-                        
-                        edge("Denali", "x"),
-                        edge("x", "x_a3"),
-                        admixture_edge("x_a3", "pb_a3", "y"),
-                      
-                        edge("Kenai", "y"),
-                        edge("y", "y_a4"),                        
-                        admixture_edge("y_a4", "pb_a4", "z"),
-                        
-                        edge("Sweden", "z"),
-                        
-                        edge("z", "PBBB"),
-                        edge("PBBB", "R")))
- 
-
-admixtures <- admixture_proportions(c(admix_props("bc_a1", "pb_a1", "ABC", "a"),
-                                      admix_props("abc_a2", "pb_a2", "x", "b"),
-                                      admix_props("x_a3", "pb_a3", "y", "c"),
-                                      admix_props("y_a4", "pb_a4", "z", "d")))
-                                
+                        edge("PB", "s"),
+                        edge("Adm1", "x"),
+                        edge("Adm2", "x"),
+                        edge("Bar", "y"),
+                        edge("Chi1", "z"),
+                        edge("Chi2", "z"),
+                        edge("Denali", "v"),
+                        edge("Kenai", "u"),
+                        edge("Sweden", "t"),
+                        edge("r", "R"),
+                        edge("s", "r"),
+                        edge("t", "r"),
+                        edge("u", "t"),
+                        edge("v", "u"),
+                        edge("w", "M"),
+                        edge("x", "w"),
+                        edge("y", "w"),
+                        edge("z", "y"),
+                        admixture_edge("M", "s", "v")))
+admixtures <- admixture_proportions(c(admix_props("M", "s", "v", "a")))
 bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
-plot(bears_graph, show_admixture_labels = TRUE)
+
+plot(bears_graph, platform = 1.4, show_admixture_labels = TRUE)
 ```
 
 # Extracting drift equations for expected $f$ statistics
@@ -199,37 +174,44 @@ The expectation of $f_2$, $f_3$, and $f_4$ statistics can be expressed in terms 
 
 The expected values are computed from weighted overlapping paths between pairs of edges such that $f_4(A,B;C,D)$ is the sum of overlapping paths from $A$ to $B$ with paths from $C$ to $D$, weighted by the probability of lineages taking each path.  The $f_2$ and $f_3$ statistics can be seen as special cases of $f_4$ statistics: $f_3(A;B,C)=f_4(A,B;A,C)$ and $f_2(A,B)=f_4(A,B;A,B)$.
 
-The expressions extracted using the `sf2`, `sf3`, and `sf4` functions are in the form of R expressions.
+The expressions extracted using the `sf2`, `sf3`, and `sf4` functions are in the form of (non-simplified) R expressions.
 
 ```{r}
-sf4(bears_graph, "BLK", "PB", "Adm1", "Adm2")
 sf2(bears_graph, "Bar", "Chi1")
 sf3(bears_graph, "Bar", "Chi1", "Chi2")
-sf4(bears_graph, "BLK", "PB", "Bar", "Adm2")
+sf4(bears_graph, "BLK", "Chi1", "Bar", "Chi2")
 ```
 
-# Fitting admixture graphs to D statistics
+# Fitting admixture graphs to observed $f$ statistics
 
-Given a data set summarized as $f_4$ (or $D$) statistics `admixturegraph` can fit the edge lengths and admixture proportions of a graph to the data.
+Given a data set summarized as $f$ (or $D$) statistics `admixturegraph` can fit the edge lengths and admixture proportions of a graph to the data.
 
-For fitting data the package expects the observed statistics in a data frame with at least the following columns: `W`, `X`, `Y`, and `Z` -- the samples in the statistics $f_4(W,X,Y,Z)$ -- and `D` (the actual $f_4$ statistics; called $D$ since that is the header used if these are computed with Patterson et al.s ADMIXTOOLS package) and `Z.values` (the statistics divided by the standard error).
+For fitting data the package expects the observed statistics in a data frame with at least the following columns: `W`, `X`, `Y`, and `Z` determining the statistic $f_4(W,X,Y,Z)$ and `D`, the actual value of the statistic (called $D$ since that is the header used if these are computed with Patterson et al.s `ADMIXTOOLS` package). Optionally, the data frame might also contain `Z.values`, the statistics divided by the standard error.
 
 For the bear samples we have the following statistics [@Cahill:2014fo]:
 
-```{r}
+```{r bears_data}
 data(bears)
 bears
 ```
+
+Since we have the `Z.values` we may visualize the statistics together with their confidence intervals (now the observations are considered as samples from a multivariate normal distribution):
 
 ```{r, fig.height=5, fig.width=6}
 plot(f4stats(bears))
 ```
 
-We can fit this to the graph from above, like this:
+Fitting the graph above to this data is done either with `fit_graph` (lots of details about the fit) or `fast_fit` (only the essentials but a bit faster, designed for usage in big loops).
+
+Both functions use a combination of linear algebra and numerical optimisation (Nelder-Mead) to find the edge lengths and admixture proportions that minimize the value of $(F-f)^t*S^{-1}*(F-f)$. Here $F$ and $f$ are the vectors 
+of predicted (from the graph with `sf4` etc.) and observed (`D` from the data frame) statistics, respectively, and $S$ is the covariance matrix of the observed statistics $f$, either given by the user or replaced by a default proxy of the identity matrix or a diagonal matrix constructed from the `Z.values`. This cost function $(F-f)^t*S^{-1}*(F-f)$ can be 
+interpreted as the log likelihood of the graph parameters (edge lengths and admixture proportions), up to an affine normalization. See the documentation of `cost_function`, `edge_optimisation_function` and `log_likelihood` for more info.
 
 ```{r fitting_data}
 bears_fit <- fit_graph(bears, bears_graph)
 ```
+
+The essentials about the fit can be printed with `print.agraph_fit` and visualized with `plot.agraph_fit`:
 
 ```{r}
 summary(bears_fit)
@@ -239,11 +221,64 @@ summary(bears_fit)
 plot(bears_fit)
 ```
 
-The fitted parameters can be extracted using the `coef` function and the predictions by the `fitted` function:
+It turned out that the value of the admixture proportion $a$ had no effect on the minimum of the cost function. This is because our data frame wasn't sufficient for a graph this big, which is also reflected by the fact that only one of the edge lengths (between polar bears and brown bears splitting and polar bears and the population mixing into ABC bears splitting) matter while the rest can be chosen freely. From the plot it is clear that this graph is not very convincing match with the data, and that additional gene flow from the polar bears into mainland Alaska bears would help.
+
+With sufficient data the effect of admixture proportions on the cost function can be examined with the help of the functions `one_dimensional_plot` and `contour_plot`.
+See also `coef.agraph_fit`, `fitted.agraph_fit`, `print.agraph_fit` and `residuals.agraph_fit`.
+
+# Exploring the graph space
+
+The number of different admixture graphs grows extremely fast with the number of leaves and admixture events, so determining the phylogeny of a given set of populations by fitting every graph to the data with brute force might not be feasible.
+We provide some tools for restricting the search space.
+
+For just a few populations and a few admixture events `admixturegraph` contains the complete collections of possible graphs: `four_leaves_graphs` for admixture graphs with four leaves and at most two admixture events, `five_leaves_graphs` and `six_leaves_graphs` for admixture graphs with five and six leaves, respectively, and at most two admixture event, and
+`seven_leaves_trees` and `eight_leaves_trees` for trees with seven and eight leaves, respectively.
 
 ```{r}
-coef(bears_fit)
-fitted(bears_fit)
+length(four_leaves_graphs)
+
+length(five_leaves_graphs)
+
+length(six_leaves_graphs)
+
+length(seven_leaves_trees)
+
+length(eight_leaves_trees)
+
+example_graph <- four_leaves_graphs[[15]](c("A", "B", "C", "D"))
+plot(example_graph, draw_inner_nodes = FALSE)
+```
+
+A given graph can be expanded to a list of bigger graphs by several functions. To add a new leaf to an existing graph use `add_a_leaf`:
+
+```{r new_leaves, fig.height=15, fig.width=6}
+example_list_1 <- add_a_leaf(example_graph, "E")
+
+original <- graphics::par()$mfrow
+graphics::par(mfrow = c(6, 2))
+for (graph in example_list_1) {
+  plot(graph, draw_inner_nodes = FALSE)
+}
+
+graphics::par(mfrow = original)
+```
+
+To add a new admixture event to an existing graph use either `add_an_admixture` or `add_an_admixture2`; the former only adding one parental edge assuming the other one needs to already exist in the graph and the latter detaching one edge and reattaching it with two parental edges anywhere in the original graph (provided that the result still is a valid admixture graph):
+
+```{r new_admixtures}
+example_list_2 <- add_an_admixture(example_graph, "b")
+length(example_list_2)
+example_list_3 <- add_an_admixture2(example_graph, "b")
+length(example_list_3)
+
+plot(example_list_2[[5]], draw_inner_nodes = FALSE)
+```
+
+None of these functions care where the original root was --- its position has no effect on the predictions `sf2`, `sf3` and `sf4` as long as the admixture events remain the same. However, if we want we can select any non-admixed leaf as an outgroup, meaning that the root will be placed on the edge leading to the leaf:
+
+```{r new_root}
+graph_with_a_new_root <- make_an_outgroup(example_list_2[[5]], "D")
+plot(graph_with_a_new_root, draw_inner_nodes = FALSE)
 ```
 
 # References

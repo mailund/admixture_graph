@@ -3,7 +3,7 @@
 \name{build_edge_optimisation_matrix}
 \alias{build_edge_optimisation_matrix}
 \title{Build a matrix coding the linear system of edges once the admix variables
-have been fixed}
+have been fixed.}
 \usage{
 build_edge_optimisation_matrix(data, graph,
   parameters = extract_graph_parameters(graph))

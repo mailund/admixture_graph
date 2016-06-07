@@ -6,11 +6,7 @@
 #' @return A model object wrapping functions and data needed to sample from the MCMC.
 #' @export
 make_mcmc_model <- function(graph, data) {
-  
-  if (!requireNamespace("MASS", quietly = TRUE)) {
-    stop("The MCMC functionality requires that the MASS packate is installed.")
-  }
-  
+
   f <- data$D
   concentration <- calculate_concentration(data, Z.value = TRUE) # FIXME: use the empirical covariance matrix
   params <- extract_graph_parameters(graph)
@@ -37,18 +33,18 @@ make_mcmc_model <- function(graph, data) {
     # this is necessary to avoid -Inf in the calculations
     admix[admix == 0] <- 1e-16
     edges[edges == 0] <- 1e-16
-    c(qnorm(admix), log(edges))
+    c(stats::qnorm(admix), log(edges))
   }
   
   transform_to_graph_space <- function(state) {
     admix <- state[admix_idx]
     edges <- state[edges_idx]
-    c(pnorm(admix), exp(edges))
+    c(stats::pnorm(admix), exp(edges))
   }
   
   log_prior <- function(state) {
     # just a reasonably wide normal dist in log space...
-    sum(log(dnorm(state, sd=1)))
+    sum(log(stats::dnorm(state, sd=1)))
   }
   
   log_likelihood <- function(state) {
@@ -60,7 +56,7 @@ make_mcmc_model <- function(graph, data) {
   }
   
   proposal <- function(state) {
-    rnorm(length(state), mean = state, sd = 0.001)
+    stats::rnorm(length(state), mean = state, sd = 0.001)
   }
   
   multnorm_proposal <- function(state, sigma){
@@ -99,22 +95,20 @@ make_mcmc_model <- function(graph, data) {
 #' is the Bayes factor between the models. Comparing models using maximum likelihood estimtates
 #' is more problematic since usually graphs are not nested models.
 #' 
-#' @param model          Object constructed with \code{\link{make_mcmc_model}}.
-#' @param initial_state  The initial set of graph parameters.
-#' @param iterations     Number of iterations to sample.
-#' @param no_temperaturesNumber of chains in the MC3 procedure
-#' @param cores          Number of cores to spread the chains across. Best performance is when cores=no_temperatures
-#' @param no_flips       Mean number of times a flip between two chains should be proposed after each step
-#' @param max_tmp        The highest temperature
+#' @param model            Object constructed with \code{\link{make_mcmc_model}}.
+#' @param initial_state    The initial set of graph parameters.
+#' @param iterations       Number of iterations to sample.
+#' @param no_temperatures  Number of chains in the MC3 procedure
+#' @param cores            Number of cores to spread the chains across. Best performance is when cores=no_temperatures
+#' @param no_flips         Mean number of times a flip between two chains should be proposed after each step
+#' @param max_tmp          The highest temperature
+#' 
 #' @return A matrix containing the trace of the chain with temperature 1.
 #' 
 #' @export
 run_metropolis_hasting <- function(model, initial_state, iterations, 
                                    no_temperatures = 1, cores = 1, no_flips = 1, max_tmp = 100) {
   
-  if (!requireNamespace("MASS", quietly = TRUE)) {
-    stop("The MCMC functionality requires that the MASS packate is installed.")
-  }
   if (!requireNamespace("parallel", quietly = TRUE)) {
     stop("The MCMC functionality requires that the parallel packate is installed.")
   }
@@ -157,7 +151,7 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
     proposal_posterior <- proposal_prior + proposal_likelihood
     
     log_accept_prob <- proposal_posterior/temperature-current_posterior/temperature
-    if (log(runif(1)) < log_accept_prob) {
+    if (log(stats::runif(1)) < log_accept_prob) {
       current_state <- proposal_state
       current_prior <- proposal_prior
       current_likelihood <- proposal_likelihood
@@ -216,7 +210,7 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
     }
     
     #Here flips between temperatures are proposed
-    flips <- rpois(1,lambda=no_flips)
+    flips <- stats::rpois(1,lambda=no_flips)
     if (no_temperatures > 1) {
       for (p in numeric(flips)) {
         r <- sample(no_temperatures,2)
@@ -225,7 +219,7 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
         current <- current_posteriors[j]/temperatures[j]+current_posteriors[m]/temperatures[m]
         new <- current_posteriors[m]/temperatures[j]+current_posteriors[j]/temperatures[m]
         a <- exp(new-current)
-        if (runif(1) < a){
+        if (stats::runif(1) < a){
           tmp_post <- current_posteriors[j]
           tmp_lik <- current_likelihoods[j]
           tmp_pri <- current_priors[j]
@@ -257,6 +251,8 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
 
 #' Removes the first k rows from a trace.
 #' 
+#' Removes the first k rows from a trace.
+#' 
 #' @param trace  A trace from an MCMC run.
 #' @param k      Number of rows to discard as burn-in.
 #' @export
@@ -264,6 +260,8 @@ burn_in <- function(trace, k) {
   trace[-seq(1,k), ]
 }
 
+#' Thins out an MCMC trace.
+#' 
 #' Thins out an MCMC trace.
 #' 
 #' @param trace  A trace from an MCMC run.
@@ -358,7 +356,7 @@ model_likelihood <- function(log_likelihoods) {
 #' @export
 model_likelihood_n <- function(log_likelihoods, no_samples = 100) {
   samples <- replicate(no_samples, model_likelihood(log_likelihoods))
-  cbind(mean = mean(samples), sd = sd(samples))
+  cbind(mean = mean(samples), sd = stats::sd(samples))
 }
 
 #' Computes the Bayes factor between two models from samples from their posterior distributions.
@@ -381,6 +379,6 @@ model_likelihood_n <- function(log_likelihoods, no_samples = 100) {
 #' @export
 model_bayes_factor_n <- function(logL1, logL2, no_samples = 100) {
   samples <- replicate(no_samples, model_likelihood(logL1) - model_likelihood(logL2))
-  cbind(mean = mean(samples), sd = sd(samples))
+  cbind(mean = mean(samples), sd = stats::sd(samples))
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/agraph.R
 \name{admixture_proportions}
 \alias{admixture_proportions}
-\title{Create the list of admixture proportions for an admixture graph}
+\title{Create the list of admixture proportions for an admixture graph.}
 \usage{
 admixture_proportions(admix_props)
 }

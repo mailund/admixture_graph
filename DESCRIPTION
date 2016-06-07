@@ -1,7 +1,7 @@
 Package: admixturegraph
 Type: Package
 Title: Admixture Graph Manipulation and Fitting
-Version: 0.4.0.9010
+Version: 1.0.0
 Date: 2015-09-24
 Authors@R: c(person("Thomas", "Mailund", email = "mailund@birc.au.dk", role = c("cre", "aut")),
              person("Kalle", "Leppala", email = "kalle.m.leppala@gmail.com", role = c("aut")))
@@ -15,18 +15,22 @@ License: GPL-2
 Depends:
     R (>= 2.10)
 Imports:
-    ggplot2,
     dplyr,
-    pracma,
-    neldermead
-Suggests:
-    testthat,
-    knitr,
+    ggplot2,
+    graphics,
     MASS,
+    neldermead,
+    pracma,
+    stats,
+    utils
+Suggests:
+    doParallel,
     foreach,
+    knitr,
     parallel,
-    doParallel
+    testthat
 URL: https://github.com/mailund/admixture_graph
 BugReports: https://github.com/mailund/admixture_graph/issues
 VignetteBuilder: knitr
+LazyData: true
 RoxygenNote: 5.0.0

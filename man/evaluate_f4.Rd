@@ -2,7 +2,7 @@
 % Please edit documentation in R/evaluate-f-statistics.R
 \name{evaluate_f4}
 \alias{evaluate_f4}
-\title{Evaluates an f_4 statistics in a given environment}
+\title{Evaluates an f_4 statistics in a given environment.}
 \usage{
 evaluate_f4(graph, env, W, X, Y, Z)
 }
@@ -23,6 +23,6 @@ evaluate_f4(graph, env, W, X, Y, Z)
 The \eqn{f_4} value specified by the graph and the environment.
 }
 \description{
-Evaluates an f_4 statistics in a given environment
+Evaluates an \eqn{f_4} statistics in a given environment.
 }
 

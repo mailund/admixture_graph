@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{coef.agraph_fit}
 \alias{coef.agraph_fit}
-\title{Parameters for the fitted graph}
+\title{Parameters for the fitted graph.}
 \usage{
 \method{coef}{agraph_fit}(object, ...)
 }

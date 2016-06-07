@@ -2,7 +2,7 @@
 % Please edit documentation in R/propose.R
 \name{make_an_outgroup}
 \alias{make_an_outgroup}
-\title{Make an outgroup}
+\title{Make an outgroup.}
 \usage{
 make_an_outgroup(graph, outgroup)
 }

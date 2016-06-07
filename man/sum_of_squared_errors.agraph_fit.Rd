@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary-statistics.R
 \name{sum_of_squared_errors.agraph_fit}
 \alias{sum_of_squared_errors.agraph_fit}
-\title{Get the sum of squared errors for a fitted graph}
+\title{Get the sum of squared errors for a fitted graph.}
 \usage{
 \method{sum_of_squared_errors}{agraph_fit}(x)
 }
@@ -13,6 +13,6 @@
 SSE for the fit.
 }
 \description{
-Get the sum of squared errors for a fitted graph
+Get the sum of squared errors for a fitted graph.
 }
 

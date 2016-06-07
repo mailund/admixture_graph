@@ -2,9 +2,9 @@
 % Please edit documentation in R/fitting.R
 \name{summary.agraph_fit}
 \alias{summary.agraph_fit}
-\title{Summary for the fitted graph}
+\title{Summary for the fitted graph.}
 \usage{
-summary.agraph_fit(object, ...)
+\method{summary}{agraph_fit}(object, ...)
 }
 \arguments{
 \item{object}{The fitted object.}

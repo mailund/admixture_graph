@@ -1,4 +1,6 @@
-#' Map sample names to population names
+#' Map sample names to population names.
+#' 
+#' Map sample names to population names.
 #' 
 #' This function maps the sample names in \code{W}, \code{X}, \code{Y}, and
 #' \code{Z} to population names (typically what an admixture graph has for
@@ -21,14 +23,18 @@ project_to_population <- function(data, f) {
   data
 }
 
-#' Reverse a projection of samples to populations
+#' Reverse a projection of samples to populations.
+#' 
+#' Reverse a projection of samples to populations.
 #' 
 #' @param x  The projected data or a fitted object on projected data.
 #' 
 #' @export
 split_population <- function(x) UseMethod("split_population")
 
-#' Reverse a projection of samples to populations
+#' Reverse a projection of samples to populations.
+#' 
+#' Reverse a projection of samples to populations.
 #' 
 #' @param x  The projected data or a fitted object on projected data.
 #' 
@@ -45,12 +51,14 @@ split_population.data.frame <- function(x) {
   x
 }
 
-#' Reverse a projection of samples to populations
+#' Reverse a projection of samples to populations.
+#' 
+#' Reverse a projection of samples to populations.
 #' 
 #' @param x  The projected data or a fitted object on projected data.
 #' 
 #' @export
 split_population.agraph_fit <- function(x) {
-  x$data <- fitted(x) %>% split_population
+  x$data <- split_population(stats::fitted(x))
   x
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/f4_plotting.R
 \name{f4stats}
 \alias{f4stats}
-\title{Make a data frame an f_4 statistics object}
+\title{Make a data frame an f_4 statistics object.}
 \usage{
 f4stats(x)
 }

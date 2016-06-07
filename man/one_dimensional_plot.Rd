@@ -2,8 +2,7 @@
 % Please edit documentation in R/fitted_plotting.R
 \name{one_dimensional_plot}
 \alias{one_dimensional_plot}
-\title{A plot of the cost function around the best fit with respect to one admix variable specified
-by the user}
+\title{A plot of the cost function.}
 \usage{
 one_dimensional_plot(object, X, resolution = 100, show_fit = FALSE,
   sigma = 6, ...)
@@ -30,6 +29,7 @@ this number as the fitting function still optimizes \code{\link{cost_function}}.
 Values for optimal cost function for values of \code{X} between zero and one, plotted.
 }
 \description{
+A plot of the cost function with respect to one admix variable specified by the user.
 Sorry about the name, all the good ones were taken and the fact that the word "graph" means
 two different things doesn't help any.
 }

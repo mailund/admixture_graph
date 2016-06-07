@@ -2,7 +2,7 @@
 % Please edit documentation in R/signs.R
 \name{is_positive}
 \alias{is_positive}
-\title{All overlaps are either empty or have a positive weight}
+\title{All overlaps are either empty or have a positive weight.}
 \usage{
 is_positive(overlaps)
 }
@@ -11,6 +11,6 @@ is_positive(overlaps)
 by \code{\link{all_path_overlaps}}.}
 }
 \description{
-All overlaps are either empty or have a positive weight
+All overlaps are either empty or have a positive weight.
 }
 

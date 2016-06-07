@@ -1,4 +1,4 @@
-#' Extract all the parameters a graph contains
+#' Extract all the parameters a graph contains.
 #' 
 #' The graph is parameterized by edge lengths and admixture proportions. This 
 #' function extracts these parameters.
@@ -24,7 +24,7 @@ extract_graph_parameters <- function(graph) {
   list(edges = edges, admix_prop = admix_prop)
 }
 
-#' Build an environment in which f statistics can be evaluated
+#' Build an environment in which f statistics can be evaluated.
 #' 
 #' Constructs an environment in which the \eqn{f} statistics for a graph can be
 #' evaluted, based on the parameters in a graph and values for edge lengths and
@@ -62,7 +62,9 @@ graph_environment <- function(parameters,
   env
 }
 
-#' Evaluates an f_4 statistics in a given environment
+#' Evaluates an f_4 statistics in a given environment.
+#' 
+#' Evaluates an \eqn{f_4} statistics in a given environment.
 #' 
 #' @param graph  The admixture graph.
 #' @param env    The environment containing the graph parameters.
@@ -79,7 +81,7 @@ evaluate_f4 <- function(graph, env, W, X, Y, Z) {
 }
 
 #' Evalutes the f_4 statistics for all rows in a data frame and extends 
-#' the data frame with the graph f_4
+#' the data frame with the graph f_4.
 #' 
 #' The data frame, \code{data}, must contain columns \code{W}, \code{X}, 
 #' \code{Y}, and \code{Z}. The function then computes the \eqn{f_4(W, X; Y, Z)}

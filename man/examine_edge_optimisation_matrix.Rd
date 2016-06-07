@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{examine_edge_optimisation_matrix}
 \alias{examine_edge_optimisation_matrix}
-\title{Examine the edge optimisation matrix to detect unfitted admix variables}
+\title{Examine the edge optimisation matrix to detect unfitted admix variables.}
 \usage{
 examine_edge_optimisation_matrix(matrix, tol = 1e-08)
 }

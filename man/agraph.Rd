@@ -2,7 +2,7 @@
 % Please edit documentation in R/agraph.R
 \name{agraph}
 \alias{agraph}
-\title{Create an admixture graph object}
+\title{Create an admixture graph object.}
 \usage{
 agraph(leaves, inner_nodes, parent_edges, admixture_proportions)
 }
@@ -21,7 +21,7 @@ agraph(leaves, inner_nodes, parent_edges, admixture_proportions)
 An admixture graph object.
 }
 \description{
-Create an admixture graph object
+Create an admixture graph object, an acyclic directed graph.
 }
 \examples{
 leaves <- c("A", "B", "C", "D")

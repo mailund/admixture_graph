@@ -2,7 +2,7 @@
 % Please edit documentation in R/signs.R
 \name{add_graph_f4_sign}
 \alias{add_graph_f4_sign}
-\title{Extend a data frame with f_4 statistics predicted by a graph}
+\title{Extend a data frame with f_4 statistics predicted by a graph.}
 \usage{
 add_graph_f4_sign(data, graph)
 }

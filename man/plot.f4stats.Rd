@@ -2,7 +2,7 @@
 % Please edit documentation in R/f4_plotting.R
 \name{plot.f4stats}
 \alias{plot.f4stats}
-\title{Plot the fit of a graph to data}
+\title{Plot the fit of a graph to data.}
 \usage{
 \method{plot}{f4stats}(x, sigma = 6, ...)
 }
@@ -14,6 +14,6 @@
 \item{...}{Additional parameters.}
 }
 \description{
-Plot the fit of a graph to data
+Plot the fit of a graph to data.
 }
 

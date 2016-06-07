@@ -2,7 +2,7 @@
 % Please edit documentation in R/propose.R
 \name{add_an_admixture2}
 \alias{add_an_admixture2}
-\title{Adds a new admixture event to a graph}
+\title{Adds a new admixture event to a graph.}
 \usage{
 add_an_admixture2(graph, admixture_variable_name, outgroup = "")
 }

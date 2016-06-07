@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{mynonneg}
 \alias{mynonneg}
-\title{Non negative least square solution}
+\title{Non negative least square solution.}
 \usage{
 mynonneg(C, d, iteration_multiplier = 3)
 }

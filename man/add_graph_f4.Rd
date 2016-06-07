@@ -3,7 +3,7 @@
 \name{add_graph_f4}
 \alias{add_graph_f4}
 \title{Evalutes the f_4 statistics for all rows in a data frame and extends 
-the data frame with the graph f_4}
+the data frame with the graph f_4.}
 \usage{
 add_graph_f4(data, graph, env)
 }

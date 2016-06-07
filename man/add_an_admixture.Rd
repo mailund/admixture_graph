@@ -2,7 +2,7 @@
 % Please edit documentation in R/propose.R
 \name{add_an_admixture}
 \alias{add_an_admixture}
-\title{Adds a new admixture event to a graph}
+\title{Adds a new admixture event to a graph.}
 \usage{
 add_an_admixture(graph, admixture_variable_name, labels_matter = FALSE,
   outgroup = "")
@@ -12,13 +12,13 @@ add_an_admixture(graph, admixture_variable_name, labels_matter = FALSE,
 
 \item{admixture_variable_name}{A name for the new admixture proportion.}
 
-\item{outgroup}{An optional parameter for the preferred outgroup.}
-
-\item{labels}{matter            When \code{FALSE} (the default value), we consider two admixture
+\item{labels_matter}{When \code{FALSE} (the default value), we consider two admixture
 graphs similar when they have the same topology but permuted
 admixture proportion names. When \code{TRUE}, the already existing
 admixture events and the edges leading to them are considered
 labeled.}
+
+\item{outgroup}{An optional parameter for the preferred outgroup.}
 }
 \value{
 A list of graphs made by adding a new admixture event to the input graph. The list has

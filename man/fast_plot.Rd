@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{fast_plot}
 \alias{fast_plot}
-\title{Fast version of graph plotting}
+\title{Fast version of graph plotting.}
 \usage{
 fast_plot(x, ordered_leaves = NULL, show_admixture_labels = FALSE,
   show_inner_node_labels = FALSE, ...)

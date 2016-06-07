@@ -1,4 +1,6 @@
-#' Filter data so all W, X, Y and Z are leaves in the graph
+#' Filter data so all W, X, Y and Z are leaves in the graph.
+#' 
+#' Filter data so all \code{W}, \code{X}, \code{Y} and \code{Z} are leaves in the graph.
 #' 
 #' @param data   Data frame (or similar) object containing columns \code{W}, \code{X},
 #'               \code{Y}, and \code{Z}.

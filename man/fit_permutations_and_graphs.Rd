@@ -2,7 +2,7 @@
 % Please edit documentation in R/propose.R
 \name{fit_permutations_and_graphs}
 \alias{fit_permutations_and_graphs}
-\title{Fit lots of graphs to data}
+\title{Fit lots of graphs to data.}
 \usage{
 fit_permutations_and_graphs(data, permutations, graphs, cores)
 }
@@ -21,7 +21,8 @@ A list of \code{\link{fast_fit}} results.
 \description{
 Combines a list of (population) permutations and a list of graph topologies
 to a big list of graphs, then fits those graphs to given data using parallel
-computation.
+computation. This function needs \code{doParallel}, \code{foreach} and
+\code{parallel} installed.
 }
 \examples{
 # Let's experiment by fitting all the graphs with five leaves and at most one admixture
@@ -29,9 +30,9 @@ computation.
 # we do wisely by not concluding too much about the actual bear family tree; this is to
 # illustrate the function usage only!
 
-load("data/bears.rda")
+data(bears)
 data <- bears[16:18, ]
-View(data)
+print(data)
 permutations <- make_permutations(c("PB", "BLK", "Sweden", "Denali", "Kenai"))
 graphs <- five_leaves_graphs
 
@@ -43,7 +44,7 @@ fitted_graphs <- fit_permutations_and_graphs(data, permutations, graphs, 1)
 
 errors <- sapply(fitted_graphs, function(x) x$best_error)
 best_graphs <- fitted_graphs[order(errors)]
-plot(best_graphs[[1]], color = "goldenrod", title = best_graphs[[1]]$best_error)
+plot(best_graphs[[1]]$graph, color = "goldenrod", title = best_graphs[[1]]$best_error)
 
 # The same value for best_error actually occurs in the list 152 times because of our
 # unsufficient data.

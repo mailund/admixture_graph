@@ -2,7 +2,7 @@
 % Please edit documentation in R/agraph.R
 \name{parent_edges}
 \alias{parent_edges}
-\title{Create the list of edges for an admixture graph}
+\title{Create the list of edges for an admixture graph.}
 \usage{
 parent_edges(edges)
 }

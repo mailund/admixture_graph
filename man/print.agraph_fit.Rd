@@ -2,9 +2,9 @@
 % Please edit documentation in R/fitting.R
 \name{print.agraph_fit}
 \alias{print.agraph_fit}
-\title{Print function for the fitted graph}
+\title{Print function for the fitted graph.}
 \usage{
-print.agraph_fit(x, ...)
+\method{print}{agraph_fit}(x, ...)
 }
 \arguments{
 \item{x}{The fitted object.}

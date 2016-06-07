@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{fast_fit}
 \alias{fast_fit}
-\title{A fast version of graph fitting}
+\title{A fast version of graph fitting.}
 \usage{
 fast_fit(data, graph, point = list(rep(1e-05,
   length(extract_graph_parameters(graph)$admix_prop)), rep(1 - 1e-05,
@@ -43,7 +43,7 @@ Default matrix determined by the parameter \code{Z.value}.}
 \value{
 A list containing only the essentials about the fit:
         \code{graph} is the graph input,
-        \code{best_error} is the minimal value if \code{\link{cost_function}},
+        \code{best_error} is the minimal value of \code{\link{cost_function}},
         obtained when the admixture proportions are \code{best_fit}.
 }
 \description{
@@ -57,9 +57,8 @@ Intended for use in big iteration loops.
 \examples{
 # For example, let's fit the following two admixture graph to an example data on bears:
 
-load("data/bears.rda")
-bears <- bears[-19, ] # One statistics is twice in the data but we don't want that bias.
-View(bears)
+data(bears)
+print(bears)
 
 leaves <- c("BLK", "PB", "Bar", "Chi1", "Chi2", "Adm1", "Adm2", "Denali", "Kenai", "Sweden") 
 inner_nodes <- c("R", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "M", "N")
@@ -93,7 +92,8 @@ plot(bears_graph, show_admixture_labels = TRUE)
 fit <- fast_fit(bears, bears_graph)
 print(fit$best_error)
 
-# The result is just the minimal value of the cost function, no deeper analysis of the fit.
+# The result is just the minimal value of the cost function and the values of admixture proportions
+# where it's obtained, no deeper analysis of the fit.
 
 }
 \seealso{
@@ -106,6 +106,5 @@ print(fit$best_error)
 \code{\link[neldermead]{optimset}}
 
 \code{\link{fit_graph}}
-#'
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{fit_graph}
 \alias{fit_graph}
-\title{Fit the graph parameters to a data set}
+\title{Fit the graph parameters to a data set.}
 \usage{
 fit_graph(data, graph, point = list(rep(1e-05,
   length(extract_graph_parameters(graph)$admix_prop)), rep(1 - 1e-05,
@@ -73,9 +73,8 @@ Like \code{\link{fast_fit}} but outputs a more detailed analysis on the results.
 \examples{
 # For example, let's fit the following two admixture graph to an example data on bears:
 
-load("data/bears.rda")
-bears <- bears[-19, ] # One statistics is twice in the data but we don't want that bias.
-View(bears)
+data(bears)
+print(bears)
 
 leaves <- c("BLK", "PB", "Bar", "Chi1", "Chi2", "Adm1", "Adm2", "Denali", "Kenai", "Sweden") 
 inner_nodes <- c("R", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "M", "N")
@@ -110,9 +109,9 @@ fit <- fit_graph(bears, bears_graph)
 summary(fit)
 
 # It turned out the values of admixture proportions had no effect on the cost function. This is not
-# too surprising because the huge graph contains a lot of edge variables compared to the tiny amount 
-# of data we used! Note however that the mere existence of the admixture event with non-trivial 
-# (not zero or one) admixture proportion might still decrease the cost function.
+# too surprising because the huge graph contains a lot of edge variables compared to the tiny 
+# amount of data we used! Note however that the mere existence of the admixture event with non- 
+# trivial (not zero or one) admixture proportion might still decrease the cost function.
 
 }
 \seealso{

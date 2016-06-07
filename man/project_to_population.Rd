@@ -2,7 +2,7 @@
 % Please edit documentation in R/project_and_split.R
 \name{project_to_population}
 \alias{project_to_population}
-\title{Map sample names to population names}
+\title{Map sample names to population names.}
 \usage{
 project_to_population(data, f)
 }
@@ -12,6 +12,9 @@ project_to_population(data, f)
 \item{f}{Function mapping sample names to population names.}
 }
 \description{
+Map sample names to population names.
+}
+\details{
 This function maps the sample names in \code{W}, \code{X}, \code{Y}, and
 \code{Z} to population names (typically what an admixture graph has for
 leaves) and stores the original sample names so we can map them back again

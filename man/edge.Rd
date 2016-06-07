@@ -2,7 +2,7 @@
 % Please edit documentation in R/agraph.R
 \name{edge}
 \alias{edge}
-\title{Create an edge from a child to a parent}
+\title{Create an edge from a child to a parent.}
 \usage{
 edge(child, parent)
 }

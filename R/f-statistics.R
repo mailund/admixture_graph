@@ -1,4 +1,6 @@
-#' Calculate the f_4(W, X; Y, Z) statistics
+#' Calculate the f_4(W, X; Y, Z) statistics.
+#' 
+#' Calculate the \eqn{f_4(W, X; Y, Z)} statistics.
 #' 
 #' @param graph  The admixture graph.
 #' @param W      A leaf node.
@@ -21,7 +23,9 @@ f4 <- function(graph, W, X, Y, Z) {
   all_path_overlaps(WX, YZ)
 }
 
-#' Calculate the f_3(A; B, C) statistics
+#' Calculate the f_3(A; B, C) statistics.
+#' 
+#' Calculate the \eqn{f_3(A; B, C)} statistics.
 #' 
 #' @param graph  The admixture graph.
 #' @param A      A leaf node.
@@ -34,7 +38,9 @@ f4 <- function(graph, W, X, Y, Z) {
 #' @export
 f3 <- function(graph, A, B, C) f4(graph, A, B, A, C)
 
-#' Calculate the f_2(A, B) statistics
+#' Calculate the f_2(A, B) statistics.
+#' 
+#' Calculate the \eqn{f_2(A, B)} statistics.
 #' 
 #' @param graph  The admixture graph.
 #' @param A      A leaf node.

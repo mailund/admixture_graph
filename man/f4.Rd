@@ -2,7 +2,7 @@
 % Please edit documentation in R/f-statistics.R
 \name{f4}
 \alias{f4}
-\title{Calculate the f_4(W, X; Y, Z) statistics}
+\title{Calculate the f_4(W, X; Y, Z) statistics.}
 \usage{
 f4(graph, W, X, Y, Z)
 }
@@ -22,6 +22,6 @@ The overlaps between paths from \code{W} to \code{X} and paths from
         \code{Y} to \code{Z}.
 }
 \description{
-Calculate the f_4(W, X; Y, Z) statistics
+Calculate the \eqn{f_4(W, X; Y, Z)} statistics.
 }
 

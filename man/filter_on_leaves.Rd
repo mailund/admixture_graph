@@ -2,7 +2,7 @@
 % Please edit documentation in R/filter.R
 \name{filter_on_leaves}
 \alias{filter_on_leaves}
-\title{Filter data so all W, X, Y and Z are leaves in the graph}
+\title{Filter data so all W, X, Y and Z are leaves in the graph.}
 \usage{
 filter_on_leaves(data, graph)
 }
@@ -17,6 +17,6 @@ Data frame with rows where \code{W}, \code{X}, \code{Y}, or \code{Z} are
         not leaves are removed.
 }
 \description{
-Filter data so all W, X, Y and Z are leaves in the graph
+Filter data so all \code{W}, \code{X}, \code{Y} and \code{Z} are leaves in the graph.
 }
 

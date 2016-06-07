@@ -2,7 +2,7 @@
 % Please edit documentation in R/symbolic-f-statistics.R
 \name{sf4}
 \alias{sf4}
-\title{Calculate the f_4(W, X; Y, Z) statistics}
+\title{Calculate the f_4(W, X; Y, Z) statistics.}
 \usage{
 sf4(graph, W, X, Y, Z)
 }
@@ -22,6 +22,6 @@ A symbolic representation of the equation for the \eqn{f_4}
         statistics given by the admixture graph.
 }
 \description{
-Calculate the f_4(W, X; Y, Z) statistics
+Calculate the \eqn{f_4(W, X; Y, Z)} statistics.
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/agraph.R
 \name{agraph_weights}
 \alias{agraph_weights}
-\title{Build the matrix of admixture proportions from an edge list}
+\title{Build the matrix of admixture proportions from an edge list.}
 \usage{
 agraph_weights(nodes, admixture_weights, parents)
 }
@@ -19,6 +19,6 @@ is the admixture weight on that edge.}
 A matrix containing the admixture weights.
 }
 \description{
-Build the matrix of admixture proportions from an edge list
+Build the matrix of admixture proportions from an edge list.
 }
 

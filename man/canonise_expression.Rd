@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{canonise_expression}
 \alias{canonise_expression}
-\title{Used to recognize similar expressions and to possibly simplify them}
+\title{Used to recognize similar expressions and to possibly simplify them.}
 \usage{
 canonise_expression(x)
 }

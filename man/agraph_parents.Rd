@@ -2,7 +2,7 @@
 % Please edit documentation in R/agraph.R
 \name{agraph_parents}
 \alias{agraph_parents}
-\title{Build the parent incidence matrix from an edge list}
+\title{Build the parent incidence matrix from an edge list.}
 \usage{
 agraph_parents(nodes, parent_edges)
 }
@@ -16,7 +16,7 @@ child node and the second is the parent.}
 An incidence matrix for the parent structure of an admixture graph.
 }
 \description{
-Build the parent incidence matrix from an edge list
+Build the parent incidence matrix from an edge list.
 }
 \seealso{
 \code{\link{agraph_children}}

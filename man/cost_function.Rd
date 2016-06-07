@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{cost_function}
 \alias{cost_function}
-\title{The cost function fed to Nelder-Mead}
+\title{The cost function fed to Nelder-Mead.}
 \usage{
 cost_function(data, concentration, matrix, graph,
   parameters = extract_graph_parameters(graph), iteration_multiplier = 3)
@@ -14,7 +14,7 @@ cost_function(data, concentration, matrix, graph,
 matrix.}
 
 \item{matrix}{A column reduced edge optimisation matrix (typically given
-by the function \code{\link{edge_optimisation_matrix}}).}
+by the function \code{\link{build_edge_optimisation_matrix}}).}
 
 \item{graph}{The admixture graph.}
 

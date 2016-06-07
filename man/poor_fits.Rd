@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary-statistics.R
 \name{poor_fits}
 \alias{poor_fits}
-\title{Get the tests in the fit where the predictions fall outside of the error bars}
+\title{Get the tests in the fit where the predictions fall outside of the error bars.}
 \usage{
 poor_fits(fit, sigma = 6)
 }
@@ -15,6 +15,6 @@ poor_fits(fit, sigma = 6)
 The poorly fitted tests.
 }
 \description{
-Get the tests in the fit where the predictions fall outside of the error bars
+Get the tests in the fit where the predictions fall outside of the error bars.
 }
 

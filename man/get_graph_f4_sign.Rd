@@ -2,7 +2,7 @@
 % Please edit documentation in R/signs.R
 \name{get_graph_f4_sign}
 \alias{get_graph_f4_sign}
-\title{Extracts the sign for the f_4 statistics predicted by the graph}
+\title{Extracts the sign for the f_4 statistics predicted by the graph.}
 \usage{
 get_graph_f4_sign(graph, W, X, Y, Z)
 }
@@ -22,6 +22,6 @@ The sign of the \eqn{f_4} specified by the graph (or \code{NA} when it
         cannot be determined without knowing the graph parameters).
 }
 \description{
-Extracts the sign for the f_4 statistics predicted by the graph
+Extracts the sign for the \eqn{f_4} statistics predicted by the graph.
 }
 

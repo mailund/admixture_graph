@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{fitted.agraph_fit}
 \alias{fitted.agraph_fit}
-\title{Predicted f statistics for the fitted graph}
+\title{Predicted f statistics for the fitted graph.}
 \usage{
 \method{fitted}{agraph_fit}(object, ...)
 }

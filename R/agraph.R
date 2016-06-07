@@ -1,4 +1,6 @@
-#' Build the parent incidence matrix from an edge list
+#' Build the parent incidence matrix from an edge list.
+#' 
+#' Build the parent incidence matrix from an edge list.
 #' 
 #' @param nodes         Nodes in the admxture graph.
 #' @param parent_edges  An \eqn{n \times 2}{n x 2} matrix where the first column is the
@@ -23,7 +25,9 @@ agraph_parents <- function(nodes, parent_edges) {
   parents
 }
 
-#' Build the child incidene matrix from an parent edge list
+#' Build the child incidene matrix from an parent edge list.
+#' 
+#' Build the child incidene matrix from an parent edge list.
 #' 
 #' @param nodes         Nodes in the admxture graph.
 #' @param parent_edges  An \eqn{n \times 2}{n x 2} matrix where the first column is the 
@@ -48,7 +52,9 @@ agraph_children <- function(nodes, parent_edges) {
   children
 }
 
-#' Build the matrix of admixture proportions from an edge list
+#' Build the matrix of admixture proportions from an edge list.
+#' 
+#' Build the matrix of admixture proportions from an edge list.
 #' 
 #' @param nodes              The name of the nodes in the admxture graph.
 #' @param admixture_weights  An \eqn{n \times 3}{n x 3} matrix where the first column is
@@ -78,7 +84,7 @@ agraph_weights <- function(nodes, admixture_weights, parents) {
   weights
 }
 
-#' Create an edge from a child to a parent
+#' Create an edge from a child to a parent.
 #' 
 #' Syntactic suggar for constructing edges in an admixture graph.
 #' 
@@ -88,7 +94,7 @@ agraph_weights <- function(nodes, admixture_weights, parents) {
 #' @export
 edge <- function(child, parent) c(child, parent)
 
-#' Create an admixture edge from a child to two parents
+#' Create an admixture edge from a child to two parents.
 #' 
 #' Syntactic suggar for constructing edges in an admixture graph.
 #' 
@@ -99,7 +105,7 @@ edge <- function(child, parent) c(child, parent)
 #' @export
 admixture_edge <- function(child, parent1, parent2) c(child, parent1, child, parent2)
 
-#' Specify the proportions in an admixture event
+#' Specify the proportions in an admixture event.
 #' 
 #' Syntactic suggar for constructing edges in an admixture graph.
 #' 
@@ -112,7 +118,7 @@ admixture_edge <- function(child, parent1, parent2) c(child, parent1, child, par
 admix_props <- function(child, parent1, parent2, prop)
   c(child, parent1, prop, child, parent2, paste("(1 - ", prop, ")", sep=""))
 
-#' Create the list of edges for an admixture graph
+#' Create the list of edges for an admixture graph.
 #' 
 #' Syntactic suggar for constructing edges in an admixture graph.
 #' 
@@ -121,7 +127,7 @@ admix_props <- function(child, parent1, parent2, prop)
 #' @export
 parent_edges <- function(edges) matrix(ncol = 2, byrow = TRUE, data = edges)
 
-#' Create the list of admixture proportions for an admixture graph
+#' Create the list of admixture proportions for an admixture graph.
 #' 
 #' Syntactic suggar for constructing edges in an admixture graph.
 #' 
@@ -130,7 +136,9 @@ parent_edges <- function(edges) matrix(ncol = 2, byrow = TRUE, data = edges)
 #' @export
 admixture_proportions <- function(admix_props) matrix(ncol = 3, byrow = TRUE, data = admix_props)
 
-#' Create an admixture graph object
+#' Create an admixture graph object.
+#' 
+#' Create an admixture graph object, an acyclic directed graph.
 #' 
 #' @param leaves                 The names of the leaves in the admixture graph.
 #' @param inner_nodes            The name of the inner nodes in the admxture graph.

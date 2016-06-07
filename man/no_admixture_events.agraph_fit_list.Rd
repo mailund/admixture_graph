@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary-statistics.R
 \name{no_admixture_events.agraph_fit_list}
 \alias{no_admixture_events.agraph_fit_list}
-\title{Get the number of admixture events in a list of fitted graph}
+\title{Get the number of admixture events in a list of fitted graph.}
 \usage{
 \method{no_admixture_events}{agraph_fit_list}(x)
 }
@@ -13,6 +13,6 @@
 Number of admixture events in the graphs.
 }
 \description{
-Get the number of admixture events in a list of fitted graph
+Get the number of admixture events in a list of fitted graph.
 }
 

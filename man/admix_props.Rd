@@ -2,7 +2,7 @@
 % Please edit documentation in R/agraph.R
 \name{admix_props}
 \alias{admix_props}
-\title{Specify the proportions in an admixture event}
+\title{Specify the proportions in an admixture event.}
 \usage{
 admix_props(child, parent1, parent2, prop)
 }

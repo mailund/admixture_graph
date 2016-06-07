@@ -1,4 +1,6 @@
-#' Create a path data frame from a list of nodes
+#' Create a path data frame from a list of nodes.
+#' 
+#' Creates a path data frame from a list of nodes.
 #'
 #' @param graph  The admixture graph the path is in.
 #' @param nodes  A list of nodes on a path.
@@ -12,7 +14,9 @@ format_path <- function(graph, nodes) {
   path
 }
 
-#' Computes all paths from one leaf to another
+#' Compute all paths from one leaf to another.
+#'
+#' Computes all paths from one leaf to another.
 #'
 #' @param graph  The admixture graph.
 #' @param src    The starting leaf.

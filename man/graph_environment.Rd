@@ -2,7 +2,7 @@
 % Please edit documentation in R/evaluate-f-statistics.R
 \name{graph_environment}
 \alias{graph_environment}
-\title{Build an environment in which f statistics can be evaluated}
+\title{Build an environment in which f statistics can be evaluated.}
 \usage{
 graph_environment(parameters, edge_lengths = NULL, admix_prop = NULL)
 }

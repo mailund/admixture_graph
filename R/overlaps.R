@@ -1,4 +1,6 @@
-#' Collects the postive and negative overlap between two paths
+#' Collect the postive and negative overlap between two paths.
+#' 
+#' Collects the postive and negative overlap between two paths.
 #' 
 #' @param path1  The first path.
 #' @param path2  The second path.
@@ -14,7 +16,9 @@ path_overlap <- function(path1, path2) {
        negative = merge(path1, rev_path2)[,1:2])  
 }
 
-#' Get the list of overlaps of all paths
+#' Get the list of overlaps of all paths.
+#' 
+#' Gets the list of overlaps of all paths.
 #' 
 #' @param paths1  Paths between one pair of leaves.
 #' @param paths2  Paths between another pair of leaves.

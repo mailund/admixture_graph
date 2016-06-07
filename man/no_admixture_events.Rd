@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary-statistics.R
 \name{no_admixture_events}
 \alias{no_admixture_events}
-\title{Get the number of admixture events in a graph}
+\title{Get the number of admixture events in a graph.}
 \usage{
 no_admixture_events(x)
 }
@@ -13,6 +13,6 @@ no_admixture_events(x)
 Number of admixture events in the graph.
 }
 \description{
-Get the number of admixture events in a graph
+Get the number of admixture events in a graph.
 }
 

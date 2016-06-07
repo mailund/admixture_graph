@@ -2,7 +2,7 @@
 % Please edit documentation in R/agraph.R
 \name{admixture_edge}
 \alias{admixture_edge}
-\title{Create an admixture edge from a child to two parents}
+\title{Create an admixture edge from a child to two parents.}
 \usage{
 admixture_edge(child, parent1, parent2)
 }

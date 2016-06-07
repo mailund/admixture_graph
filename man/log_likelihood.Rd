@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{log_likelihood}
 \alias{log_likelihood}
-\title{Calculate (essentially) the log likelihood of a graph with parameters, given the observation}
+\title{Calculate (essentially) the log likelihood of a graph with parameters, given the observation.}
 \usage{
 log_likelihood(f, concentration, matrix, graph,
   parameters = extract_graph_parameters(graph))

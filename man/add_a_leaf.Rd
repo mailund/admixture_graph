@@ -2,7 +2,7 @@
 % Please edit documentation in R/propose.R
 \name{add_a_leaf}
 \alias{add_a_leaf}
-\title{Adds a new leaf to a graph}
+\title{Adds a new leaf to a graph.}
 \usage{
 add_a_leaf(graph, leaf_name, outgroup = "")
 }

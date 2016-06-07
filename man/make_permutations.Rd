@@ -2,12 +2,12 @@
 % Please edit documentation in R/propose.R
 \name{make_permutations}
 \alias{make_permutations}
-\title{List of permutations}
+\title{List of permutations.}
 \usage{
 make_permutations(populations)
 }
 \arguments{
-\item{x}{A vector (of populations for example) of length between 4 and 8.}
+\item{populations}{A vector (of populations for example) of length between 4 and 8.}
 }
 \value{
 A list of different permutations of the elements of \code{x}.

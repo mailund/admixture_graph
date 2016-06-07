@@ -1,4 +1,4 @@
-#' Fast version of graph plotting
+#' Fast version of graph plotting.
 #' 
 #' This is a fast, deterministic and stand-alone function for visualizing the
 #' admixture graph. Has the bad habit if sometimes drawing several nodes at the
@@ -68,36 +68,36 @@ fast_plot <- function(x,
   right_x <- dfs(root, basis = leaf_index, step = max)
   xpos <- left_x + (right_x - left_x) / 2.0
   # Start the actual drawing of the graph...
-  plot(xpos, ypos, type = "n", axes = FALSE, frame.plot = FALSE,
-       xlab = "", ylab = "", ylim = c(-1, max(ypos) + 0.5), ...)
+  graphics::plot(xpos, ypos, type = "n", axes = FALSE, frame.plot = FALSE,
+                 xlab = "", ylab = "", ylim = c(-1, max(ypos) + 0.5), ...)
   for (node in graph$nodes) {
     parents <- graph$nodes[graph$parents[node, ]]
     if (length(parents) == 1) {
-      lines(c(xpos[node],xpos[parents]), c(ypos[node], ypos[parents]))
+      graphics::lines(c(xpos[node],xpos[parents]), c(ypos[node], ypos[parents]))
     } else if (length(parents) == 2) {
       break_y <- ypos[node]
       break_x_left <- xpos[node] - 0.3
       break_x_right <- xpos[node] + 0.3
       if (xpos[parents[1]] < xpos[parents[2]]) {
-        lines(c(xpos[parents[1]], break_x_left), c(ypos[parents[1]], break_y))
-        lines(c(xpos[parents[2]], break_x_right), c(ypos[parents[2]], break_y))  
+        graphics::lines(c(xpos[parents[1]], break_x_left), c(ypos[parents[1]], break_y))
+        graphics::lines(c(xpos[parents[2]], break_x_right), c(ypos[parents[2]], break_y))  
       } else {
-        lines(c(xpos[parents[2]], break_x_left), c(ypos[parents[2]], break_y))
-        lines(c(xpos[parents[1]], break_x_right), c(ypos[parents[1]], break_y))
+        graphics::lines(c(xpos[parents[2]], break_x_left), c(ypos[parents[2]], break_y))
+        graphics::lines(c(xpos[parents[1]], break_x_right), c(ypos[parents[1]], break_y))
       }
-      segments(break_x_left, break_y, xpos[node], ypos[node], col = "red")
-      segments(break_x_right, break_y, xpos[node], ypos[node], col = "red")
+      graphics::segments(break_x_left, break_y, xpos[node], ypos[node], col = "red")
+      graphics::segments(break_x_right, break_y, xpos[node], ypos[node], col = "red")
       if (show_admixture_labels) {
         if (xpos[parents[1]] < xpos[parents[2]]) {
-          text(break_x_left, break_y, graph$probs[parents[[1]], node],
-               cex = 0.5, pos = 1, col = "red", offset = 0.1)
-          text(break_x_right, break_y, graph$probs[parents[[2]], node],
-               cex = 0.5, pos = 1, col = "red", offset = 0.1)
+          graphics::text(break_x_left, break_y, graph$probs[parents[[1]], node],
+                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
+          graphics::text(break_x_right, break_y, graph$probs[parents[[2]], node],
+                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
         } else {
-          text(break_x_left, break_y, graph$probs[parents[[2]], node],
-               cex = 0.5, pos = 1, col = "red", offset = 0.1)
-          text(break_x_right, break_y, graph$probs[parents[[1]], node],
-               cex = 0.5, pos = 1, col = "red", offset = 0.1)          
+          graphics::text(break_x_left, break_y, graph$probs[parents[[2]], node],
+                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
+          graphics::text(break_x_right, break_y, graph$probs[parents[[1]], node],
+                         cex = 0.5, pos = 1, col = "red", offset = 0.1)          
         }
       }
     }
@@ -106,15 +106,15 @@ fast_plot <- function(x,
   inner_nodes <- which(is_inner(graph$nodes))
   leaves <- which(!is_inner(graph$nodes))
   if (show_inner_node_labels) {
-    text(xpos[inner_nodes], ypos[inner_nodes], 
-         labels = graph$nodes[inner_nodes], cex = 0.6, col = "blue", pos = 3)
+    graphics::text(xpos[inner_nodes], ypos[inner_nodes], 
+                   labels = graph$nodes[inner_nodes], cex = 0.6, col = "blue", pos = 3)
   }
-  text(xpos[leaves], ypos[leaves], labels = graph$nodes[leaves], 
-       cex = 0.7, col = "black", pos = 1)
+  graphics::text(xpos[leaves], ypos[leaves], labels = graph$nodes[leaves], 
+                 cex = 0.7, col = "black", pos = 1)
   invisible()
 }
 
-#' Plot an admixture graph
+#' Plot an admixture graph.
 #' 
 #' This is a basic drawing routine for visualising the graph. Uses Nelder-Mead
 #' algorithm and complicated heuristic approach to find aestethic node coordinates,
@@ -155,6 +155,12 @@ fast_plot <- function(x,
 #'                                if not specified. Accepts both a character vector of
 #'                                the leaves or a numeric vector interpreted as a
 #'                                permutation of the default order.
+#' @param fix                     If nothing else helps, the list \code{fix} can be used to
+#'                                correct the inner node coordinates given by the heuristics.
+#'                                Should contain numeric vectors of length 2 with the name
+#'                                of an inner node, \emph{e.g.} \code{inner_node = c(0, 10)},
+#'                                moving \code{inner_node} to the right 10 units where 100 is
+#'                                the plot width. Non-specified inner nodes are left in peace.
 #' @param platform                By default admixture nodes are drawn with a horizontal
 #'                                platform for proportion labels, the width of which is
 #'                                half the distance between any two leaves. The number
@@ -189,7 +195,7 @@ fast_plot <- function(x,
 #' admixtures <- admixture_proportions(c(admix_props("y", "u", "w", "a"),
 #'                                       admix_props("z", "u", "x", "b")))
 #' graph <- agraph(leaves, inner_nodes, edges, admixtures)
-#' plot(graph, show_inner_node_labels = T)
+#' plot(graph, show_inner_node_labels = TRUE)
 #' 
 #' # Suppose now that we prefer to have the outgroup "lobster" on the right side.
 #' # This is achieved by telling the algorithm that the children of "R" should be in
@@ -199,14 +205,14 @@ fast_plot <- function(x,
 #' 
 #' # Suppose further that we prefer to have "mermaid" and "human" next to each other,
 #' # as well as "sea horse" and "horse". This is easily achieved by rearranging the leaf
-#' # order proposed by the algorithm. We can also make the admixture platforms a bit
-#' # shorter, color the nodes, show the admixture proportions and give the plot a title:
+#' # order proposed by the algorithm. We can also fine-tune by moving "y" a little bit
+#' # to the right, make the admixture platforms a bit shorter, color the nodes, show the
+#' # admixture proportions and give the plot a title:
 #'
 #' plot(graph, child_order = list(R = c("s", "lobster")), leaf_order = c(1, 2, 4, 3, 5, 6),
-#'      platform = 0.8, color = "deepskyblue", inner_node_color = "skyblue",
-#'      show_admixture_labels = TRUE, title = "Evolution of fish/mammal hybrids")
-#'
-#' @import neldermead
+#'      fix = list(y = c(5, 0)), platform = 0.8, color = "deepskyblue",
+#'      inner_node_color = "skyblue", show_admixture_labels = TRUE,
+#'      title = "Evolution of fish/mammal hybrids")
 #' 
 #' @export
 plot.agraph <- function(x,
@@ -220,14 +226,15 @@ plot.agraph <- function(x,
                         parent_order = list(),
                         child_order = list(),
                         leaf_order = NULL,
+                        fix = list(),
                         platform = 1,
                         title = NULL,
                         ...) {
   # Combine the user instructions and automated heuristics about the graph orderings.
   graph <- x
   arranged <- arrange_graph(graph)
-  parent_order <- modifyList(arranged$parent_order, parent_order)
-  child_order <- modifyList(arranged$child_order, child_order)
+  parent_order <- utils::modifyList(arranged$parent_order, parent_order)
+  child_order <- utils::modifyList(arranged$child_order, child_order)
   if (is.null(leaf_order) == TRUE) {
     leaf_order <- leaf_order(graph, parent_order, child_order)
   } else if (typeof(leaf_order) != "character") {
@@ -273,7 +280,7 @@ plot.agraph <- function(x,
   names(heights) <- names(inner)
   global_longest <- 0
   for (inner_node in names(inner)) {
-    paths <- all_paths_to_root(refined_graph, inner_node)
+    paths <- all_paths_to_leaves(refined_graph, inner_node)
     longest <- 0
     for (path in paths) {
       if (length(path) > longest) {
@@ -286,6 +293,7 @@ plot.agraph <- function(x,
     }
   }
   for (inner_node in names(inner)) {
+    heights[inner_node] <- global_longest - heights[inner_node]
     inner[[inner_node]][2] <- 100*(1 - heights[inner_node]/global_longest)
   }
   # Perform Nelder-Mead to optimize the x-coordinates of the non-root inner nodes.
@@ -294,21 +302,26 @@ plot.agraph <- function(x,
     min <- rep(0, length(inner))
     max <- rep(100, length(inner))
     cfunc <- drawing_cost(graph, leaves, root, inner, child_order, parent_order, platform)
-    opti <- neldermead::fminbnd(cfunc, x0 = x0, xmin = min, xmax = max)
+    opti <- suppressWarnings(neldermead::fminbnd(cfunc, x0 = x0, xmin = min, xmax = max))
     x <- neldermead::neldermead.get(opti, "xopt")
     for (i in seq(1, length(inner))) {
       inner[[i]][1] <- x[i]
     }
   }
   # Plot everything asked for.
+  xpd <- graphics::par()$xpd
+  graphics::par(xpd = NA)
   level <- platform*25/(length(leaves) - 1)
   for (inner_node in names(inner)) {
     inner[[inner_node]][2] <- 100*(1 - heights[inner_node]/global_longest)
   }
+  for (fixed in names(fix)) {
+    inner[[fixed]] <- inner[[fixed]] + fix[[fixed]]
+  }
   nodes <- graph$nodes
   coordinates <- c(leaves, root, inner)
-  plot(c(-min(10, level), 100 + min(10, level)), c(-10, 110), type = "n", axes = FALSE, frame.plot = FALSE,
-       xlab = "", ylab = "", main = title, ...)
+  graphics::plot(c(-level, 100 + level), c(0, 100), type = "n", axes = FALSE,
+                 frame.plot = FALSE, xlab = "", ylab = "", main = title, ...)
   for (i in nodes) {
     for (j in nodes) {
       if (parents[i, j] == TRUE) {
@@ -316,8 +329,8 @@ plot.agraph <- function(x,
         if (length(parent_order[[i]]) == 2) {
           if (parent_order[[i]][1] == j) {
             i_thing <- -level
-            segments(coordinates[[i]][1] + i_thing, coordinates[[i]][2], coordinates[[i]][1] - i_thing, coordinates[[i]][2],
-                     col = "black", lwd = 2)
+            graphics::segments(coordinates[[i]][1] + i_thing, coordinates[[i]][2], coordinates[[i]][1] - i_thing,
+                               coordinates[[i]][2], col = "black", lwd = 2)
           }
           if (parent_order[[i]][2] == j) {
             i_thing <- level
@@ -327,41 +340,43 @@ plot.agraph <- function(x,
             if (substr(label, 1, 1) == "(") {
               label <- substr(label, 2, nchar(label) - 1)
             }
-            text(coordinates[[i]][1] + 0.75*i_thing, coordinates[[i]][2], label, adj = c(0.5, 1.6), cex = 0.8)
+            graphics::text(coordinates[[i]][1] + 0.75*i_thing, coordinates[[i]][2], label,
+                           adj = c(0.5, 1.6), cex = 0.8)
           }
         }
-        segments(coordinates[[i]][1] + i_thing, coordinates[[i]][2], coordinates[[j]][1], coordinates[[j]][2],
-                 col = "black", lwd = 2)
+        graphics::segments(coordinates[[i]][1] + i_thing, coordinates[[i]][2], coordinates[[j]][1],
+                           coordinates[[j]][2], col = "black", lwd = 2)
       }
     }
   }
   for (i in seq(1, length(leaves))) {
     leaf <- leaves[[i]]
     if (draw_leaves == TRUE) {
-      points(leaf[1], leaf[2], lwd = 2, pch = 21, col = "black", bg = color, cex = 2)
+      graphics::points(leaf[1], leaf[2], lwd = 2, pch = 21, col = "black", bg = color, cex = 2)
     }
     if (show_leaf_labels == TRUE) {
-      text(leaf[1], leaf[2], names(leaves)[i], adj = c(0.5, 2.6), cex = 0.8)
+      graphics::text(leaf[1], leaf[2], names(leaves)[i], adj = c(0.5, 2.6), cex = 0.8)
     }
   }
   if (length(inner) > 0) {
     for (i in seq(1, length(inner))) {
       vertex <- inner[[i]]
       if (draw_inner_nodes == TRUE) {
-        points(vertex[1], vertex[2], lwd = 2, pch = 21, col = "black", bg = inner_node_color, cex = 2)
+        graphics::points(vertex[1], vertex[2], lwd = 2, pch = 21, col = "black", bg = inner_node_color, cex = 2)
       }
       if (show_inner_node_labels == TRUE) {
-        text(vertex[1], vertex[2], names(inner)[i], adj = c(0.5, -1.6), cex = 0.8)
+        graphics::text(vertex[1], vertex[2], names(inner)[i], adj = c(0.5, -1.6), cex = 0.8)
       }
     }
   }
   juuri <- root[[1]]
   if (draw_inner_nodes == TRUE) {
-    points(juuri[1], juuri[2], lwd = 2, pch = 21, col = "black", bg = inner_node_color, cex = 2)
+    graphics::points(juuri[1], juuri[2], lwd = 2, pch = 21, col = "black", bg = inner_node_color, cex = 2)
   }
   if (show_inner_node_labels == TRUE) {
-    text(juuri[1], juuri[2], names(root)[1], adj = c(0.5, -1.6), cex = 0.8)
+    graphics::text(juuri[1], juuri[2], names(root)[1], adj = c(0.5, -1.6), cex = 0.8)
   }
+  graphics::par(xpd = xpd)
 }
 
 drawing_cost <- function(graph, leaves, root, inner, child_order, parent_order, platform) {
@@ -701,21 +716,21 @@ arrange_graph <- function(graph) {
             if (graph$child_order[[vertex]][1] != cycles[[mix]]$left[l - 1]) {
               graph$child_order[[vertex]][2] <- graph$child_order[[vertex]][1]
               graph$child_order[[vertex]][1] <- cycles[[mix]]$left[l - 1]
-              # Any cycle we nood to turn around because of breaking the rules like this?
+              # Any cycle we need to turn around because of breaking the rules like this?
               # Possibly yes, but avoid cleaning them too much.
               for (first_cycle in cycles) {
                 if (first_cycle$collision == vertex) {
                   graph$child_order[[vertex]] <- c(graph$parent_order[[vertex]][2],
                                                    graph$parent_order[[vertex]][1])
-                  cycles[[first_cycyle$admix]]$left <- first_cycle$right
-                  cycles[[first_cycyle$admix]]$right <- first_cycle$left
+                  cycles[[first_cycle$admix]]$left <- first_cycle$right
+                  cycles[[first_cycle$admix]]$right <- first_cycle$left
                   rest <- character(0)
                   for (other_cycle in cycles) {
-                    if (other_cycyle$admix != first_cycyle$admix) {
-                      rest <- c(rest, other_cycyle$left, other_cycle$right)
+                    if (other_cycle$admix != first_cycle$admix) {
+                      rest <- c(rest, other_cycle$left, other_cycle$right)
                     }
                   }
-                  for (L in seq(1, length(first_cycyle$left) - 1)) {
+                  for (L in seq(1, length(first_cycle$left) - 1)) {
                     mess <- first_cycle$left[L]
                     if (mess %in% rest == FALSE && length(graph$child_order[[mess]] == 2)) {
                       if (graph$child_order[[mess]][2] != first_cycle$left[L - 1]) {
@@ -724,7 +739,7 @@ arrange_graph <- function(graph) {
                       }
                     }
                   }
-                  for (R in seq(1, length(first_cycyle$right) - 1)) {
+                  for (R in seq(1, length(first_cycle$right) - 1)) {
                     mess <- first_cycle$right[R]
                     if (mess %in% rest == FALSE && length(graph$child_order[[mess]] == 2)) {
                       if (graph$child_order[[mess]][1] != first_cycle$right[R - 1]) {
@@ -898,8 +913,6 @@ arrange_graph <- function(graph) {
       graph$parent_order[[node]] <- graph$parent_of[node]
     }
   }
-  #graph$child_order$v <- c("P.hamadryas", "t")
-  #leaf_order <- c("rheMac2", "P.papio", "P.hamadryas", "P.anubis", "P.anubis2", "P.cynocephalus", "P.ursinus", "P.kindae")
   return(list(parent_order = graph$parent_order, child_order = graph$child_order, cycles = cycles))
 }
 
@@ -1014,6 +1027,25 @@ all_paths_to_root <- function(graph, node) {
     }
   } else {
     previous <- all_paths_to_root(graph, graph$parent_of[node])
+    for (j in seq(1, length(previous))) {
+      path_list[[j]] <- c(node, previous[[j]])
+    }
+  }
+  path_list
+}
+
+all_paths_to_leaves <- function(graph, node) {
+  path_list <- list()
+  if (node %in% graph$leaves) {
+    path_list[[1]] <- c(node)
+  } else if (node %in% graph$admix_nodes) {
+    previous <- all_paths_to_leaves(graph, graph$child_order[[node]][1])
+    for (j in seq(1, length(previous))) {
+      path_list[[j]] <- c(node, previous[[j]])
+    }
+  } else {
+    previous <- c(all_paths_to_leaves(graph, graph$child_order[[node]][1]),
+                  all_paths_to_leaves(graph, graph$child_order[[node]][2]))
     for (j in seq(1, length(previous))) {
       path_list[[j]] <- c(node, previous[[j]])
     }

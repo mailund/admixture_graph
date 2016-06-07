@@ -3,7 +3,7 @@
 \docType{data}
 \name{eight_leaves_trees}
 \alias{eight_leaves_trees}
-\title{Eight leaves trees}
+\title{Eight leaves trees.}
 \format{An object of class \code{list} of length 3.}
 \usage{
 eight_leaves_trees
@@ -32,14 +32,6 @@ for (i in seq(1, length(eight_leaves_trees))) {
 \seealso{
 \code{\link{make_permutations}}
 
-\code{\link{four_leaves_graphs}}
-
-\code{\link{five_leaves_graphs}}
-
-\code{\link{six_leaves_graphs}}
-
-\code{\link{seven_leaves_trees}}
-
 \code{\link{fit_permutations_and_graphs}}
 
 \code{\link{add_a_leaf}}
@@ -49,6 +41,11 @@ for (i in seq(1, length(eight_leaves_trees))) {
 \code{\link{add_an_admixture2}}
 
 \code{\link{make_an_outgroup}}
+
+Other graphs: \code{\link{five_leaves_graphs}},
+  \code{\link{four_leaves_graphs}},
+  \code{\link{seven_leaves_trees}},
+  \code{\link{six_leaves_graphs}}
 }
 \keyword{datasets}
 

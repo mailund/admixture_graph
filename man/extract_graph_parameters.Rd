@@ -2,7 +2,7 @@
 % Please edit documentation in R/evaluate-f-statistics.R
 \name{extract_graph_parameters}
 \alias{extract_graph_parameters}
-\title{Extract all the parameters a graph contains}
+\title{Extract all the parameters a graph contains.}
 \usage{
 extract_graph_parameters(graph)
 }

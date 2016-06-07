@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{calculate_concentration}
 \alias{calculate_concentration}
-\title{Building a proxy concentration matrix}
+\title{Building a proxy concentration matrix.}
 \usage{
 calculate_concentration(data, Z.value)
 }

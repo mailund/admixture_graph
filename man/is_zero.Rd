@@ -2,7 +2,7 @@
 % Please edit documentation in R/signs.R
 \name{is_zero}
 \alias{is_zero}
-\title{All overlaps are empty}
+\title{All overlaps are empty.}
 \usage{
 is_zero(overlaps)
 }
@@ -11,6 +11,6 @@ is_zero(overlaps)
 by \code{\link{all_path_overlaps}}.}
 }
 \description{
-All overlaps are empty
+All overlaps are empty.
 }
 

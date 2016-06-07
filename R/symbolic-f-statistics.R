@@ -48,7 +48,9 @@ format_overlaps <- function(graph, overlaps) {
   if (result != "") parse(text = result) else expression(0)
 }
 
-#' Calculate the f_4(W, X; Y, Z) statistics
+#' Calculate the f_4(W, X; Y, Z) statistics.
+#' 
+#' Calculate the \eqn{f_4(W, X; Y, Z)} statistics.
 #'
 #' @param graph  The admixture graph.
 #' @param W      A leaf node.
@@ -62,7 +64,9 @@ format_overlaps <- function(graph, overlaps) {
 #' @export
 sf4 <- function(graph, W, X, Y, Z) format_overlaps(graph, f4(graph, W, X, Y, Z))
 
-#' Calculate the f_3(A; B, C) statistics
+#' Calculate the f_3(A; B, C) statistics.
+#' 
+#' Calculate the \eqn{f_3(A; B, C)} statistics.
 #'
 #' @param graph  The admixture graph.
 #' @param A      A leaf node.
@@ -75,7 +79,9 @@ sf4 <- function(graph, W, X, Y, Z) format_overlaps(graph, f4(graph, W, X, Y, Z))
 #' @export
 sf3 <- function(graph, A, B, C) sf4(graph, A, B, A, C)
 
-#' Calculate the f_2(A, B) statistics
+#' Calculate the f_2(A, B) statistics.
+#' 
+#' Calculate the \eqn{f_2(A, B)} statistics.
 #'
 #' @param graph  The admixture graph.
 #' @param A      A leaf node.

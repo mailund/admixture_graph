@@ -1,43 +1,43 @@
-#' Plot the fit of a graph to data
+#' Plot the fit of a graph to data.
+#' 
+#' Plot the fit of a graph to data.
 #' 
 #' @param x      Fitted graph object.
 #' @param sigma  How many standard deviations the error bars should be wide.
 #' @param ...    Additional parameters.
 #' 
-#' @import ggplot2
-#' @import dplyr
-#' 
 #' @export
 plot.agraph_fit <- function(x, sigma = 6, ...) {
   
-  fit <- fitted(x)
+  fit <- stats::fitted(x)
+  D <- fit$D
   fit$stderr <- with(fit, D / Z.value)
   fit$error_bar_start <- with(fit, D - sigma/2*stderr)
   fit$error_bar_end   <- with(fit, D + sigma/2*stderr)
   fit$test <- with(fit, paste("D(",W,",",X,";",Y,",",Z,")"))
-  fit$test <- factor(fit$test, levels=arrange(fit, D)$test)
-  fit$hit <- with(fit, Vectorize(between)(graph_f4, error_bar_start, error_bar_end))
+  fit$test <- factor(fit$test, levels=dplyr::arrange(fit, D)$test)
+  fit$hit <- with(fit, Vectorize(dplyr::between)(graph_f4, error_bar_start, error_bar_end))
 
-  ggplot(fit) +
-    geom_hline(yintersect = 0, linetype = 'dashed', color = 'gray') +
-    geom_segment(aes_string(x = 'test', xend = 'test', y = 'D', yend = 'graph_f4', color = 'hit'), 
-                 linetype = 'dashed') +
-    geom_errorbar(aes_string(x = 'test', ymin = 'error_bar_start', ymax = 'error_bar_end'), color='black') +
-    geom_point(aes_string(x = 'test', y = 'D'), color='black') +
-    geom_point(aes_string(x = 'test', y = 'graph_f4', color = 'hit')) +
-    (if (all(fit$hit))        scale_color_manual(values = c("green"))
-     else if (all (!fit$hit)) scale_color_manual(values = c("red"))
-     else                     scale_color_manual(values = c("red", "green"))) +
-    xlab('') + ylab('') + 
-    coord_flip() +
-    theme_classic() +
-    theme(legend.position="none") +
-    theme(axis.line = element_blank(),
-          axis.text.x = element_blank(),
-          axis.ticks = element_blank()) +
-    theme(panel.grid.major = element_line(color = 'white'),
-          panel.grid.major.x = element_blank(),
-          panel.grid.major.y = element_line(color = '#eeeeee'))
+  ggplot2::ggplot(fit) +
+    ggplot2::geom_hline(yintercept = 0, linetype = 'dashed', color = 'gray') +
+    ggplot2::geom_segment(ggplot2::aes_string(x = 'test', xend = 'test', y = 'D', yend = 'graph_f4', color = 'hit'), 
+                          linetype = 'dashed') +
+    ggplot2::geom_errorbar(ggplot2::aes_string(x = 'test', ymin = 'error_bar_start', ymax = 'error_bar_end'), color='black') +
+    ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'D'), color='black') +
+    ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'graph_f4', color = 'hit')) +
+    (if (all(fit$hit))        ggplot2::scale_color_manual(values = c("green"))
+     else if (all (!fit$hit)) ggplot2::scale_color_manual(values = c("red"))
+     else                     ggplot2::scale_color_manual(values = c("red", "green"))) +
+    ggplot2::xlab('') + ggplot2::ylab('') + 
+    ggplot2::coord_flip() +
+    ggplot2::theme_classic() +
+    ggplot2::theme(legend.position="none") +
+    ggplot2::theme(axis.line = ggplot2::element_blank(),
+                   axis.text.x = ggplot2::element_blank(),
+                   axis.ticks = ggplot2::element_blank()) +
+    ggplot2::theme(panel.grid.major = ggplot2::element_line(color = 'white'),
+                   panel.grid.major.x = ggplot2::element_blank(),
+                   panel.grid.major.y = ggplot2::element_line(color = '#eeeeee'))
 }
 
 unpack_environment <- function(parameters, x) {
@@ -63,8 +63,9 @@ make_predict_function <- function(data, graph, parameters = extract_graph_parame
   }
 }
 
-#' A contour plot of the cost function around the best (admix variable) fit with respect to two
-#' admix variables specified by the user
+#' A contour plot of the cost function.
+#'
+#' A contour plot of the cost function with respect to two admix variables specified by the user.
 #' 
 #' @param object      The fitted object.
 #' @param X           An admix variable name (remember quotation marks).
@@ -78,16 +79,16 @@ make_predict_function <- function(data, graph, parameters = extract_graph_parame
 #'                    fitted statistics, we have no guarantee that the chosen variables maximize
 #'                    this number as the fitting function still optimizes \code{\link{cost_function}}.
 #' @param ...         Additional parameters passed to the plotting function
-#'                    \code{\link{filled.contour}}.
+#'                    \code{\link{contour}}.
 #'   
 #' @return The matrix of values computed and plotted.
 #'
-#' @seealso \code{\link{filled.contour}}
+#' @seealso \code{\link{contour}}
 #' @seealso \code{\link{one_dimensional_plot}}
 #'
 #' @export
 contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 6, ...) {
-  fitted_parameters <- coef(object) # We draw a little plus sign on the best point.
+  fitted_parameters <- object$best_fit # We draw a little plus sign on the best point.
   best_x <- fitted_parameters[X]
   best_y <- fitted_parameters[Y]
   x <- 0:resolution/resolution
@@ -139,15 +140,15 @@ contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma 
       z[i + 1, j + 1] <- evaluate_point(point)
     }
   }
-  image(x, y, z, xlab = X, ylab = Y, col = rev(heat.colors(12)), ...)
-  contour(x, y, z, add = TRUE, ...)
-  points(best_x, best_y, pch = 3)
+  graphics::image(x, y, z, xlab = X, ylab = Y, col = rev(grDevices::heat.colors(12)), ...)
+  graphics::contour(x, y, z, add = TRUE, ...)
+  graphics::points(best_x, best_y, pch = 3)
   invisible(z)
 }
 
-#' A plot of the cost function around the best fit with respect to one admix variable specified
-#' by the user
-#' 
+#' A plot of the cost function.
+#'
+#' A plot of the cost function with respect to one admix variable specified by the user.
 #' Sorry about the name, all the good ones were taken and the fact that the word "graph" means
 #' two different things doesn't help any.
 #' 
@@ -169,7 +170,7 @@ contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma 
 #'
 #' @export
 one_dimensional_plot <- function(object, X, resolution = 100, show_fit = FALSE, sigma = 6, ...) {
-  fitted_parameters <- coef(object) # We draw a little plus sign on the best point.
+  fitted_parameters <- object$best_fit # We draw a little plus sign on the best point.
   best_x <- fitted_parameters[X]
   x <- 0:resolution/resolution
   y <- rep(0, resolution + 1)
@@ -217,12 +218,12 @@ one_dimensional_plot <- function(object, X, resolution = 100, show_fit = FALSE, 
     y[i + 1] <- evaluate_point(point)
   }
   if (show_fit == TRUE) {
-    plot(x, y, xlab = X, ylab = "cost", type = "h", col = "red", ...)
-    points(best_x, best_error, pch = 3)
+    graphics::plot(x, y, xlab = X, ylab = "cost", type = "h", col = "red", ...)
+    graphics::points(best_x, best_error, pch = 3)
     invisible(y)
   } else {
-    plot(x, y, xlab = X, ylab = "cost", type = "l", col = "red", ...)
-    points(best_x, best_error, pch = 3)
+    graphics::plot(x, y, xlab = X, ylab = "cost", type = "l", col = "red", ...)
+    graphics::points(best_x, best_error, pch = 3)
     invisible(y)
   }
 }

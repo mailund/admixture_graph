@@ -1,8 +1,8 @@
-#' List of permutations
+#' List of permutations.
 #' 
 #' List of permutations of given elements.
 #' 
-#' @param x  A vector (of populations for example) of length between 4 and 8.
+#' @param populations  A vector (of populations for example) of length between 4 and 8.
 #' 
 #' @return A list of different permutations of the elements of \code{x}.
 #'
@@ -129,7 +129,7 @@ make_permutations <- function(populations) {
   return(P)
 }
 
-#' Four leaves graphs
+#' Four leaves graphs.
 #' 
 #' A comprehensive listing of all the \eqn{35} admixture graphs with four leaves and
 #' at most two admixture events. Our convention is that the position of the root does
@@ -143,11 +143,9 @@ make_permutations <- function(populations) {
 #' @return A list of functions on four leaves.
 #'         The outputs of these functions are \code{\link{agraph}} objects.
 #' 
+#' @family graphs
+#' 
 #' @seealso \code{\link{make_permutations}}
-#' @seealso \code{\link{five_leaves_graphs}}
-#' @seealso \code{\link{six_leaves_graphs}}
-#' @seealso \code{\link{seven_leaves_trees}}
-#' @seealso \code{\link{eight_leaves_trees}}
 #' @seealso \code{\link{fit_permutations_and_graphs}}
 #' @seealso \code{\link{add_a_leaf}}
 #' @seealso \code{\link{add_an_admixture}}
@@ -889,7 +887,7 @@ four_leaves_graphs <- list(
   }
 )
 
-#' Five leaves graphs
+#' Five leaves graphs.
 #' 
 #' A comprehensive listing of all the \eqn{8} admixture graphs with five leaves and
 #' at most one admixture event. Our convention is that the position of the root does
@@ -902,12 +900,10 @@ four_leaves_graphs <- list(
 #' 
 #' @return A list of functions on five leaves.
 #'         The outputs of these functions are \code{\link{agraph}} objects.
+#'         
+#' @family graphs
 #' 
 #' @seealso \code{\link{make_permutations}}
-#' @seealso \code{\link{four_leaves_graphs}}
-#' @seealso \code{\link{six_leaves_graphs}}
-#' @seealso \code{\link{seven_leaves_trees}}
-#' @seealso \code{\link{eight_leaves_trees}}
 #' @seealso \code{\link{fit_permutations_and_graphs}}
 #' @seealso \code{\link{add_a_leaf}}
 #' @seealso \code{\link{add_an_admixture}}
@@ -1086,7 +1082,7 @@ five_leaves_graphs <- list(
   }
 )
 
-#' Six leaves graphs
+#' Six leaves graphs.
 #' 
 #' A comprehensive listing of all the \eqn{21} admixture graphs with six leaves and
 #' at most one admixture event. Our convention is that the position of the root does
@@ -1099,12 +1095,10 @@ five_leaves_graphs <- list(
 #' 
 #' @return A list of functions on six leaves.
 #'         The outputs of these functions are \code{\link{agraph}} objects.
-#' 
+#'
+#' @family graphs
+#'   
 #' @seealso \code{\link{make_permutations}}
-#' @seealso \code{\link{four_leaves_graphs}}
-#' @seealso \code{\link{five_leaves_graphs}}
-#' @seealso \code{\link{seven_leaves_trees}}
-#' @seealso \code{\link{eight_leaves_trees}}
 #' @seealso \code{\link{fit_permutations_and_graphs}}
 #' @seealso \code{\link{add_a_leaf}}
 #' @seealso \code{\link{add_an_admixture}}
@@ -1581,7 +1575,7 @@ six_leaves_graphs <- list(
   }
 )
 
-#' Seven leaves trees
+#' Seven leaves trees.
 #' 
 #' A comprehensive listing of\ldots well\ldots both unrooted trees with seven leaves.
 #' The position of the root can be moved later with the function
@@ -1589,12 +1583,10 @@ six_leaves_graphs <- list(
 #' 
 #' @return A list of functions on seven leaves.
 #'         The outputs of these functions are \code{\link{agraph}} objects.
-#' 
+#'
+#' @family graphs
+#'   
 #' @seealso \code{\link{make_permutations}}
-#' @seealso \code{\link{four_leaves_graphs}}
-#' @seealso \code{\link{five_leaves_graphs}}
-#' @seealso \code{\link{six_leaves_graphs}}
-#' @seealso \code{\link{eight_leaves_trees}}
 #' @seealso \code{\link{fit_permutations_and_graphs}}
 #' @seealso \code{\link{add_a_leaf}}
 #' @seealso \code{\link{add_an_admixture}}
@@ -1655,7 +1647,7 @@ seven_leaves_trees <- list(
   }
 )
 
-#' Eight leaves trees
+#' Eight leaves trees.
 #' 
 #' A comprehensive listing of three unrooted trees with eight leaves.
 #' The position of the root can be moved later with the function
@@ -1663,12 +1655,10 @@ seven_leaves_trees <- list(
 #' 
 #' @return A list of functions on eight leaves.
 #'         The outputs of these functions are \code{\link{agraph}} objects.
-#' 
+#'
+#' @family graphs
+#'   
 #' @seealso \code{\link{make_permutations}}
-#' @seealso \code{\link{four_leaves_graphs}}
-#' @seealso \code{\link{five_leaves_graphs}}
-#' @seealso \code{\link{six_leaves_graphs}}
-#' @seealso \code{\link{seven_leaves_trees}}
 #' @seealso \code{\link{fit_permutations_and_graphs}}
 #' @seealso \code{\link{add_a_leaf}}
 #' @seealso \code{\link{add_an_admixture}}
@@ -1755,11 +1745,12 @@ eight_leaves_trees <- list(
   }
 )
 
-#' Fit lots of graphs to data
+#' Fit lots of graphs to data.
 #'
 #' Combines a list of (population) permutations and a list of graph topologies
 #' to a big list of graphs, then fits those graphs to given data using parallel
-#' computation.
+#' computation. This function needs \code{doParallel}, \code{foreach} and
+#' \code{parallel} installed.
 #'   
 #' @param data          The data table.
 #' @param permutations  List of population permutations.
@@ -1781,9 +1772,9 @@ eight_leaves_trees <- list(
 #' # we do wisely by not concluding too much about the actual bear family tree; this is to
 #' # illustrate the function usage only!
 #' 
-#' load("data/bears.rda")
+#' data(bears)
 #' data <- bears[16:18, ]
-#' View(data)
+#' print(data)
 #' permutations <- make_permutations(c("PB", "BLK", "Sweden", "Denali", "Kenai"))
 #' graphs <- five_leaves_graphs
 #' 
@@ -1795,29 +1786,39 @@ eight_leaves_trees <- list(
 #' 
 #' errors <- sapply(fitted_graphs, function(x) x$best_error)
 #' best_graphs <- fitted_graphs[order(errors)]
-#' plot(best_graphs[[1]], color = "goldenrod", title = best_graphs[[1]]$best_error)
+#' plot(best_graphs[[1]]$graph, color = "goldenrod", title = best_graphs[[1]]$best_error)
 #'
 #' # The same value for best_error actually occurs in the list 152 times because of our
 #' # unsufficient data.
 #'
-#' @import foreach
-#' @import doParallel
-#'
 #' @export
 fit_permutations_and_graphs <- function(data, permutations, graphs, cores) {
-  cl <- makeCluster(cores)
-  registerDoParallel(cl)
-  foreach(i = seq(1, length(permutations)), .combine = c, .packages = "admixturegraph") %:%
-  foreach(j = seq(1, length(graphs)), .packages = "admixturegraph") %dopar% {
+  if (!requireNamespace("doParallel", quietly = TRUE)) {
+    stop("This function needs the package 'doParallel' to be installed.")
+  }
+  if (!requireNamespace("foreach", quietly = TRUE)) {
+    stop("This function needs the package 'foreach' to be installed.")
+  }
+  if (!requireNamespace("parallel", quietly = TRUE)) {
+    stop("This function needs the package 'parallel' to be installed.")
+  }
+  cl <- parallel::makeCluster(cores)
+  doParallel::registerDoParallel(cl)
+  # The following is a mess because I don't want to attach packages within my own, so I have to use
+  # the binary operators as they were normal functions.
+  i <- seq(1, length(permutations))
+  j <- seq(1, length(graphs))
+  foreach::'%dopar%'(foreach::'%:%'(foreach::foreach(i = i, .combine = c, .packages = "admixturegraph"),
+                                    foreach::foreach(j = j, .packages = "admixturegraph")), {
     permutation <- permutations[[i]]
     graph_function <- graphs[[j]]
     graph <- graph_function(permutation)
     result <- fast_fit(filter_on_leaves(data, graph), graph)
     return(result)
-  }
+  })
 }
 
-#' Adds a new leaf to a graph
+#' Adds a new leaf to a graph.
 #' 
 #' Given an admixture graph, selects an edge and branches off a new edge ending at a new leaf. 
 #' 
@@ -1966,7 +1967,7 @@ add_a_leaf <- function(graph, leaf_name, outgroup = "") {
   return(graph_list)
 }
 
-#' Adds a new admixture event to a graph
+#' Adds a new admixture event to a graph.
 #' 
 #' Given an admixture graph, selects a child edge and a parent edges and adds a new edge from the 
 #' parent edge to the childedge with an admixture event, if possible. 
@@ -1978,7 +1979,7 @@ add_a_leaf <- function(graph, leaf_name, outgroup = "") {
 #' 
 #' @param graph                    An admixture graph.
 #' @param admixture_variable_name  A name for the new admixture proportion.
-#' @param labels matter            When \code{FALSE} (the default value), we consider two admixture
+#' @param labels_matter            When \code{FALSE} (the default value), we consider two admixture
 #'                                 graphs similar when they have the same topology but permuted
 #'                                 admixture proportion names. When \code{TRUE}, the already existing
 #'                                 admixture events and the edges leading to them are considered
@@ -2432,7 +2433,7 @@ add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FAL
   return(graph_list)
 }
 
-#' Adds a new admixture event to a graph
+#' Adds a new admixture event to a graph.
 #' 
 #' Given an admixture graph, selects a child edge and two parent edges, disconnects the child edge
 #' from its original parent node and connects it to the two parent edges with an admixture event,
@@ -3017,7 +3018,7 @@ add_an_admixture2 <- function(graph, admixture_variable_name, outgroup = "") {
   return(graph_list)
 }
 
-#' Make an outgroup
+#' Make an outgroup.
 #' 
 #' Given a graph and a leaf, tries to put the root of the graph on the edge leading to the leaf.
 #' If not possible (\emph{i. e.} if the leaf has admixture in its ancestry), puts the root

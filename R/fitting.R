@@ -1,4 +1,4 @@
-#' Used to recognize similar expressions and to possibly simplify them
+#' Used to recognize similar expressions and to possibly simplify them.
 #'
 #' It's best to simplify algebraic expression a little before evaluating.
 #'
@@ -155,7 +155,7 @@ canonise_expression <- function(x) {
 }
 
 #' Build a matrix coding the linear system of edges once the admix variables
-#' have been fixed
+#' have been fixed.
 #'
 #' The elements are characters containing numbers, admix variable names,
 #' parenthesis and arithmetical operations. (Transform into expressions with
@@ -250,7 +250,7 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
        parameters = parameters)
 }
 
-#' Examine the edge optimisation matrix to detect unfitted admix variables
+#' Examine the edge optimisation matrix to detect unfitted admix variables.
 #'
 #' If the essential number of equations is not higher than the essential number of
 #' edge variables, the quality of edge optimisation will not depend on the admix
@@ -269,8 +269,6 @@ build_edge_optimisation_matrix <- function(data, graph, parameters
 #'         a way that is interpreted elsewhere (in \code{\link{summary.agraph_fit}}).
 #'
 #' @seealso \code{\link{qr.solve}}
-#'
-#' @import pracma
 examine_edge_optimisation_matrix <- function(matrix, tol = 1e-8) {
   # In order to indentify which admix variables are trurly fitted and which are
   # not, we assign a random value to some of them, not all but maybe none. We can
@@ -291,7 +289,7 @@ examine_edge_optimisation_matrix <- function(matrix, tol = 1e-8) {
     # constants and calculating the rank.
     A <- rep(NaN, length(parameters$admix_prop))
     for (a in seq(1, length(parameters$admix_prop))) {
-      A[a] <- runif(1)
+      A[a] <- stats::runif(1)
     }
     evaluated_matrix <- edge_optimisation_matrix
     for (i in seq(1, m)) {
@@ -328,7 +326,7 @@ examine_edge_optimisation_matrix <- function(matrix, tol = 1e-8) {
       A <- rep(NaN, length(parameters$admix_prop))
       for (a in seq(1, length(parameters$admix_prop))) {
         if ((r/(2^a)) %% 1 < 0.5) {
-          A[a] <- runif(1) # Note that the last case r = R is not assigning anything.
+          A[a] <- stats::runif(1) # Note that the last case r = R is not assigning anything.
         }
       }
       evaluated_matrix <- edge_optimisation_matrix # Evaluated but still chars.
@@ -419,7 +417,7 @@ examine_edge_optimisation_matrix <- function(matrix, tol = 1e-8) {
   complaint
 }
 
-#' Non negative least square solution
+#' Non negative least square solution.
 #'
 #' This is the function \code{\link{lsqnonneg}} from the package \code{pracma}, 
 #' I just changed \code{\link{qr.solve}} into using Moore-Penrose inverse instead
@@ -439,8 +437,6 @@ examine_edge_optimisation_matrix <- function(matrix, tol = 1e-8) {
 #' @seealso \code{\link[pracma]{lsqnonneg}}
 #' @seealso \code{\link{qr.solve}}
 #' @seealso \code{\link[MASS]{ginv}}
-#'
-#' @import MASS
 mynonneg <- function(C, d, iteration_multiplier = 3) {
   m <- NROW(C)
   n <- NCOL(C)
@@ -482,7 +478,7 @@ mynonneg <- function(C, d, iteration_multiplier = 3) {
   return(list(x = x, resid.norm = sum(resid*resid)))
 }
 
-#' The cost function fed to Nelder-Mead
+#' The cost function fed to Nelder-Mead.
 #'
 #' We want Nelder-Mead to run fast so the cost function operates with the column
 #' reduced edge optimisation matrix and does not give any extra information about
@@ -492,7 +488,7 @@ mynonneg <- function(C, d, iteration_multiplier = 3) {
 #' @param concentration         The Cholesky decomposition of the inverted covariance
 #'                              matrix.
 #' @param matrix                A column reduced edge optimisation matrix (typically given
-#'                              by the function \code{\link{edge_optimisation_matrix}}).
+#'                              by the function \code{\link{build_edge_optimisation_matrix}}).
 #' @param graph                 The admixture graph.
 #' @param parameters            In case one wants to tweak something in the graph.
 #' @param iteration_multiplier  Given to \code{\link{mynonneg}}.
@@ -536,7 +532,7 @@ cost_function <- function(data, concentration, matrix, graph,
   }
 }
 
-#' More detailed edge fitting than mere cost_function
+#' More detailed edge fitting than mere cost_function.
 #'
 #' Returning the cost, an example edge solution of an optimal fit, and linear
 #' relations describing the set of all edge solutions. Operating with the full
@@ -545,7 +541,7 @@ cost_function <- function(data, concentration, matrix, graph,
 #' @param data                  The data set.
 #' @param concentration         The Cholesky decomposition of the inverted covariance matrix.
 #' @param matrix                A full edge optimisation matrix (typically given by the
-#'                              function \code{\link{edge_optimisation_matrix}}).
+#'                              function \code{\link{build_edge_optimisation_matrix}}).
 #' @param graph                 The admixture graph.
 #' @param parameters            In case one wants to tweak something in the graph.
 #' @param iteration_multiplier  Given to \code{\link{mynonneg}}.
@@ -560,8 +556,6 @@ cost_function <- function(data, concentration, matrix, graph,
 #' @seealso \code{\link{mynonneg}}
 #' @seealso \code{\link{cost_function}}
 #' @seealso \code{\link{log_likelihood}}
-#'
-#' @import pracma
 edge_optimisation_function <- function(data, concentration, matrix, graph,
                                        parameters = extract_graph_parameters(graph),
                                        iteration_multiplier = 3) {
@@ -657,7 +651,7 @@ edge_optimisation_function <- function(data, concentration, matrix, graph,
   }
 }
 
-#' Building a proxy concentration matrix
+#' Building a proxy concentration matrix.
 #' 
 #' If we don't have the true concentration matrix of the data rows calculated,
 #' but at least have the \eqn{Z} scores of individual rows, (unrealistically) assuming
@@ -687,7 +681,7 @@ calculate_concentration <- function(data, Z.value) {
   concentration
 }
 
-#' A fast version of graph fitting
+#' A fast version of graph fitting.
 #'
 #' Given a table of observed \eqn{f} statistics and a graph, uses Nelder-Mead algorithm to
 #' find the graph parameters (edge lengths and admixture proportions) that minimize the value
@@ -719,7 +713,7 @@ calculate_concentration <- function(data, Z.value) {
 #'
 #' @return A list containing only the essentials about the fit:
 #'         \code{graph} is the graph input,
-#'         \code{best_error} is the minimal value if \code{\link{cost_function}},
+#'         \code{best_error} is the minimal value of \code{\link{cost_function}},
 #'         obtained when the admixture proportions are \code{best_fit}.
 #'
 #' @seealso \code{\link{cost_function}}
@@ -727,13 +721,12 @@ calculate_concentration <- function(data, Z.value) {
 #' @seealso \code{\link{calculate_concentration}}
 #' @seealso \code{\link[neldermead]{optimset}}
 #' @seealso \code{\link{fit_graph}}
-#'#'
+#'
 #' @examples
 #' # For example, let's fit the following two admixture graph to an example data on bears:
 #' 
-#' load("data/bears.rda")
-#' bears <- bears[-19, ] # One statistics is twice in the data but we don't want that bias.
-#' View(bears)
+#' data(bears)
+#' print(bears)
 #' 
 #' leaves <- c("BLK", "PB", "Bar", "Chi1", "Chi2", "Adm1", "Adm2", "Denali", "Kenai", "Sweden") 
 #' inner_nodes <- c("R", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "M", "N")
@@ -767,9 +760,8 @@ calculate_concentration <- function(data, Z.value) {
 #' fit <- fast_fit(bears, bears_graph)
 #' print(fit$best_error)
 #' 
-#' # The result is just the minimal value of the cost function, no deeper analysis of the fit.
-#' 
-#' @import neldermead
+#' # The result is just the minimal value of the cost function and the values of admixture proportions
+#' # where it's obtained, no deeper analysis of the fit.
 #'
 #' @export
 fast_fit <- function(data, graph,
@@ -780,12 +772,6 @@ fast_fit <- function(data, graph,
                      optimisation_options = NULL,
                      parameters = extract_graph_parameters(graph),
                      iteration_multiplier = 3) {
-  if (!requireNamespace("neldermead", quietly = TRUE)) {
-    stop("This function requires neldermead to be installed.")
-  }
-  if (!requireNamespace("pracma", quietly = TRUE)) {
-    stop("This function requires pracma to be installed.")
-  }
   withCallingHandlers({
     inner_fast_fit(data, graph, point, Z.value, concentration, optimisation_options,
                    parameters, iteration_multiplier)
@@ -829,7 +815,7 @@ inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisat
   })
 }
 
-#' Fit the graph parameters to a data set
+#' Fit the graph parameters to a data set.
 #'
 #' Given a table of observed \eqn{f} statistics and a graph, uses Nelder-Mead algorithm to
 #' find the graph parameters (edge lengths and admixture proportions) that minimize the value
@@ -888,9 +874,8 @@ inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisat
 #' @examples
 #' # For example, let's fit the following two admixture graph to an example data on bears:
 #' 
-#' load("data/bears.rda")
-#' bears <- bears[-19, ] # One statistics is twice in the data but we don't want that bias.
-#' View(bears)
+#' data(bears)
+#' print(bears)
 #' 
 #' leaves <- c("BLK", "PB", "Bar", "Chi1", "Chi2", "Adm1", "Adm2", "Denali", "Kenai", "Sweden") 
 #' inner_nodes <- c("R", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "M", "N")
@@ -925,11 +910,9 @@ inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisat
 #' summary(fit)
 #' 
 #' # It turned out the values of admixture proportions had no effect on the cost function. This is not
-#' # too surprising because the huge graph contains a lot of edge variables compared to the tiny amount 
-#' # of data we used! Note however that the mere existence of the admixture event with non-trivial 
-#' # (not zero or one) admixture proportion might still decrease the cost function.
-#'
-#' @import neldermead
+#' # too surprising because the huge graph contains a lot of edge variables compared to the tiny 
+#' # amount of data we used! Note however that the mere existence of the admixture event with non- 
+#' # trivial (not zero or one) admixture proportion might still decrease the cost function.
 #'
 #' @export
 fit_graph <- function(data, graph,
@@ -999,7 +982,7 @@ inner_fit_graph <- function(data, graph, point, Z.value, concentration, optimisa
   })
 }
 
-#' Calculate (essentially) the log likelihood of a graph with parameters, given the observation
+#' Calculate (essentially) the log likelihood of a graph with parameters, given the observation.
 #'
 #' Or the log likelihood of the observation, given graph with parameters, depending how things are modeled.
 #' Basically this is just \code{\link{cost_function}} that doesn't optimize the edge variables
@@ -1056,7 +1039,7 @@ log_likelihood <- function(f, concentration, matrix, graph, parameters = extract
   }
 }
 
-#' Print function for the fitted graph
+#' Print function for the fitted graph.
 #'
 #' Prints the value of \code{\link{cost_function}} of the fitted graph, and complains
 #' if some or all of the admixture proportions aren't trurly fitted.
@@ -1091,7 +1074,7 @@ print.agraph_fit <- function(x, ...) {
   cat("\n")
 }
 
-#' Parameters for the fitted graph
+#' Parameters for the fitted graph.
 #'
 #' Extracts the graph parameters for the graph fitted to data. Note that the optimal 
 #' parameters are generally not unique.
@@ -1106,7 +1089,7 @@ coef.agraph_fit <- function(object, ...) {
   c(object$best_edge_fit, object$best_fit)
 }
 
-#' Summary for the fitted graph
+#' Summary for the fitted graph.
 #'
 #' Prints: \cr
 #' Optimal admixture proportions and a complaint if some of them are not trurly fitted,
@@ -1191,7 +1174,7 @@ summary.agraph_fit <- function(object, ...) {
   cat(object$best_error)
 }
 
-#' Predicted f statistics for the fitted graph
+#' Predicted f statistics for the fitted graph.
 #'
 #' Gets the predicted \eqn{f} statistics \eqn{F} for the fitted graph.
 #'

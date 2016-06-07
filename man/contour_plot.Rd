@@ -2,8 +2,7 @@
 % Please edit documentation in R/fitted_plotting.R
 \name{contour_plot}
 \alias{contour_plot}
-\title{A contour plot of the cost function around the best (admix variable) fit with respect to two
-admix variables specified by the user}
+\title{A contour plot of the cost function.}
 \usage{
 contour_plot(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 6,
   ...)
@@ -27,17 +26,16 @@ fitted statistics, we have no guarantee that the chosen variables maximize
 this number as the fitting function still optimizes \code{\link{cost_function}}.}
 
 \item{...}{Additional parameters passed to the plotting function
-\code{\link{filled.contour}}.}
+\code{\link{contour}}.}
 }
 \value{
 The matrix of values computed and plotted.
 }
 \description{
-A contour plot of the cost function around the best (admix variable) fit with respect to two
-admix variables specified by the user
+A contour plot of the cost function with respect to two admix variables specified by the user.
 }
 \seealso{
-\code{\link{filled.contour}}
+\code{\link{contour}}
 
 \code{\link{one_dimensional_plot}}
 }

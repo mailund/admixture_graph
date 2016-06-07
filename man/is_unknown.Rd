@@ -2,7 +2,7 @@
 % Please edit documentation in R/signs.R
 \name{is_unknown}
 \alias{is_unknown}
-\title{Overlapping edges have both positive and negative contributions}
+\title{Overlapping edges have both positive and negative contributions.}
 \usage{
 is_unknown(overlaps)
 }
@@ -11,6 +11,6 @@ is_unknown(overlaps)
 by \code{\link{all_path_overlaps}}.}
 }
 \description{
-Overlapping edges have both positive and negative contributions
+Overlapping edges have both positive and negative contributions.
 }
 

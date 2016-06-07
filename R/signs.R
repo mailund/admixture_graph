@@ -10,7 +10,9 @@ path_non_negative <- function(overlap)
 path_non_positive <- function(overlap)
   path_zero(overlap) || path_negative(overlap)
 
-#' All overlaps are empty
+#' All overlaps are empty.
+#' 
+#' All overlaps are empty.
 #' 
 #' @param overlaps  Data frame representing path overlaps, typically generated
 #'                  by \code{\link{all_path_overlaps}}.
@@ -20,7 +22,9 @@ is_zero <- function(overlaps) {
   all(unlist(Map(path_zero, overlaps)))
 }
 
-#' All overlaps are either empty or have a positive weight
+#' All overlaps are either empty or have a positive weight.
+#' 
+#' All overlaps are either empty or have a positive weight.
 #' 
 #' @param overlaps  Data frame representing path overlaps, typically generated
 #'                  by \code{\link{all_path_overlaps}}.
@@ -30,7 +34,9 @@ is_positive <- function(overlaps) {
   !is_zero(overlaps) && all(unlist(Map(path_non_negative, overlaps)))
 }
 
-#' All overlaps are either empty or have a negative weight
+#' All overlaps are either empty or have a negative weight.
+#' 
+#' All overlaps are either empty or have a negative weight.
 #' 
 #' @param overlaps  Data frame representing path overlaps, typically generated
 #'                  by \code{\link{all_path_overlaps}}.
@@ -40,7 +46,9 @@ is_negative <- function(overlaps) {
   !is_zero(overlaps) && all(unlist(Map(path_non_positive, overlaps)))
 }
 
-#' Overlapping edges have both positive and negative contributions
+#' Overlapping edges have both positive and negative contributions.
+#' 
+#' Overlapping edges have both positive and negative contributions.
 #' 
 #' @param overlaps  Data frame representing path overlaps, typically generated
 #'                  by \code{\link{all_path_overlaps}}.
@@ -50,7 +58,9 @@ is_unknown <- function(overlaps) {
   !is_zero(overlaps) && !is_positive(overlaps) && !is_negative(overlaps)
 }
 
-#' Get the sign of overlapping paths
+#' Get the sign of overlapping paths.
+#' 
+#' Get the sign of overlapping paths.
 #' 
 #' @param overlaps  Data frame representing path overlaps, typically generated
 #'                  by \code{\link{all_path_overlaps}}.
@@ -63,7 +73,9 @@ overlaps_sign <- function(overlaps) {
   else return(NA)
 }
 
-#' Extracts the sign for the f_4 statistics predicted by the graph
+#' Extracts the sign for the f_4 statistics predicted by the graph.
+#' 
+#' Extracts the sign for the \eqn{f_4} statistics predicted by the graph.
 #' 
 #' @param graph  The admixture graph.
 #' @param W      First population/sample.
@@ -79,7 +91,7 @@ get_graph_f4_sign <- function(graph, W, X, Y, Z) {
   overlaps_sign(f4(graph, W, X, Y, Z))
 }
 
-#' Extend a data frame with f_4 statistics predicted by a graph
+#' Extend a data frame with f_4 statistics predicted by a graph.
 #' 
 #' Extracts the sign for the \eqn{f_4} statistics predicted by the graph for all
 #' rows in a data frame and extends the data frame with the graph \eqn{f_4}.
