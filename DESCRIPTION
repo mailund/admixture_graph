@@ -15,19 +15,19 @@ License: GPL-2
 Depends:
     R (>= 2.10)
 Imports:
+    doParallel,
     dplyr,
+    foreach,
     ggplot2,
     graphics,
     MASS,
     neldermead,
+    parallel,
     pracma,
     stats,
     utils
 Suggests:
-    doParallel,
-    foreach,
     knitr,
-    parallel,
     testthat
 URL: https://github.com/mailund/admixture_graph
 BugReports: https://github.com/mailund/admixture_graph/issues

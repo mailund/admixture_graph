@@ -2,11 +2,11 @@
 Admixture Graph Manipulation and Fitting
 ========================================
 
-The package provides functionality to analyse and test admixture graphs against the f statisticsdescribed in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson *et al.*, Genetics, Vol. 192, 1065--1093, 2012.
+The package provides functionality to analyse and test admixture graphs against the \(f\) statistics described in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson *et al.*, Genetics, Vol. 192, 1065--1093, 2012.
 
-The f statistics --- f2, f3, and f4 --- extract information about correlations between gene frequencies in different populations (or single diploid genome samples), which can be informative about patterns of gene flow between these populations in form of admixture events. If a graph is constructed as a hypothesis for the relationship between the populations, equations for the expected values of the f statistics can be extracted, as functions of edge lenghs — representing genetic drift — and admixture proportions.
+The \(f\) statistics --- \(f2\), \(f3\), and \(f4\) --- extract information about correlations between gene frequencies in different populations (or single diploid genome samples), which can be informative about patterns of gene flow between these populations in form of admixture events. If a graph is constructed as a hypothesis for the relationship between the populations, equations for the expected values of the \(f\) statistics can be extracted, as functions of edge lenghs --- representing genetic drift --- and admixture proportions.
 
-This package provides functions for extracting these equations and for fitting them against computed f statistics. It does not currently provide functions for computing the f statistics — for that we refer to the [ADMIXTOOLS](https://github.com/DReichLab/AdmixTools) software package.
+This package provides functions for extracting these equations and for fitting them against computed \(f\) statistics. It does not currently provide functions for computing the \(f\) statistics --- for that we refer to the [ADMIXTOOLS](https://github.com/DReichLab/AdmixTools) software package.
 
 Example
 -------
@@ -15,34 +15,33 @@ Below is a quick example of how the package can be used. The example uses data f
 
 The BLK sample is the black bear, the PB sample is a polar bear, and the rest are brown bears.
 
-I have taken the D statistics from Table 1 in the paper and have the statistics:
+I have taken the \(f\) statistics from Table 1 in the paper:
 
 ``` r
 data(bears)
 bears
-#>      W  X      Y      Z       D Z.value
-#> 1  BLK PB Sweden   Adm1  0.1258    12.8
-#> 2  BLK PB  Kenai   Adm1  0.0685     5.9
-#> 3  BLK PB Denali   Adm1  0.0160     1.3
-#> 4  BLK PB Sweden   Adm2  0.1231    12.2
-#> 5  BLK PB  Kenai   Adm2  0.0669     6.1
-#> 6  BLK PB Denali   Adm2  0.0139     1.1
-#> 7  BLK PB Sweden    Bar  0.1613    14.7
-#> 8  BLK PB  Kenai    Bar  0.1091     8.9
-#> 9  BLK PB Denali    Bar  0.0573     4.3
-#> 10 BLK PB Sweden   Chi1  0.1786    17.7
-#> 11 BLK PB  Kenai   Chi1  0.1278    11.3
-#> 12 BLK PB Denali   Chi1  0.0777     6.4
-#> 13 BLK PB Sweden   Chi2  0.1819    18.3
-#> 14 BLK PB  Kenai   Chi2  0.1323    12.1
-#> 15 BLK PB Denali   Chi2  0.0819     6.7
-#> 16 BLK PB Sweden Denali  0.1267    14.3
-#> 17 BLK PB  Kenai Denali  0.0571     5.6
-#> 18 BLK PB Sweden  Kenai  0.0719     9.6
-#> 19 BLK PB Denali  Kenai -0.0571    -5.6
+#>      W  X      Y      Z      D Z.value
+#> 1  BLK PB Sweden   Adm1 0.1258    12.8
+#> 2  BLK PB  Kenai   Adm1 0.0685     5.9
+#> 3  BLK PB Denali   Adm1 0.0160     1.3
+#> 4  BLK PB Sweden   Adm2 0.1231    12.2
+#> 5  BLK PB  Kenai   Adm2 0.0669     6.1
+#> 6  BLK PB Denali   Adm2 0.0139     1.1
+#> 7  BLK PB Sweden    Bar 0.1613    14.7
+#> 8  BLK PB  Kenai    Bar 0.1091     8.9
+#> 9  BLK PB Denali    Bar 0.0573     4.3
+#> 10 BLK PB Sweden   Chi1 0.1786    17.7
+#> 11 BLK PB  Kenai   Chi1 0.1278    11.3
+#> 12 BLK PB Denali   Chi1 0.0777     6.4
+#> 13 BLK PB Sweden   Chi2 0.1819    18.3
+#> 14 BLK PB  Kenai   Chi2 0.1323    12.1
+#> 15 BLK PB Denali   Chi2 0.0819     6.7
+#> 16 BLK PB Sweden Denali 0.1267    14.3
+#> 17 BLK PB  Kenai Denali 0.0571     5.6
+#> 18 BLK PB Sweden  Kenai 0.0719     9.6
 ```
 
-The D column is the f4(W,X;Y,Z) statistic and the Z column is the Z-values obtained from a blocked jacknife (see Patterson *et al.* for details).
+The `D` column is the \(f4(W,X;Y,Z)\) statistic and the `Z` column is the \(Z\)-values obtained from a blocked jacknife (see Patterson *et al.* for details).
 
 From the statistics we can see that the ABC bears (Adm, Bar and Chi) are closer related to the polar bears compared to the other brown bears. The paper explains this with gene flow from polar bears into the ABC bears and going further out from there, but we can also explain this by several waves of admixture from ancestral polar bears into brown bears:
 
@@ -99,6 +98,9 @@ admixtures <- admixture_proportions(c(admix_props("bc_a1", "pb_a1", "ABC", "a"),
                                 
 bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
 plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
+#> fminbnd:  Exiting: Maximum number of function evaluations has been exceeded
+#>          - increase MaxFunEvals option.
+#>          Current function value: 2097.43464986477
 ```
 
 ![](README-graph-1.png)
@@ -106,7 +108,7 @@ plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 Fitting a graph to data
 -----------------------
 
-The graph makes predictions on how the f4 statistics should look. If you have the *neldermead* package installed you can fit graph parameters to observed D statistics. This is done using the *fit\_graph* function
+The graph makes predictions on how the \(f4\) statistics should look. The graph parameters can be fit to observed statistics using the `fit_graph` function:
 
 ``` r
 fit <- fit_graph(bears, bears_graph)
@@ -117,21 +119,20 @@ fit
 #> Minimal error: 0.001490682
 ```
 
-The object it returns contains an environment that contains the fitted parameters and a data frame containing the original data together with an extra column, graph\_f4, containing the fitted values.
-
-You can get the fitted values by calling the *summary* function.
+You can get detailsabout the fit by calling the `summary.agraph_fit` function:
 
 ``` r
 summary(fit)
 #> 
-#> Call:
-#> fit_graph(bears, bears_graph)
+#> Call: fit_graph(bears, bears_graph)
 #> 
-#> Optimal admix variables:
+#> After fixing {a, b, c, d} none of the remaining proportions {} affect the quality of the fit!
+#> 
+#> Optimal admixture proportions:
 #>          a          b          c          d 
 #> 0.03985233 0.91958225 0.99999900 0.56905827 
 #> 
-#> Optimal edge variables:
+#> Optimal edge lengths:
 #>        edge_R_BLK       edge_R_PBBB       edge_PBBB_z   edge_PBBB_pb_a4 
 #>       0.000000000       0.000000000       0.000000000       0.104668543 
 #>     edge_Adm_Adm1     edge_Adm_Adm2     edge_Chi_Chi1     edge_Chi_Chi2 
@@ -149,10 +150,10 @@ summary(fit)
 #>       edge_x_a3_x       edge_y_a4_y 
 #>       0.000000000       0.000000000 
 #> 
-#> Solution to a homogeneous system of edges with the optimal admix variables:
-#> (Adding any such solution to the optimal one will not affect the error.)
+#> Solution to a homogeneous system of edge lengths with the optimal admixture proportions:
+#> Adding any such solution to the optimal one will not affect the error.
 #> 
-#> Free edge variables:
+#> Free edge lengths:
 #> edge_R_BLK
 #> edge_R_PBBB
 #> edge_PBBB_z
@@ -180,7 +181,7 @@ summary(fit)
 #> edge_x_a3_x
 #> edge_y_a4_y
 #> 
-#> Bounded edge variables:
+#> Bounded edge lengths:
 #> edge_PBBB_pb_a4 = 0
 #> edge_pb_a2_pb_a1 = 0
 #> edge_pb_a3_pb_a2 = 0
@@ -190,59 +191,7 @@ summary(fit)
 #> 0.001490682
 ```
 
-This function also returns the fitted values as a list, so you can assign the result to an object if you need to access it later.
-
-You can also get the fitted parameters using the generic *coef* or *coefficients* funcions
-
-``` r
-coef(fit)
-#>                 a                 b                 c                 d 
-#>       0.039852331       0.919582246       0.999999000       0.569058269 
-#>        edge_R_BLK       edge_R_PBBB       edge_PBBB_z   edge_PBBB_pb_a4 
-#>       0.000000000       0.000000000       0.000000000       0.104668543 
-#>     edge_Adm_Adm1     edge_Adm_Adm2     edge_Chi_Chi1     edge_Chi_Chi2 
-#>       0.000000000       0.000000000       0.000000000       0.000000000 
-#>       edge_BC_Bar       edge_BC_Chi      edge_ABC_Adm    edge_ABC_bc_a1 
-#>       0.000000000       0.000000000       0.000000000       0.000000000 
-#>     edge_x_Denali     edge_x_abc_a2      edge_y_Kenai       edge_y_x_a3 
-#>       0.000000000       0.000000000       0.000000000       0.000000000 
-#>     edge_z_Sweden       edge_z_y_a4     edge_pb_a1_PB  edge_pb_a1_bc_a1 
-#>       0.000000000       0.000000000       0.000000000       0.000000000 
-#>  edge_pb_a2_pb_a1 edge_pb_a2_abc_a2  edge_pb_a3_pb_a2   edge_pb_a3_x_a3 
-#>       1.355528458       0.000000000       0.014259138       0.000000000 
-#>  edge_pb_a4_pb_a3   edge_pb_a4_y_a4     edge_bc_a1_BC   edge_abc_a2_ABC 
-#>       0.008994011       0.000000000       0.000000000       0.000000000 
-#>       edge_x_a3_x       edge_y_a4_y 
-#>       0.000000000       0.000000000
-```
-
-To get the fitted predictions, together with the data used for fitting, use the *fitted* function.
-
-``` r
-fitted(fit)
-#>      W  X      Y      Z       D Z.value    graph_f4
-#> 1  BLK PB Sweden   Adm1  0.1258    12.8  0.12677500
-#> 2  BLK PB  Kenai   Adm1  0.0685     5.9  0.06721250
-#> 3  BLK PB Denali   Adm1  0.0160     1.3  0.01311250
-#> 4  BLK PB Sweden   Adm2  0.1231    12.2  0.12677500
-#> 5  BLK PB  Kenai   Adm2  0.0669     6.1  0.06721250
-#> 6  BLK PB Denali   Adm2  0.0139     1.1  0.01311250
-#> 7  BLK PB Sweden    Bar  0.1613    14.7  0.18084167
-#> 8  BLK PB  Kenai    Bar  0.1091     8.9  0.12127917
-#> 9  BLK PB Denali    Bar  0.0573     4.3  0.06717917
-#> 10 BLK PB Sweden   Chi1  0.1786    17.7  0.18084167
-#> 11 BLK PB  Kenai   Chi1  0.1278    11.3  0.12127917
-#> 12 BLK PB Denali   Chi1  0.0777     6.4  0.06717917
-#> 13 BLK PB Sweden   Chi2  0.1819    18.3  0.18084167
-#> 14 BLK PB  Kenai   Chi2  0.1323    12.1  0.12127917
-#> 15 BLK PB Denali   Chi2  0.0819     6.7  0.06717917
-#> 16 BLK PB Sweden Denali  0.1267    14.3  0.11366250
-#> 17 BLK PB  Kenai Denali  0.0571     5.6  0.05410000
-#> 18 BLK PB Sweden  Kenai  0.0719     9.6  0.05956250
-#> 19 BLK PB Denali  Kenai -0.0571    -5.6 -0.05410000
-```
-
-You can make a plot of the fit against the data using the *plot* function.
+You can make a plot of the fit against the data by calling the `plot.agraph_fit` function:
 
 ``` r
 plot(fit)
@@ -250,6 +199,8 @@ plot(fit)
 
 ![](README-fitted_data-1.png)
 
-The plot shows the data f4 statistics with error bars (in black) plus the predicted values from the graph.
+The plot shows the onserved \(f4\) statistics with error bars (in black) plus the predicted values from the graph.
 
-The result of this is a ggplot2 object that you can modify by adding ggplot2 commands in the usual way.
+The result of this is a `ggplot2` object that you can modify by adding `ggplot2` commands in the usual way.
+
+Read the vignette `admixturegraph` for more examples.

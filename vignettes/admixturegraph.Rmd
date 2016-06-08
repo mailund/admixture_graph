@@ -221,7 +221,7 @@ summary(bears_fit)
 plot(bears_fit)
 ```
 
-It turned out that the value of the admixture proportion $a$ had no effect on the minimum of the cost function. This is because our data frame wasn't sufficient for a graph this big, which is also reflected by the fact that only one of the edge lengths (between polar bears and brown bears splitting and polar bears and the population mixing into ABC bears splitting) matter while the rest can be chosen freely. From the plot it is clear that this graph is not very convincing match with the data, and that additional gene flow from the polar bears into mainland Alaska bears would help.
+It turned out that the value of the admixture proportion a had no effect on the minimum of the cost function. This is because our data frame wasn't sufficient for a graph this big, which is also reflected by the fact that only one of the edge lengths (between polar bears and brown bears splitting and polar bears and the population mixing into ABC bears splitting) matter while the rest can be chosen freely. From the plot it is clear that this graph is not very convincing match with the data, and that additional gene flow from the polar bears into mainland Alaska bears would help.
 
 With sufficient data the effect of admixture proportions on the cost function can be examined with the help of the functions `one_dimensional_plot` and `contour_plot`.
 See also `coef.agraph_fit`, `fitted.agraph_fit`, `print.agraph_fit` and `residuals.agraph_fit`.
@@ -263,7 +263,7 @@ for (graph in example_list_1) {
 graphics::par(mfrow = original)
 ```
 
-To add a new admixture event to an existing graph use either `add_an_admixture` or `add_an_admixture2`; the former only adding one parental edge assuming the other one needs to already exist in the graph and the latter detaching one edge and reattaching it with two parental edges anywhere in the original graph (provided that the result still is a valid admixture graph):
+To add a new admixture event to an existing graph use either `add_an_admixture` or `add_an_admixture2`; the former is only adding one parental edge assuming the other one already exist in the graph and the latter is detaching one edge and reattaching it with two parental edges anywhere in the original graph (provided that the result still is a valid admixture graph):
 
 ```{r new_admixtures}
 example_list_2 <- add_an_admixture(example_graph, "b")
