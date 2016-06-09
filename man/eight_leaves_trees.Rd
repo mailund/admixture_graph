@@ -18,6 +18,8 @@ The position of the root can be moved later with the function
 \code{\link{make_an_outgroup}}.
 }
 \examples{
+# (For consistency we skip this example on the automatic testing.)
+\donttest{
 # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 # just for browsing.
 for (i in seq(1, length(eight_leaves_trees))) {
@@ -26,6 +28,7 @@ for (i in seq(1, length(eight_leaves_trees))) {
   title <- paste("eight_leaves_trees[[", i,
                  "]](c(\\"A\\", \\"B\\", \\"C\\", \\"D\\", \\"E\\", \\"F\\", \\"G\\", \\"H\\"))", sep = "")
   plot(graph, color = "brown", title = title)
+}
 }
 
 }

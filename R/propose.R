@@ -23,8 +23,7 @@
 #' FIVE <- length(make_permutations(c(1, 2, 3, 4, 5)))
 #' SIX <- length(make_permutations(c(1, 2, 3, 4, 5, 6)))
 #' SEVEN <- length(make_permutations(c(1, 2, 3, 4, 5, 6, 7)))
-#' EIGHT <- length(make_permutations(c(1, 2, 3, 4, 5, 6, 7, 8)))
-#' 1/1 + 1/1 + 1/2 + 1/6 + 1/FOUR + 1/FIVE + 1/SIX + 1/SEVEN + 1/EIGHT
+#' 1/1 + 1/1 + 1/2 + 1/6 + 1/FOUR + 1/FIVE + 1/SIX + 1/SEVEN
 #' # Hey that was pretty close!
 #'
 #' @export
@@ -153,6 +152,8 @@ make_permutations <- function(populations) {
 #' @seealso \code{\link{make_an_outgroup}}
 #'
 #' @examples
+#' # (This example is slow so we skip it on the automatic testing.)
+#' \donttest{
 #' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 #' # just for browsing.
 #' for (i in seq(1, length(four_leaves_graphs))) {
@@ -160,6 +161,7 @@ make_permutations <- function(populations) {
 #'   # This is how you include quotation marks in strings by the way:
 #'   title <- paste("four_leaves_graphs[[", i, "]](c(\"A\", \"B\", \"C\", \"D\"))", sep = "")
 #'   plot(graph, color = "tomato3", title = title)
+#' }
 #' }
 #'
 #' @export
@@ -911,6 +913,8 @@ four_leaves_graphs <- list(
 #' @seealso \code{\link{make_an_outgroup}}
 #'
 #' @examples
+#' # (This example is slow so we skip it on the automatic testing.)
+#' \donttest{
 #' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 #' # just for browsing.
 #' for (i in seq(1, length(five_leaves_graphs))) {
@@ -919,6 +923,7 @@ four_leaves_graphs <- list(
 #'   title <- paste("five_leaves_graphs[[", i, "]](c(\"A\", \"B\", \"C\", \"D\", \"E\"))",
 #'                  sep = "")
 #'   plot(graph, color = "purple", title = title)
+#' }
 #' }
 #'
 #' @export
@@ -1106,6 +1111,8 @@ five_leaves_graphs <- list(
 #' @seealso \code{\link{make_an_outgroup}}
 #'
 #' @examples
+#' # (This example is slow so we skip it on the automatic testing.)
+#' \donttest{
 #' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 #' # just for browsing.
 #' for (i in seq(1, length(six_leaves_graphs))) {
@@ -1114,6 +1121,7 @@ five_leaves_graphs <- list(
 #'   title <- paste("six_leaves_graphs[[", i,
 #'                  "]](c(\"A\", \"B\", \"C\", \"D\", \"E\", \"F\"))", sep = "")
 #'   plot(graph, color = "yellow4", title = title)
+#' }
 #' }
 #'
 #' @export
@@ -1594,6 +1602,8 @@ six_leaves_graphs <- list(
 #' @seealso \code{\link{make_an_outgroup}}
 #'
 #' @examples
+#' # (For consistency we skip this example on the automatic testing.)
+#' \donttest{
 #' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 #' # just for browsing.
 #' for (i in seq(1, length(seven_leaves_trees))) {
@@ -1602,6 +1612,7 @@ six_leaves_graphs <- list(
 #'   title <- paste("seven_leaves_trees[[", i,
 #'                  "]](c(\"A\", \"B\", \"C\", \"D\", \"E\", \"F\", \"G\"))", sep = "")
 #'   plot(graph, color = "seagreen", title = title)
+#' }
 #' }
 #'
 #' @export
@@ -1666,6 +1677,8 @@ seven_leaves_trees <- list(
 #' @seealso \code{\link{make_an_outgroup}}
 #'
 #' @examples
+#' # (For consistency we skip this example on the automatic testing.)
+#' \donttest{
 #' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 #' # just for browsing.
 #' for (i in seq(1, length(eight_leaves_trees))) {
@@ -1674,6 +1687,7 @@ seven_leaves_trees <- list(
 #'   title <- paste("eight_leaves_trees[[", i,
 #'                  "]](c(\"A\", \"B\", \"C\", \"D\", \"E\", \"F\", \"G\", \"H\"))", sep = "")
 #'   plot(graph, color = "brown", title = title)
+#' }
 #' }
 #'
 #' @export
@@ -1767,6 +1781,8 @@ eight_leaves_trees <- list(
 #' @seealso \code{\link{eight_leaves_trees}}
 #' 
 #' @examples
+#' # (This example is slow so we skip it on the automatic testing.)
+#' \donttest{
 #' # Let's experiment by fitting all the graphs with five leaves and at most one admixture
 #' # event to a five population subset of the bear data. Note that with three data rows only
 #' # we do wisely by not concluding too much about the actual bear family tree; this is to
@@ -1790,6 +1806,7 @@ eight_leaves_trees <- list(
 #'
 #' # The same value for best_error actually occurs in the list 152 times because of our
 #' # unsufficient data.
+#' }
 #'
 #' @export
 fit_permutations_and_graphs <- function(data, permutations, graphs, cores) {
@@ -1848,7 +1865,7 @@ fit_permutations_and_graphs <- function(data, permutations, graphs, cores) {
 #' admixtures <- NULL
 #' Lambda <- agraph(leaves, inner_nodes, edges, admixtures)
 #' set <- list(Lambda)
-#' for (i in seq(1, 6)) {
+#' for (i in seq(1, 5)) {
 #'   new_set <- list()
 #'   for (tree in set) {
 #'     new_set <- c(new_set, add_a_leaf(tree, paste(i + 2)))

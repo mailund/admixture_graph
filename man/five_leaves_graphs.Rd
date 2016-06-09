@@ -23,6 +23,8 @@ and a simple branch. The position of the root can be moved later with the functi
 \code{\link{make_an_outgroup}}.
 }
 \examples{
+# (This example is slow so we skip it on the automatic testing.)
+\donttest{
 # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 # just for browsing.
 for (i in seq(1, length(five_leaves_graphs))) {
@@ -31,6 +33,7 @@ for (i in seq(1, length(five_leaves_graphs))) {
   title <- paste("five_leaves_graphs[[", i, "]](c(\\"A\\", \\"B\\", \\"C\\", \\"D\\", \\"E\\"))",
                  sep = "")
   plot(graph, color = "purple", title = title)
+}
 }
 
 }

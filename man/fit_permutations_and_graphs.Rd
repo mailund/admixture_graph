@@ -25,6 +25,8 @@ computation. This function needs \code{doParallel}, \code{foreach} and
 \code{parallel} installed.
 }
 \examples{
+# (This example is slow so we skip it on the automatic testing.)
+\donttest{
 # Let's experiment by fitting all the graphs with five leaves and at most one admixture
 # event to a five population subset of the bear data. Note that with three data rows only
 # we do wisely by not concluding too much about the actual bear family tree; this is to
@@ -48,6 +50,7 @@ plot(best_graphs[[1]]$graph, color = "goldenrod", title = best_graphs[[1]]$best_
 
 # The same value for best_error actually occurs in the list 152 times because of our
 # unsufficient data.
+}
 
 }
 \seealso{

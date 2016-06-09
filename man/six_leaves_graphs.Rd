@@ -23,6 +23,8 @@ eye and a simple branch. The position of the root can be moved later with the fu
 \code{\link{make_an_outgroup}}.
 }
 \examples{
+# (This example is slow so we skip it on the automatic testing.)
+\donttest{
 # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 # just for browsing.
 for (i in seq(1, length(six_leaves_graphs))) {
@@ -31,6 +33,7 @@ for (i in seq(1, length(six_leaves_graphs))) {
   title <- paste("six_leaves_graphs[[", i,
                  "]](c(\\"A\\", \\"B\\", \\"C\\", \\"D\\", \\"E\\", \\"F\\"))", sep = "")
   plot(graph, color = "yellow4", title = title)
+}
 }
 
 }

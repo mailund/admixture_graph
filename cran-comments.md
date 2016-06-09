@@ -4,6 +4,4 @@
 
 ### R CMD check results
 No ERRORS, WARNINGS or NOTES.
-I have a couple of functions with examples that take more than 5 seconds.
-Some of them are essential.
-Altogether running them should still take only a couple of minutes.
+I have used the donttest command to skip most of the long examples during automated testing, but there's still three functions with examples taking more than 5 seconds (but less than 7). These three functions are pretty much the whole point of the package so having them tested sounds like the right thing to do, but I can skip them too if necessary.

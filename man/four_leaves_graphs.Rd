@@ -23,6 +23,8 @@ eye and a simple branch. The position of the root can be moved later with the fu
 \code{\link{make_an_outgroup}}.
 }
 \examples{
+# (This example is slow so we skip it on the automatic testing.)
+\donttest{
 # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 # just for browsing.
 for (i in seq(1, length(four_leaves_graphs))) {
@@ -30,6 +32,7 @@ for (i in seq(1, length(four_leaves_graphs))) {
   # This is how you include quotation marks in strings by the way:
   title <- paste("four_leaves_graphs[[", i, "]](c(\\"A\\", \\"B\\", \\"C\\", \\"D\\"))", sep = "")
   plot(graph, color = "tomato3", title = title)
+}
 }
 
 }

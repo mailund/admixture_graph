@@ -22,8 +22,7 @@ FOUR <- length(make_permutations(c(1, 2, 3, 4)))
 FIVE <- length(make_permutations(c(1, 2, 3, 4, 5)))
 SIX <- length(make_permutations(c(1, 2, 3, 4, 5, 6)))
 SEVEN <- length(make_permutations(c(1, 2, 3, 4, 5, 6, 7)))
-EIGHT <- length(make_permutations(c(1, 2, 3, 4, 5, 6, 7, 8)))
-1/1 + 1/1 + 1/2 + 1/6 + 1/FOUR + 1/FIVE + 1/SIX + 1/SEVEN + 1/EIGHT
+1/1 + 1/1 + 1/2 + 1/6 + 1/FOUR + 1/FIVE + 1/SIX + 1/SEVEN
 # Hey that was pretty close!
 
 }

@@ -28,7 +28,7 @@ edges <- parent_edges(c(edge("1", "R"), edge("2", "R")))
 admixtures <- NULL
 Lambda <- agraph(leaves, inner_nodes, edges, admixtures)
 set <- list(Lambda)
-for (i in seq(1, 6)) {
+for (i in seq(1, 5)) {
   new_set <- list()
   for (tree in set) {
     new_set <- c(new_set, add_a_leaf(tree, paste(i + 2)))
