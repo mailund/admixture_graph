@@ -17,14 +17,17 @@
 #' @seealso \code{\link{add_an_admixture2}}
 #'
 #' @examples
+#' \donttest{
 #' # The number of permutations of n elements is n!. Take 0! = 1, 1! = 1, 2! = 2
 #' # and 3! = 6 for granted. Now we can estimate e:
 #' FOUR <- length(make_permutations(c(1, 2, 3, 4)))
 #' FIVE <- length(make_permutations(c(1, 2, 3, 4, 5)))
 #' SIX <- length(make_permutations(c(1, 2, 3, 4, 5, 6)))
 #' SEVEN <- length(make_permutations(c(1, 2, 3, 4, 5, 6, 7)))
-#' 1/1 + 1/1 + 1/2 + 1/6 + 1/FOUR + 1/FIVE + 1/SIX + 1/SEVEN
+#' EIGHT <- length(make_permutations(c(1, 2, 3, 4, 5, 6, 7, 8)))
+#' 1/1 + 1/1 + 1/2 + 1/6 + 1/FOUR + 1/FIVE + 1/SIX + 1/SEVEN + 1/EIGHT
 #' # Hey that was pretty close!
+#' }
 #'
 #' @export
 make_permutations <- function(populations) {
@@ -152,7 +155,6 @@ make_permutations <- function(populations) {
 #' @seealso \code{\link{make_an_outgroup}}
 #'
 #' @examples
-#' # (This example is slow so we skip it on the automatic testing.)
 #' \donttest{
 #' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 #' # just for browsing.
@@ -913,7 +915,6 @@ four_leaves_graphs <- list(
 #' @seealso \code{\link{make_an_outgroup}}
 #'
 #' @examples
-#' # (This example is slow so we skip it on the automatic testing.)
 #' \donttest{
 #' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 #' # just for browsing.
@@ -1111,7 +1112,6 @@ five_leaves_graphs <- list(
 #' @seealso \code{\link{make_an_outgroup}}
 #'
 #' @examples
-#' # (This example is slow so we skip it on the automatic testing.)
 #' \donttest{
 #' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 #' # just for browsing.
@@ -1602,7 +1602,6 @@ six_leaves_graphs <- list(
 #' @seealso \code{\link{make_an_outgroup}}
 #'
 #' @examples
-#' # (For consistency we skip this example on the automatic testing.)
 #' \donttest{
 #' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 #' # just for browsing.
@@ -1677,7 +1676,6 @@ seven_leaves_trees <- list(
 #' @seealso \code{\link{make_an_outgroup}}
 #'
 #' @examples
-#' # (For consistency we skip this example on the automatic testing.)
 #' \donttest{
 #' # While the usage of this function is pretty self-explanatory, let's plot all the graphs
 #' # just for browsing.
@@ -1781,7 +1779,6 @@ eight_leaves_trees <- list(
 #' @seealso \code{\link{eight_leaves_trees}}
 #' 
 #' @examples
-#' # (This example is slow so we skip it on the automatic testing.)
 #' \donttest{
 #' # Let's experiment by fitting all the graphs with five leaves and at most one admixture
 #' # event to a five population subset of the bear data. Note that with three data rows only
@@ -1858,6 +1855,7 @@ fit_permutations_and_graphs <- function(data, permutations, graphs, cores) {
 #' @seealso \code{\link{make_an_outgroup}}
 #' 
 #' @examples
+#' \donttest{
 #' # Take a look at how much trees there are: 
 #' leaves <- c("1", "2")
 #' inner_nodes <- c("R")
@@ -1865,7 +1863,7 @@ fit_permutations_and_graphs <- function(data, permutations, graphs, cores) {
 #' admixtures <- NULL
 #' Lambda <- agraph(leaves, inner_nodes, edges, admixtures)
 #' set <- list(Lambda)
-#' for (i in seq(1, 5)) {
+#' for (i in seq(1, 6)) {
 #'   new_set <- list()
 #'   for (tree in set) {
 #'     new_set <- c(new_set, add_a_leaf(tree, paste(i + 2)))
@@ -1881,6 +1879,7 @@ fit_permutations_and_graphs <- function(data, permutations, graphs, cores) {
 #' # In general, there are 1*3*5*...*(2n - 5) different trees with n labeled leaves
 #' # (A001147 in the online encyclopedia of integer sequences).
 #' # Exhaustive search through the graph space is hard!
+#' }
 #' 
 #' @export
 add_a_leaf <- function(graph, leaf_name, outgroup = "") {
@@ -2018,6 +2017,7 @@ add_a_leaf <- function(graph, leaf_name, outgroup = "") {
 #' @seealso \code{\link{make_an_outgroup}}
 #' 
 #' @examples
+#' \donttest{
 #' # To illustrate what the parameter labels_matter does, consider the following graph:
 #' 
 #' leaves <- c("A", "B", "C")
@@ -2082,6 +2082,7 @@ add_a_leaf <- function(graph, leaf_name, outgroup = "") {
 #'
 #' long_list <- add_an_admixture(graph, "q", labels_matter = TRUE)
 #' print(length(long_list))
+#' }
 #' 
 #' @export
 add_an_admixture <- function(graph, admixture_variable_name, labels_matter = FALSE, outgroup = "") {
@@ -3058,21 +3059,22 @@ add_an_admixture2 <- function(graph, admixture_variable_name, outgroup = "") {
 #' @seealso \code{\link{make_an_outgroup}}
 #' 
 #' @examples
+#' \donttest{
 #' # Here is a little family tree of some dinosaur-like animals.
 #' 
 #' species <- c("triceratops", "crocodile", "diplodocus", "tyrannosaurus", "chicken")
 #' graph <- five_leaves_graphs[[1]](species)
 #' plot(graph)
 #' 
-#' # Of course we know that while this is correct as an undirected graph, y-axis does
-#' # not correspond to time because "crocodile" should be the outgroup.
+#' # Of course we know that while this is correct as an undirected graph, "crocodile"
+#' # should really be the outgroup.
 #' 
 #' graph <- make_an_outgroup(graph, "crocodile")
 #' plot(graph)
 #' 
-#' # Strictly speaking the y-axis still doesn't correspond to time because unfortunately
-#' # the (non-bird) dinosaurs are extinct :-( But at least now the y-axis shows which
-#' # species evolved from which.
+#' # Strictly speaking the graph is still a little misleading because unfortunately
+#' # the (non-bird) dinosaurs are extinct :-(
+#' }
 #' 
 #' @export
 make_an_outgroup <- function(graph, outgroup) {

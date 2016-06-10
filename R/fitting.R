@@ -723,6 +723,7 @@ calculate_concentration <- function(data, Z.value) {
 #' @seealso \code{\link{fit_graph}}
 #'
 #' @examples
+#' \donttest{
 #' # For example, let's fit the following two admixture graph to an example data on bears:
 #' 
 #' data(bears)
@@ -762,7 +763,8 @@ calculate_concentration <- function(data, Z.value) {
 #' 
 #' # The result is just the minimal value of the cost function and the values of admixture proportions
 #' # where it's obtained, no deeper analysis of the fit.
-#'
+#' }
+#' 
 #' @export
 fast_fit <- function(data, graph,
                      point = list(rep(1e-5, length(extract_graph_parameters(graph)$admix_prop)),
@@ -872,6 +874,7 @@ inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisat
 #' @seealso \code{\link{fast_fit}}
 #'
 #' @examples
+#' \donttest{
 #' # For example, let's fit the following two admixture graph to an example data on bears:
 #' 
 #' data(bears)
@@ -913,6 +916,7 @@ inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisat
 #' # too surprising because the huge graph contains a lot of edge variables compared to the tiny 
 #' # amount of data we used! Note however that the mere existence of the admixture event with non- 
 #' # trivial (not zero or one) admixture proportion might still decrease the cost function.
+#' }
 #'
 #' @export
 fit_graph <- function(data, graph,

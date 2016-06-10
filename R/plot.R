@@ -175,7 +175,8 @@ fast_plot <- function(x,
 #' @seealso \code{\link{agraph}}
 #' @seealso \code{\link{fast_plot}}
 #'
-#' @examples 
+#' @examples
+#' \donttest{
 #' leaves <- c("salmon", "sea horse", "mermaid", "horse", "human", "lobster")
 #' inner_nodes <- c("R", "s", "t", "u", "v", "w", "x", "y", "z")
 #' edges <- parent_edges(c(edge("salmon", "t"),
@@ -213,6 +214,7 @@ fast_plot <- function(x,
 #'      fix = list(y = c(5, 0)), platform = 0.8, color = "deepskyblue",
 #'      inner_node_color = "skyblue", show_admixture_labels = TRUE,
 #'      title = "Evolution of fish/mammal hybrids")
+#' }
 #' 
 #' @export
 plot.agraph <- function(x,
