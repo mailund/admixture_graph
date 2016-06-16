@@ -23,11 +23,11 @@ suppressPackageStartupMessages(library(neldermead, quietly = TRUE))
 
 # Admixture Graph Manipulation and Fitting
 
-The package provides functionality to analyse and test admixture graphs against the f statisticsdescribed in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson *et al.*, Genetics, Vol. 192, 1065--1093, 2012.
+The package provides functionality to analyse and test admixture graphs against the $f$ statistics described in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson *et al.*, Genetics, Vol. 192, 1065--1093, 2012.
 
-The f statistics --- f2, f3, and f4 --- extract information about correlations between gene frequencies in different populations (or single diploid genome samples), which can be informative about patterns of gene flow between these populations in form of admixture events. If a graph is constructed as a hypothesis for the relationship between the populations, equations for the expected values of the f statistics can be extracted, as functions of edge lenghs — representing genetic drift — and admixture proportions.
+The $f$ statistics --- $f2$, $f3$, and $f4$ --- extract information about correlations between gene frequencies in different populations (or single diploid genome samples), which can be informative about patterns of gene flow between these populations in form of admixture events. If a graph is constructed as a hypothesis for the relationship between the populations, equations for the expected values of the $f$ statistics can be extracted, as functions of edge lenghs --- representing genetic drift --- and admixture proportions.
 
-This package provides functions for extracting these equations and for fitting them against computed f statistics. It does not currently provide functions for computing the f statistics — for that we refer to the [ADMIXTOOLS](https://github.com/DReichLab/AdmixTools) software package.
+This package provides functions for extracting these equations and for fitting them against computed $f$ statistics. It does not currently provide functions for computing the $f$ statistics --- for that we refer to the [ADMIXTOOLS](https://github.com/DReichLab/AdmixTools) software package.
 
 ## Example
 
@@ -39,14 +39,14 @@ bears into brown bears](http://onlinelibrary.wiley.com/doi/10.1111/mec.13038/abs
 The BLK sample is the black bear, the PB sample is a polar bear, and the rest
 are brown bears. 
 
-I have taken the D statistics from Table 1 in the paper and have the statistics:
+I have taken the $f$ statistics from Table 1 in the paper:
 
 ```{r}
 data(bears)
 bears
 ```
 
-The D column is the f4(W,X;Y,Z) statistic and the Z column is the Z-values
+The `D` column is the $f4(W,X;Y,Z)$ statistic and the `Z` column is the $Z$-values
 obtained from a blocked jacknife (see Patterson *et al.* for details).
 
 From the statistics we can see that the ABC bears (Adm, Bar and Chi) are closer
@@ -110,49 +110,29 @@ bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
 plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 ```
 
-
-
 ## Fitting a graph to data
 
-The graph makes predictions on how the f4 statistics should look. If you have the *neldermead* package installed you can fit graph parameters to observed D statistics. This is done using the *fit_graph* function
+The graph makes predictions on how the $f4$ statistics should look. The graph parameters can be fit to observed statistics using the `fit_graph` function:
 
 ```{r, warning=FALSE, cache=TRUE, dependson="graph"}
 fit <- fit_graph(bears, bears_graph)
 fit
 ```
 
-The object it returns contains an environment that contains the fitted parameters and a data
-frame containing the original data together with an extra column, graph_f4, containing the fitted
-values.
-
-You can get the fitted values by calling the *summary* function.
+You can get detailsabout the fit by calling the `summary.agraph_fit` function:
 
 ```{r}
 summary(fit)
 ```
 
-This function also returns the fitted values as a list, so you can assign the result to an object
-if you need to access it later.
-
-You can also get the fitted parameters using the generic *coef* or *coefficients* funcions
-
-```{r}
-coef(fit)
-```
-
-To get the fitted predictions, together with the data used for fitting, use the *fitted* function.
-
-```{r}
-fitted(fit)
-```
-
-You can make a plot of the fit against the data using the *plot* function.
+You can make a plot of the fit against the data by calling the `plot.agraph_fit` function:
 
 ```{r fitted_data}
 plot(fit)
 ```
 
-The plot shows the data f4 statistics with error bars (in black) plus the predicted values from the graph.
+The plot shows the onserved $f4$ statistics with error bars (in black) plus the predicted values from the graph.
 
-The result of this is a ggplot2 object that you can modify by adding ggplot2 commands in the usual way.
+The result of this is a `ggplot2` object that you can modify by adding `ggplot2` commands in the usual way.
 
+Read the vignette `admixturegraph` for more examples.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{edge_optimisation_function}
 \alias{edge_optimisation_function}
-\title{More detailed edge fitting than mere \code{cost_function}.}
+\title{More detailed edge fitting than mere cost_function.}
 \usage{
 edge_optimisation_function(data, concentration, matrix, graph,
   parameters = extract_graph_parameters(graph), iteration_multiplier = 3)
@@ -13,25 +13,32 @@ edge_optimisation_function(data, concentration, matrix, graph,
 \item{concentration}{The Cholesky decomposition of the inverted covariance matrix.}
 
 \item{matrix}{A full edge optimisation matrix (typically given by the
-function \code{edge_optimisation_matrix$full}).}
+function \code{\link{build_edge_optimisation_matrix}}).}
 
 \item{graph}{The admixture graph.}
 
 \item{parameters}{In case one wants to tweak something in the graph.}
 
-\item{iteration_multiplier}{Given to mynonneg().}
+\item{iteration_multiplier}{Given to \code{\link{mynonneg}}.}
 }
 \value{
-Given an input vector of admix variables, returns a list \code{x} containing
-         the minimal error (\code{x$cost}), the graph-f4-statistics
-         (\code{x$approximation}), an example solution (\code{x$edge_fit}), linear
-         relations describing all the solutions (\code{x$homogeneous}) and one
-         way to choose the free (\code{x$free_edges}) and bounded
-         (\code{x$bounded_edges}) edge variables.
+Given an input vector of admix variables, returns a list containing
+         the minimal error (\code{cost}), the graph-\eqn{f4} statistics
+         (\code{approximation}), an example solution (\code{edge_fit}), linear
+         relations describing all the solutions (\code{homogeneous}) and one
+         way to choose the free (\code{free_edges}) and bounded
+         (\code{bounded_edges}) edge variables.
 }
 \description{
 Returning the cost, an example edge solution of an optimal fit, and linear
 relations describing the set of all edge solutions. Operating with the full
-edge optimisation matrix.
+edge optimisation matrix, not the column reduced one.
+}
+\seealso{
+\code{\link{mynonneg}}
+
+\code{\link{cost_function}}
+
+\code{\link{log_likelihood}}
 }
 

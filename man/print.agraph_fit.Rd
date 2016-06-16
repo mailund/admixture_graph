@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{print.agraph_fit}
 \alias{print.agraph_fit}
-\title{Print function for a fitted graph.}
+\title{Print function for the fitted graph.}
 \usage{
 \method{print}{agraph_fit}(x, ...)
 }
@@ -12,6 +12,12 @@
 \item{...}{Additional parameters.}
 }
 \description{
-Print summary of the result of a fit.
+Prints the value of \code{\link{cost_function}} of the fitted graph, and complains
+if some or all of the admixture proportions aren't trurly fitted.
+Note: the admixture proportion not being trurly fitted does not necessarily mean that
+there is no evidence of an admix event!
+}
+\seealso{
+\code{link{summary.agraph_fit}}
 }
 

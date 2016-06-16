@@ -14,13 +14,13 @@ run_metropolis_hasting(model, initial_state, iterations, no_temperatures = 1,
 
 \item{iterations}{Number of iterations to sample.}
 
+\item{no_temperatures}{Number of chains in the MC3 procedure}
+
 \item{cores}{Number of cores to spread the chains across. Best performance is when cores=no_temperatures}
 
 \item{no_flips}{Mean number of times a flip between two chains should be proposed after each step}
 
 \item{max_tmp}{The highest temperature}
-
-\item{no_temperaturesNumber}{of chains in the MC3 procedure}
 }
 \value{
 A matrix containing the trace of the chain with temperature 1.

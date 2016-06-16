@@ -12,37 +12,99 @@ fast_fit(data, graph, point = list(rep(1e-05,
   iteration_multiplier = 3)
 }
 \arguments{
-\item{data}{The data set.}
+\item{data}{The data table, must contain columns \code{W}, \code{X},
+\code{Y}, \code{Z} for sample names and \code{D} for the
+observed \eqn{f_4(W, X; Y, Z)}. May contain an optional
+column \code{Z.value} for the \eqn{Z} scores (the \eqn{f}
+statistics divided by the standard deviations).}
 
-\item{graph}{The admixture graph.}
+\item{graph}{The admixture graph (an \code{\link{agraph}} object).}
 
-\item{point}{If the user wants to restrict admix variables somehow, like fixing some
-of them. A list of two vectors: the lower and the upper bounds. As a default the bounds
-are just it little bit more than zero and less than one; this is because sometimes the
-point non non-continuity and minimum of the cost function coincide, and zero and one
-have several reasons to be problematic values in this respect.}
+\item{point}{If the user wants to restrict the admixture proportions somehow,
+like to fix some of them. A list of two vectors: the lower and the
+upper bounds. As a default the bounds are just it little bit more
+than zero and less than one; this is because sometimes the
+infimum of the values of cost function is at a point of
+non-continuity, and zero and one have reasons to be problematic
+values in this respect.}
 
-\item{Z.value}{Whether we calculate the default concentration from Z.values (default
-option) or just use the identity matrix.}
+\item{Z.value}{Whether we calculate the default concentration from \eqn{Z} scores
+(the default option \code{TRUE}) or just use the identity matrix.}
 
 \item{concentration}{The Cholesky decomposition of the inverted covariance matrix.
-Default matrix determined by parameter Z.value.}
+Default matrix determined by the parameter \code{Z.value}.}
 
-\item{optimisation_options}{Options to the optimisation algorithm.}
+\item{optimisation_options}{Options to the Nelder-Mead algorithm.}
 
 \item{parameters}{In case one wants to tweak something in the graph.}
 
-\item{iteration_multiplier}{Given to mynonneg().}
+\item{iteration_multiplier}{Given to \code{\link{mynonneg}}.}
 }
 \value{
-A list containing some selected stuff about the fit.
+A list containing only the essentials about the fit:
+        \code{graph} is the graph input,
+        \code{best_error} is the minimal value of \code{\link{cost_function}},
+        obtained when the admixture proportions are \code{best_fit}.
 }
 \description{
-Like fit_graph() but only gives the very basics, dropping the analysis
-of free/bounded edge variables and fitted/non-fitted admix variables.
+Given a table of observed \eqn{f} statistics and a graph, uses Nelder-Mead algorithm to
+find the graph parameters (edge lengths and admixture proportions) that minimize the value
+of \code{\link{cost_function}}, \emph{i. e.} maximizes the likelihood of a graph with
+parameters given the observed data.
+Like \code{\link{fit_graph}} but dropping most of the analysis on the result.
 Intended for use in big iteration loops.
 }
+\examples{
+# For example, let's fit the following two admixture graph to an example data on bears:
+
+data(bears)
+print(bears)
+
+leaves <- c("BLK", "PB", "Bar", "Chi1", "Chi2", "Adm1", "Adm2", "Denali", "Kenai", "Sweden") 
+inner_nodes <- c("R", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "M", "N")
+edges <- parent_edges(c(edge("BLK", "R"),
+                        edge("PB", "v"),
+                        edge("Bar", "x"),
+                        edge("Chi1", "y"),
+                        edge("Chi2", "y"),
+                        edge("Adm1", "z"),
+                        edge("Adm2", "z"),
+                        edge("Denali", "t"),
+                        edge("Kenai", "s"),
+                        edge("Sweden", "r"),
+                        edge("q", "R"),
+                        edge("r", "q"),
+                        edge("s", "r"),
+                        edge("t", "s"),
+                        edge("u", "q"),
+                        edge("v", "u"),
+                        edge("w", "M"),
+                        edge("x", "N"),
+                        edge("y", "x"),
+                        edge("z", "w"),
+                        admixture_edge("M", "u", "t"),
+                        admixture_edge("N", "v", "w")))
+admixtures <- admixture_proportions(c(admix_props("M", "u", "t", "a"),
+                                      admix_props("N", "v", "w", "b")))
+bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
+plot(bears_graph, show_admixture_labels = TRUE)
+
+fit <- fast_fit(bears, bears_graph)
+print(fit$best_error)
+
+# The result is just the minimal value of the cost function and the values of admixture proportions
+# where it's obtained, no deeper analysis of the fit.
+
+}
 \seealso{
+\code{\link{cost_function}}
+
+\code{\link{agraph}}
+
+\code{\link{calculate_concentration}}
+
 \code{\link[neldermead]{optimset}}
+
+\code{\link{fit_graph}}
 }
 

@@ -7,22 +7,26 @@
 examine_edge_optimisation_matrix(matrix, tol = 1e-08)
 }
 \arguments{
-\item{matrix}{Not really a matrix but two (an output of build_edge_optimisation_matrix())}
+\item{matrix}{Not really a matrix but two (should be an output of
+\code{\link{build_edge_optimisation_matrix}}).}
 
-\item{tol}{Calulating the rank with qr.rank sometimes crashes (it shouldn't!).}
+\item{tol}{Calulating the rank with \code{\link{qr.solve}} sometimes crashes.
+Default \eqn{10^{-8}}{10^(-8)}.}
 }
 \value{
-An indicator of warning ($complaint), coding all the possibilities in a way that
-        is interpreted elsewhere (in summary()).
+An indicator of warning (\code{complaint}), coding all the possibilities in
+        a way that is interpreted elsewhere (in \code{\link{summary.agraph_fit}}).
 }
 \description{
 If the essential number of equations is not higher than the essential number of
 edge variables, the quality of edge optimisation will not depend on the admix
 variables (expect possibly in isolated special cases where the quality can be worse),
 and a complaint will be given.
-Note: the admix variable not being fitted does not mean there is no evidence of an
-admix event! Isolated values of the admix variables, that could very well be 0 or 1,
-still might give significantly worse fit than a typical value (but not the other way
-around).
+Note: The admix variable not being fitted does not mean that there is no evidence of
+an admix event! Isolated values of the admix variables, possibly \eqn{0} or \eqn{1},
+might give significantly worse fit than a typical value (but not the other way around).
+}
+\seealso{
+\code{\link{qr.solve}}
 }
 

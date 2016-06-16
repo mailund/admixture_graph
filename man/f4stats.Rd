@@ -2,12 +2,15 @@
 % Please edit documentation in R/f4_plotting.R
 \name{f4stats}
 \alias{f4stats}
-\title{Make a data frame an f4 statistics object.}
+\title{Make a data frame an f_4 statistics object.}
 \usage{
 f4stats(x)
 }
 \arguments{
-\item{x}{Data frame with observed D (f4) statistics}
+\item{x}{Data frame with observed \eqn{D} (\eqn{f_4}) statistics.}
+}
+\value{
+Something about classes.
 }
 \description{
 This is mostly just a convinience function to set the class of a data frame such that 

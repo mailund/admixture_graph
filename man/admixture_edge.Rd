@@ -2,16 +2,16 @@
 % Please edit documentation in R/agraph.R
 \name{admixture_edge}
 \alias{admixture_edge}
-\title{Create admixture edges from child to two parents}
+\title{Create an admixture edge from a child to two parents.}
 \usage{
 admixture_edge(child, parent1, parent2)
 }
 \arguments{
-\item{child}{The name of the child node}
+\item{child}{The name of the child node.}
 
-\item{parent1}{The name of the parent node}
+\item{parent1}{The name of the parent node.}
 
-\item{parent2}{The name of the parent node}
+\item{parent2}{The name of the parent node.}
 }
 \description{
 Syntactic suggar for constructing edges in an admixture graph.

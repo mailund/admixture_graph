@@ -15,6 +15,6 @@ format_path(graph, nodes)
 A data frame capturing the path and the probabilities/weights on the edges.
 }
 \description{
-Create a path data frame from a list of nodes.
+Creates a path data frame from a list of nodes.
 }
 

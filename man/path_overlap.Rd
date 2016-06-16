@@ -2,18 +2,18 @@
 % Please edit documentation in R/overlaps.R
 \name{path_overlap}
 \alias{path_overlap}
-\title{Collects the postive and negative overlap between two paths.}
+\title{Collect the postive and negative overlap between two paths.}
 \usage{
 path_overlap(path1, path2)
 }
 \arguments{
-\item{path1}{The first path}
+\item{path1}{The first path.}
 
-\item{path2}{The second path}
+\item{path2}{The second path.}
 }
 \value{
 The (admixture) probability of seeing the two paths together with the
-  positive and negative edges in the overlap.
+        positive and negative edges in the overlap.
 }
 \description{
 Collects the postive and negative overlap between two paths.

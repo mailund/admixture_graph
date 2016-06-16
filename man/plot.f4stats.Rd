@@ -7,7 +7,7 @@
 \method{plot}{f4stats}(x, sigma = 6, ...)
 }
 \arguments{
-\item{x}{Data frame with observed D (f4) statistics}
+\item{x}{Data frame with observed \eqn{D} (\eqn{f_4}) statistics}
 
 \item{sigma}{How many sigmas the error bars should be wide.}
 

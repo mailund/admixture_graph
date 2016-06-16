@@ -7,9 +7,9 @@
 poor_fits(fit, sigma = 6)
 }
 \arguments{
-\item{fit}{The fitted graph}
+\item{fit}{The fitted graph.}
 
-\item{sigma}{the width of the error bars.}
+\item{sigma}{The width of the error bars.}
 }
 \value{
 The poorly fitted tests.

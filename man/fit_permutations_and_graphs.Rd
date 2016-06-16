@@ -2,19 +2,68 @@
 % Please edit documentation in R/propose.R
 \name{fit_permutations_and_graphs}
 \alias{fit_permutations_and_graphs}
-\title{Combine a list of permutations with a list of (parameterized) graphs to fit them}
+\title{Fit lots of graphs to data.}
 \usage{
-fit_permutations_and_graphs(data, permutations, graphs)
+fit_permutations_and_graphs(data, permutations, graphs, cores)
 }
 \arguments{
-\item{permutations}{List of population permutations}
+\item{data}{The data table.}
 
-\item{graphs}{List of functions for producing graphs}
+\item{permutations}{List of population permutations.}
+
+\item{graphs}{List of functions for producing graphs.}
+
+\item{cores}{Number of cores used.}
 }
 \value{
-a list of fitted graphs.
+A list of \code{\link{fast_fit}} results.
 }
 \description{
-Combine a list of permutations with a list of (parameterized) graphs to fit them
+Combines a list of (population) permutations and a list of graph topologies
+to a big list of graphs, then fits those graphs to given data using parallel
+computation. This function needs \code{doParallel}, \code{foreach} and
+\code{parallel} installed.
+}
+\examples{
+# (This example is slow so we skip it on the automatic testing.)
+\donttest{
+# Let's experiment by fitting all the graphs with five leaves and at most one admixture
+# event to a five population subset of the bear data. Note that with three data rows only
+# we do wisely by not concluding too much about the actual bear family tree; this is to
+# illustrate the function usage only!
+
+data(bears)
+data <- bears[16:18, ]
+print(data)
+permutations <- make_permutations(c("PB", "BLK", "Sweden", "Denali", "Kenai"))
+graphs <- five_leaves_graphs
+
+# We go with one core only as I don't know what kind of machine you are using.
+
+fitted_graphs <- fit_permutations_and_graphs(data, permutations, graphs, 1)
+
+# Now sort the fitted objects by best_error and see how the best graph looks like.
+
+errors <- sapply(fitted_graphs, function(x) x$best_error)
+best_graphs <- fitted_graphs[order(errors)]
+plot(best_graphs[[1]]$graph, color = "goldenrod", title = best_graphs[[1]]$best_error)
+
+# The same value for best_error actually occurs in the list 152 times because of our
+# unsufficient data.
+}
+
+}
+\seealso{
+\code{\link{make_permutations}}
+
+\code{\link{four_leaves_graphs}}
+
+\code{\link{five_leaves_graphs}}
+
+\code{\link{six_leaves_graphs}}
+
+\code{\link{seven_leaves_trees}}
+
+\code{\link{eight_leaves_trees}}
 }
 

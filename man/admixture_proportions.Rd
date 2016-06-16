@@ -2,17 +2,14 @@
 % Please edit documentation in R/agraph.R
 \name{admixture_proportions}
 \alias{admixture_proportions}
-\title{Create the list of admixture proportions for an admixture graph}
+\title{Create the list of admixture proportions for an admixture graph.}
 \usage{
 admixture_proportions(admix_props)
 }
 \arguments{
-\item{admix_props}{The admixture proportions}
+\item{admix_props}{The admixture proportions.}
 }
 \description{
 Syntactic suggar for constructing edges in an admixture graph.
-}
-\seealso{
-admix_props
 }
 

@@ -1,14 +1,13 @@
-
 #' Extract all the parameters a graph contains.
 #' 
 #' The graph is parameterized by edge lengths and admixture proportions. This 
 #' function extracts these parameters.
 #' 
-#' @param graph The admixture graph
+#' @param graph  The admixture graph.
 #'   
 #' @return A list containing two values: \code{edges}, a vector of edges and 
-#'   \code{admix_prop}, a vector containing admixture proportions.
-#'   
+#'         \code{admix_prop}, a vector containing admixture proportions.
+#'         
 #' @export
 extract_graph_parameters <- function(graph) {
   edges <- c()
@@ -25,21 +24,21 @@ extract_graph_parameters <- function(graph) {
   list(edges = edges, admix_prop = admix_prop)
 }
 
-#' Build an environment in which \eqn{f} statistics can be evaluated.
+#' Build an environment in which f statistics can be evaluated.
 #' 
-#' Constructs an environment in which the f statistics for a graph can be
+#' Constructs an environment in which the \eqn{f} statistics for a graph can be
 #' evaluted, based on the parameters in a graph and values for edge lengths and
 #' admixture proportions (with defaults if not specified).
 #' 
-#' @param parameters     The parameters of a graph as returned by
-#'   \code{extract_graph_parameters}
-#' @param edge_lengths   If specified, a vector of edge lengths. Otherwise
-#'   defaults are used.
-#' @param admix_prop     If specified, a vector of admixture proportions.
-#'   Otherwise defaults are used.
+#' @param parameters    The parameters of a graph as returned by
+#'                      \code{\link{extract_graph_parameters}}.
+#' @param edge_lengths  If specified, a vector of edge lengths. Otherwise
+#'                      defaults are used.
+#' @param admix_prop    If specified, a vector of admixture proportions.
+#'                      Otherwise defaults are used.
 #'   
 #' @return A list containing two values: \code{edges}, a vector of edges and
-#'   \code{admix_prop}, a vector containing admixture proportions.
+#'         \code{admix_prop}, a vector containing admixture proportions.
 #'   
 #' @export
 graph_environment <- function(parameters,
@@ -63,14 +62,16 @@ graph_environment <- function(parameters,
   env
 }
 
+#' Evaluates an f_4 statistics in a given environment.
+#' 
 #' Evaluates an \eqn{f_4} statistics in a given environment.
 #' 
-#' @param graph      The admixture graph.
-#' @param env        The environment containing the graph parameters.
-#' @param W          First population/sample.
-#' @param X          Second population/sample.
-#' @param Y          Third population/sample.
-#' @param Z          Fourth population/sample.
+#' @param graph  The admixture graph.
+#' @param env    The environment containing the graph parameters.
+#' @param W      First population/sample.
+#' @param X      Second population/sample.
+#' @param Y      Third population/sample.
+#' @param Z      Fourth population/sample.
 #'   
 #' @return The \eqn{f_4} value specified by the graph and the environment.
 #'   
@@ -79,22 +80,21 @@ evaluate_f4 <- function(graph, env, W, X, Y, Z) {
   eval(sf4(graph, W, X, Y, Z), env)
 }
 
-#' Evalutes the \eqn{f_4} statistics for all rows in a data frame and extends 
-#' the data frame with the graph \eqn{f_4}.
+#' Evalutes the f_4 statistics for all rows in a data frame and extends 
+#' the data frame with the graph f_4.
 #' 
 #' The data frame, \code{data}, must contain columns \code{W}, \code{X}, 
-#' \code{Y}, and \code{Z}. The function then computes the \eqn{f_4(W,X;Y,Z)} 
+#' \code{Y}, and \code{Z}. The function then computes the \eqn{f_4(W, X; Y, Z)}
 #' statistics (also known as the \eqn{D} statistics) for all rows and adds these
 #' as a column, \code{graph_f4}, to the data frame.
 #' 
-#' @param data     The data frame to get the labels to compute the f4 statistics
-#'   from.
-#' @param graph    The admixture graph
-#' @param env      The environment to evaluate the f4 statistics in
+#' @param data   The data frame to get the labels to compute the \eqn{f_4} statistics from.
+#' @param graph  The admixture graph.
+#' @param env    The environment to evaluate the \eqn{f_4} statistics in.
 #'   
 #' @return A data frame identical to \code{data} except with an additional 
-#'   column, \code{graph_f4}, containing the \eqn{f_4} values as determined by
-#'   the graph and the environment.
+#'         column, \code{graph_f4}, containing the \eqn{f_4} values as determined by
+#'         the graph and the environment.
 #'   
 #' @export
 add_graph_f4 <- function(data, graph, env) {

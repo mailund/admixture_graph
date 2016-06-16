@@ -2,23 +2,20 @@
 % Please edit documentation in R/agraph.R
 \name{admix_props}
 \alias{admix_props}
-\title{Specify the proportions in an admixture event}
+\title{Specify the proportions in an admixture event.}
 \usage{
 admix_props(child, parent1, parent2, prop)
 }
 \arguments{
-\item{child}{The child node}
+\item{child}{The child node.}
 
-\item{parent1}{The first parent}
+\item{parent1}{The first parent.}
 
-\item{parent2}{The second parent}
+\item{parent2}{The second parent.}
 
-\item{prop}{The admixture proportions coming from the first parent}
+\item{prop}{The admixture proportions coming from the first parent.}
 }
 \description{
 Syntactic suggar for constructing edges in an admixture graph.
-}
-\seealso{
-admix_props
 }
 

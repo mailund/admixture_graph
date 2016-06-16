@@ -2,13 +2,13 @@
 % Please edit documentation in R/evaluate-f-statistics.R
 \name{graph_environment}
 \alias{graph_environment}
-\title{Build an environment in which \eqn{f} statistics can be evaluated.}
+\title{Build an environment in which f statistics can be evaluated.}
 \usage{
 graph_environment(parameters, edge_lengths = NULL, admix_prop = NULL)
 }
 \arguments{
 \item{parameters}{The parameters of a graph as returned by
-\code{extract_graph_parameters}}
+\code{\link{extract_graph_parameters}}.}
 
 \item{edge_lengths}{If specified, a vector of edge lengths. Otherwise
 defaults are used.}
@@ -18,10 +18,10 @@ Otherwise defaults are used.}
 }
 \value{
 A list containing two values: \code{edges}, a vector of edges and
-  \code{admix_prop}, a vector containing admixture proportions.
+        \code{admix_prop}, a vector containing admixture proportions.
 }
 \description{
-Constructs an environment in which the f statistics for a graph can be
+Constructs an environment in which the \eqn{f} statistics for a graph can be
 evaluted, based on the parameters in a graph and values for edge lengths and
 admixture proportions (with defaults if not specified).
 }

@@ -32,15 +32,13 @@ test_that("we get the right symbolic representation of f statistics.", {
                           edge("D", "ABC")))
   admix <- admixture_proportions(c(admix_props("C", "AC", "BC", "a")))
   graph <- agraph(leaves, inner_nodes, edges, admix)
-  
-  expect_equal(sf2(graph, "A", "B"), expression(edge_AC_A + edge_ABC_BC + edge_ABC_AC + edge_BC_B))
-  expect_equal(sf3(graph, "A", "B", "D"), expression(edge_AC_A + edge_ABC_AC))
-  expect_equal(sf3(graph, "C", "B", "D"),
-               expression(a * a * (edge_ABC_AC + edge_AC_C) +
-                            a * (1 - a) * ( - edge_ABC_BC) + 
-                            (1 - a) * (1 - a) * (edge_BC_C)))
-  expect_equal(sf4(graph, "A", "B", "C", "D"), expression(a * (edge_ABC_AC) + (1 - a) * ( - edge_ABC_BC)))
-  expect_equal(sf4(graph, "B", "D", "A", "C"), expression((1 - a) * ( - edge_ABC_BC)))
-  expect_equal(sf4(graph, "B", "D", "C", "A"), expression((1 - a) * (edge_ABC_BC)))
-})
 
+  expect_equal(toString(sf2(graph, "A", "B")), "edge_AC_A + edge_ABC_BC + edge_ABC_AC + edge_BC_B")
+  expect_equal(toString(sf3(graph, "A", "B", "D")), "edge_AC_A + edge_ABC_AC")
+  expect_equal(toString(sf3(graph, "C", "B", "D")),
+  "a * a * (edge_ABC_AC + edge_AC_C) + a * (1 - a) * (-edge_ABC_BC) + (1 - a) * (1 - a) * (edge_BC_C)")
+  expect_equal(toString(sf4(graph, "A", "B", "C", "D")),
+               "a * (edge_ABC_AC) + (1 - a) * (-edge_ABC_BC)")
+  expect_equal(toString(sf4(graph, "B", "D", "A", "C")), "(1 - a) * (-edge_ABC_BC)")
+  expect_equal(toString(sf4(graph, "B", "D", "C", "A")), "(1 - a) * (edge_ABC_BC)")
+})

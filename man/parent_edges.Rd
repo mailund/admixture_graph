@@ -7,14 +7,9 @@
 parent_edges(edges)
 }
 \arguments{
-\item{edges}{List of edges}
+\item{edges}{List of edges.}
 }
 \description{
 Syntactic suggar for constructing edges in an admixture graph.
-}
-\seealso{
-admixture_edge
-
-parent_edges
 }
 

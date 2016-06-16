@@ -7,11 +7,14 @@
 project_to_population(data, f)
 }
 \arguments{
-\item{data}{The data frame to modify}
+\item{data}{The data frame to modify.}
 
-\item{f}{Function mapping sample names to population names}
+\item{f}{Function mapping sample names to population names.}
 }
 \description{
+Map sample names to population names.
+}
+\details{
 This function maps the sample names in \code{W}, \code{X}, \code{Y}, and
 \code{Z} to population names (typically what an admixture graph has for
 leaves) and stores the original sample names so we can map them back again

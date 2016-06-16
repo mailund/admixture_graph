@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{Fitted graph object.}
 
-\item{sigma}{How many sigmas the error bars should be wide.}
+\item{sigma}{How many standard deviations the error bars should be wide.}
 
 \item{...}{Additional parameters.}
 }

@@ -2,24 +2,24 @@
 % Please edit documentation in R/signs.R
 \name{get_graph_f4_sign}
 \alias{get_graph_f4_sign}
-\title{Extracts the sign for the \eqn{f_4} statistics predicted by the graph.}
+\title{Extracts the sign for the f_4 statistics predicted by the graph.}
 \usage{
 get_graph_f4_sign(graph, W, X, Y, Z)
 }
 \arguments{
-\item{graph}{The admixture graph}
+\item{graph}{The admixture graph.}
 
-\item{W}{First population/sample}
+\item{W}{First population/sample.}
 
-\item{X}{Second population/sample}
+\item{X}{Second population/sample.}
 
-\item{Y}{Third population/sample}
+\item{Y}{Third population/sample.}
 
-\item{Z}{Fourth population/sample}
+\item{Z}{Fourth population/sample.}
 }
 \value{
-The sign of the \eqn{f_4} specified by the graph (or NA when it
-  cannot be determined without knowing the graph parameters).
+The sign of the \eqn{f_4} specified by the graph (or \code{NA} when it
+        cannot be determined without knowing the graph parameters).
 }
 \description{
 Extracts the sign for the \eqn{f_4} statistics predicted by the graph.

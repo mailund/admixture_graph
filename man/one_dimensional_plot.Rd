@@ -2,8 +2,7 @@
 % Please edit documentation in R/fitted_plotting.R
 \name{one_dimensional_plot}
 \alias{one_dimensional_plot}
-\title{A plot of the cost function around the best fit with respect to one admix variable specified
-by the user.}
+\title{A plot of the cost function.}
 \usage{
 one_dimensional_plot(object, X, resolution = 100, show_fit = FALSE,
   sigma = 6, ...)
@@ -15,21 +14,26 @@ one_dimensional_plot(object, X, resolution = 100, show_fit = FALSE,
 
 \item{resolution}{How densely is the function evaluated.}
 
-\item{show_fit}{Should the function plot the number of tests where the graph fits
-the data instead of the sum of squared errors?}
+\item{show_fit}{Should the function plot the number of statistics where the graph fits
+the data instead of the \code{\link{cost_function}}?}
 
-\item{sigma}{If the function plots the fit, it is considered a hit if the difference
-between a prediction and the observed statistics is no more than sigma/2.}
+\item{sigma}{If \code{show_fit} is \code{TRUE} then each statistic is considered fitted
+if the difference between a prediction and the observation statistics is no
+more than \eqn{D*\sigma/(2*Z)}. Notice that even when plotting the number of
+fitted statistics, we have no guarantee that the chosen variables maximize
+this number as the fitting function still optimizes \code{\link{cost_function}}.}
 
 \item{...}{Additional parameters.}
 }
 \value{
-Values for optimal cost function for values of X between zero and one, plotted.
+Values for optimal cost function for values of \code{X} between zero and one, plotted.
 }
 \description{
-Note that the other admix variables and the edge variables remain unchanged, so the plotted
-value of the cost function is only optimal at the fit!
-Sorry about the name, all the good ones were taken, and the fact that the word "graph" means
-two different things does't help any.
+A plot of the cost function with respect to one admix variable specified by the user.
+Sorry about the name, all the good ones were taken and the fact that the word "graph" means
+two different things doesn't help any.
+}
+\seealso{
+\code{\link{contour_plot}}
 }
 

@@ -15,38 +15,41 @@ agraph(leaves, inner_nodes, parent_edges, admixture_proportions)
 \code{\link{parent_edges}}.}
 
 \item{admixture_proportions}{The list of admixture proportions; created by 
-\code{\link{admixture_proportions}}}
+\code{\link{admixture_proportions}}.}
 }
 \value{
 An admixture graph object.
 }
 \description{
-Create an admixture graph object.
+Create an admixture graph object, an acyclic directed graph.
 }
 \examples{
-leaves <- c("A", "B", "C", "O")
-inner_nodes <- c("AB", "BC", "ABC", "R")
-edges <- parent_edges(c(edge("A", "AB"),
-                        edge("C", "BC"),
-                        admixture_edge("B", "AB", "BC"),
-                        edge("AB", "ABC"),
-                        edge("BC", "ABC"),
-                        edge("ABC", "R"),
-                        edge("O", "R")))
-admixtures <- admixture_proportions(c(admix_props("B", "AB", "BC", "a")))
+leaves <- c("A", "B", "C", "D")
+inner_nodes <- c("ab", "b", "bc", "abc", "abcd")
+edges <- parent_edges(c(edge("A", "ab"),
+                        edge("B", "b"),
+                        edge("C", "bc"),
+                        edge("D", "abcd"),
+                        edge("ab", "abc"),
+                        edge("bc", "abc"),
+                        edge("abc", "abcd"),
+                        admixture_edge("b", "ab", "bc")))
+admixtures <- admixture_proportions(c(admix_props("b", "ab", "bc", "x")))
 
 graph <- agraph(leaves, inner_nodes, edges, admixtures)
 
 }
 \seealso{
-edge
+\code{\link{edge}}
 
-admixture_edge
+\code{\link{admixture_edge}}
 
-parent_edges
+\code{\link{admix_props}}
 
-admix_props
+\code{\link{parent_edges}}
 
-admixture_proportions
+\code{\link{admixture_proportions}}
+
+\code{\link{plot.agraph}}
 }
 

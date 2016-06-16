@@ -2,7 +2,7 @@
 % Please edit documentation in R/paths.R
 \name{all_paths}
 \alias{all_paths}
-\title{Computes all paths from one leaf to another.}
+\title{Compute all paths from one leaf to another.}
 \usage{
 all_paths(graph, src, dst)
 }

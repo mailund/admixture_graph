@@ -2,7 +2,7 @@
 % Please edit documentation in R/fitting.R
 \name{fitted.agraph_fit}
 \alias{fitted.agraph_fit}
-\title{Extract fitted data for a fitted graph.}
+\title{Predicted f statistics for the fitted graph.}
 \usage{
 \method{fitted}{agraph_fit}(object, ...)
 }
@@ -12,6 +12,9 @@
 \item{...}{Additional parameters.}
 }
 \description{
-Get the predicted f4 statistics for a fitted graph.
+Gets the predicted \eqn{f} statistics \eqn{F} for the fitted graph.
+}
+\seealso{
+\code{link{summary.agraph_fit}}
 }
 

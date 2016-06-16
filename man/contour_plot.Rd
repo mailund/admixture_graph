@@ -2,8 +2,7 @@
 % Please edit documentation in R/fitted_plotting.R
 \name{contour_plot}
 \alias{contour_plot}
-\title{A contour plot of the cost function around the best (admix variable) fit with respect to 2
-admix variables specified by the user.}
+\title{A contour plot of the cost function.}
 \usage{
 contour_plot(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 6,
   ...)
@@ -17,20 +16,27 @@ contour_plot(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 6,
 
 \item{resolution}{How densely is the function evaluated.}
 
-\item{show_fit}{Should the function plot the number of tests where the graph fits
-the data instead of the sum of squared errors?}
+\item{show_fit}{Should the function plot the number of statistics where the graph fits
+the data instead of the \code{\link{cost_function}}?}
 
-\item{sigma}{If the function plots the fit, it is considered a hit if the difference
-between a prediction and the observed statistics is no more than sigma/2.}
+\item{sigma}{If \code{show_fit} is \code{TRUE} then each statistic is considered fitted
+if the difference between a prediction and the observation statistics is no
+more than \eqn{D*\sigma/(2*Z)}. Notice that even when plotting the number of
+fitted statistics, we have no guarantee that the chosen variables maximize
+this number as the fitting function still optimizes \code{\link{cost_function}}.}
 
-\item{...}{Additional parameters passed to the plotting function filled.contour.}
+\item{...}{Additional parameters passed to the plotting function
+\code{\link{contour}}.}
 }
 \value{
 The matrix of values computed and plotted.
 }
 \description{
-Note that the other admix variables remain unchanged, so the plotted value of the cost
-function might only be optimal in one point if there are more than 2 admix variables!
-The edge variables are re-optimized at every pont.
+A contour plot of the cost function with respect to two admix variables specified by the user.
+}
+\seealso{
+\code{\link{contour}}
+
+\code{\link{one_dimensional_plot}}
 }
 

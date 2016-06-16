@@ -1,4 +1,3 @@
-
 path_zero <- function(overlap)
   nrow(overlap$positive) == 0 && nrow(overlap$negative) == 0
 path_positive <- function(overlap)
@@ -13,8 +12,10 @@ path_non_positive <- function(overlap)
 
 #' All overlaps are empty.
 #' 
-#' @param overlaps   Data frame representing path overlaps, typically generated
-#'   by \code{\link{all_path_overlaps}}.
+#' All overlaps are empty.
+#' 
+#' @param overlaps  Data frame representing path overlaps, typically generated
+#'                  by \code{\link{all_path_overlaps}}.
 #'   
 #' @export
 is_zero <- function(overlaps) {
@@ -23,8 +24,10 @@ is_zero <- function(overlaps) {
 
 #' All overlaps are either empty or have a positive weight.
 #' 
-#' @param overlaps   Data frame representing path overlaps, typically generated
-#'   by \code{\link{all_path_overlaps}}.
+#' All overlaps are either empty or have a positive weight.
+#' 
+#' @param overlaps  Data frame representing path overlaps, typically generated
+#'                  by \code{\link{all_path_overlaps}}.
 #'
 #' @export
 is_positive <- function(overlaps) {
@@ -33,8 +36,10 @@ is_positive <- function(overlaps) {
 
 #' All overlaps are either empty or have a negative weight.
 #' 
-#' @param overlaps   Data frame representing path overlaps, typically generated
-#'   by \code{\link{all_path_overlaps}}.
+#' All overlaps are either empty or have a negative weight.
+#' 
+#' @param overlaps  Data frame representing path overlaps, typically generated
+#'                  by \code{\link{all_path_overlaps}}.
 #'
 #' @export
 is_negative <- function(overlaps) {
@@ -43,8 +48,10 @@ is_negative <- function(overlaps) {
 
 #' Overlapping edges have both positive and negative contributions.
 #' 
-#' @param overlaps   Data frame representing path overlaps, typically generated
-#'   by \code{\link{all_path_overlaps}}.
+#' Overlapping edges have both positive and negative contributions.
+#' 
+#' @param overlaps  Data frame representing path overlaps, typically generated
+#'                  by \code{\link{all_path_overlaps}}.
 #'
 #' @export
 is_unknown <- function(overlaps) {
@@ -53,8 +60,10 @@ is_unknown <- function(overlaps) {
 
 #' Get the sign of overlapping paths.
 #' 
-#' @param overlaps   Data frame representing path overlaps, typically generated
-#'   by \code{\link{all_path_overlaps}}.
+#' Get the sign of overlapping paths.
+#' 
+#' @param overlaps  Data frame representing path overlaps, typically generated
+#'                  by \code{\link{all_path_overlaps}}.
 #'
 #' @export
 overlaps_sign <- function(overlaps) {
@@ -64,39 +73,41 @@ overlaps_sign <- function(overlaps) {
   else return(NA)
 }
 
+#' Extracts the sign for the f_4 statistics predicted by the graph.
+#' 
 #' Extracts the sign for the \eqn{f_4} statistics predicted by the graph.
 #' 
-#' @param graph      The admixture graph
-#' @param W          First population/sample
-#' @param X          Second population/sample
-#' @param Y          Third population/sample
-#' @param Z          Fourth population/sample
+#' @param graph  The admixture graph.
+#' @param W      First population/sample.
+#' @param X      Second population/sample.
+#' @param Y      Third population/sample.
+#' @param Z      Fourth population/sample.
 #'   
-#' @return The sign of the \eqn{f_4} specified by the graph (or NA when it
-#'   cannot be determined without knowing the graph parameters).
+#' @return The sign of the \eqn{f_4} specified by the graph (or \code{NA} when it
+#'         cannot be determined without knowing the graph parameters).
 #'   
 #' @export
 get_graph_f4_sign <- function(graph, W, X, Y, Z) {
   overlaps_sign(f4(graph, W, X, Y, Z))
 }
 
-#' Extend a data frame with \eqn{f_4} statistics predicted by a graph.
+#' Extend a data frame with f_4 statistics predicted by a graph.
 #' 
 #' Extracts the sign for the \eqn{f_4} statistics predicted by the graph for all
 #' rows in a data frame and extends the data frame with the graph \eqn{f_4}.
 #' 
 #' The data frame, \code{data}, must contain columns \code{W}, \code{X}, 
 #' \code{Y}, and \code{Z}. The function then computes the sign of the 
-#' f4(W,X;Y,Z) statistics for all rows and adds these as a column, 
+#' \eqn{f4(W, X; Y, Z)} statistics for all rows and adds these as a column, 
 #' \code{graph_f4_sign}, to the data frame.
 #' 
-#' @param data     The data frame to get the labels to compute the \eqn{f_4} 
-#'   statistics from.
-#' @param graph    The admixture graph
+#' @param data   The data frame to get the labels to compute the \eqn{f_4} 
+#'               statistics from.
+#' @param graph  The admixture graph.
 #'   
 #' @return A data frame identical to \code{data} except with an additional 
-#'   column, \code{graph_f4_sign}, containing the sign of the \eqn{f_4}
-#'   statistics as determined by the graph.
+#'         column, \code{graph_f4_sign}, containing the sign of the \eqn{f_4}
+#'         statistics as determined by the graph.
 #'   
 #' @export
 add_graph_f4_sign <- function(data, graph) {

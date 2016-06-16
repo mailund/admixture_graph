@@ -7,9 +7,9 @@
 \method{no_poor_fits}{agraph_fit_list}(fit, sigma = 6)
 }
 \arguments{
-\item{fit}{The fitted graph}
+\item{fit}{The fitted graph.}
 
-\item{sigma}{the width of the error bars.}
+\item{sigma}{The width of the error bars.}
 }
 \value{
 The poorly fitted tests.
