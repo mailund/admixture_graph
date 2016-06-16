@@ -67,34 +67,6 @@ graph <- agraph(leaves, inner_nodes, edges, admixtures)
 
 plot(graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 
-## ----bears_graph, fig.width=6, fig.height=5, cache=TRUE------------------
-leaves <- c("BLK", "PB", "Adm1", "Adm2", "Bar", "Chi1", "Chi2", "Denali", "Kenai", "Sweden") 
-inner_nodes <- c("R", "r", "s", "t", "u", "v", "w", "x", "y", "z", "M")
-edges <- parent_edges(c(edge("BLK", "R"),
-                        edge("PB", "s"),
-                        edge("Adm1", "x"),
-                        edge("Adm2", "x"),
-                        edge("Bar", "y"),
-                        edge("Chi1", "z"),
-                        edge("Chi2", "z"),
-                        edge("Denali", "v"),
-                        edge("Kenai", "u"),
-                        edge("Sweden", "t"),
-                        edge("r", "R"),
-                        edge("s", "r"),
-                        edge("t", "r"),
-                        edge("u", "t"),
-                        edge("v", "u"),
-                        edge("w", "M"),
-                        edge("x", "w"),
-                        edge("y", "w"),
-                        edge("z", "y"),
-                        admixture_edge("M", "s", "v")))
-admixtures <- admixture_proportions(c(admix_props("M", "s", "v", "a")))
-bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
-
-plot(bears_graph, platform = 1.4, show_admixture_labels = TRUE)
-
 ## ------------------------------------------------------------------------
 sf2(bears_graph, "Bar", "Chi1")
 sf3(bears_graph, "Bar", "Chi1", "Chi2")

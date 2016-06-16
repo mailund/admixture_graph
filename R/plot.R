@@ -342,7 +342,7 @@ plot.agraph <- function(x,
             if (substr(label, 1, 1) == "(") {
               label <- substr(label, 2, nchar(label) - 1)
             }
-            graphics::text(coordinates[[i]][1] + 0.75*i_thing, coordinates[[i]][2], label,
+            graphics::text(coordinates[[i]][1] + i_thing, coordinates[[i]][2], label,
                            adj = c(0.5, 1.6), cex = 0.8)
           }
         }
