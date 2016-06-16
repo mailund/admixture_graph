@@ -165,7 +165,7 @@ fast_plot <- function(x,
 #'                                platform for proportion labels, the width of which is
 #'                                half the distance between any two leaves. The number
 #'                                \code{platform} tells how many default platform widths
-#'                                should the platforms be wide, \emph{i. e.} zero means no
+#'                                should the platforms be wide, \emph{i.e.} zero means no
 #'                                platform.
 #' @param title                   Optional title for the plot.
 #' @param ...                     Additional plotting options.
@@ -219,7 +219,7 @@ fast_plot <- function(x,
 #' @export
 plot.agraph <- function(x,
                         show_leaf_labels = TRUE,
-                        draw_leaves = TRUE,
+                        draw_leaves = FALSE,
                         color = "yellowgreen",
                         show_inner_node_labels = FALSE,
                         draw_inner_nodes = draw_leaves,
