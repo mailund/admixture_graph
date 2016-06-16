@@ -85,19 +85,19 @@ fast_plot <- function(x,
         graphics::lines(c(xpos[parents[2]], break_x_left), c(ypos[parents[2]], break_y))
         graphics::lines(c(xpos[parents[1]], break_x_right), c(ypos[parents[1]], break_y))
       }
-      graphics::segments(break_x_left, break_y, xpos[node], ypos[node], col = "red")
-      graphics::segments(break_x_right, break_y, xpos[node], ypos[node], col = "red")
+      graphics::segments(break_x_left, break_y, xpos[node], ypos[node], col = "black")
+      graphics::segments(break_x_right, break_y, xpos[node], ypos[node], col = "black")
       if (show_admixture_labels) {
         if (xpos[parents[1]] < xpos[parents[2]]) {
           graphics::text(break_x_left, break_y, graph$probs[parents[[1]], node],
-                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
+                         cex = 0.5, pos = 1, col = "black", offset = 0.1)
           graphics::text(break_x_right, break_y, graph$probs[parents[[2]], node],
-                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
+                         cex = 0.5, pos = 1, col = "black", offset = 0.1)
         } else {
           graphics::text(break_x_left, break_y, graph$probs[parents[[2]], node],
-                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
+                         cex = 0.5, pos = 1, col = "black", offset = 0.1)
           graphics::text(break_x_right, break_y, graph$probs[parents[[1]], node],
-                         cex = 0.5, pos = 1, col = "red", offset = 0.1)          
+                         cex = 0.5, pos = 1, col = "black", offset = 0.1)          
         }
       }
     }
