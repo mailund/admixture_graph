@@ -4,7 +4,7 @@
 \alias{admixture_edge}
 \title{Create an admixture edge from a child to two parents.}
 \usage{
-admixture_edge(child, parent1, parent2)
+admixture_edge(child, parent1, parent2, prop = NA)
 }
 \arguments{
 \item{child}{The name of the child node.}
@@ -12,6 +12,11 @@ admixture_edge(child, parent1, parent2)
 \item{parent1}{The name of the parent node.}
 
 \item{parent2}{The name of the parent node.}
+
+\item{prop}{Admixture proportions from \code{parent1} to \code{child}.
+                If this parameter is not provided, you must explicitly
+                specify the admixture proportion parameters in the
+                \code{agraph} function call.}
 }
 \description{
 Syntactic suggar for constructing edges in an admixture graph.
