@@ -15,10 +15,12 @@ agraph_parents <- function(nodes, parent_edges) {
   rownames(parents) <- colnames(parents) <- nodes
   for (row in 1:nrow(parent_edges)) {
     if (!(parent_edges[row,1] %in% nodes)) {
-      stop(paste("The node", parent_edges[row,1], "is used in the edges but is not specified as a node."))
+      stop(paste("The node", parent_edges[row,1], 
+                 "is used in the edges but is not specified as a node."))
     }
     if (!(parent_edges[row,2] %in% nodes)) {
-      stop(paste("The node", parent_edges[row,2], "is used in the edges but is not specified as a node."))
+      stop(paste("The node", parent_edges[row,2], 
+                 "is used in the edges but is not specified as a node."))
     }
     parents[parent_edges[row,1], parent_edges[row,2]] <- TRUE
   }
@@ -42,10 +44,12 @@ agraph_children <- function(nodes, parent_edges) {
   rownames(children) <- colnames(children) <- nodes
   for (row in 1:nrow(parent_edges)) {
     if (!(parent_edges[row,1] %in% nodes)) {
-      stop(paste("The node", parent_edges[row,1], "is used in the edges but is not specified as a node."))
+      stop(paste("The node", parent_edges[row,1], 
+                 "is used in the edges but is not specified as a node."))
     }
     if (!(parent_edges[row,2] %in% nodes)) {
-      stop(paste("The node", parent_edges[row,2], "is used in the edges but is not specified as a node."))
+      stop(paste("The node", parent_edges[row,2], 
+                 "is used in the edges but is not specified as a node."))
     }
     children[parent_edges[row,2], parent_edges[row,1]] <- TRUE
   }
