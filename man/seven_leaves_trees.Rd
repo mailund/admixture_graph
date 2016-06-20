@@ -4,20 +4,10 @@
 \name{seven_leaves_trees}
 \alias{seven_leaves_trees}
 \title{Seven leaves trees.}
-\format{\preformatted{List of 2
- $ tree_1:function (leaves)  
-  ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1619 12 1637 3 12 3 1619 1637
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
- $ tree_2:function (leaves)  
-  ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1639 12 1657 3 12 3 1639 1657
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
-}}
+\format{A list of functions on seven leaves.
+        The outputs of these functions are \code{\link{agraph}} objects.}
 \usage{
 seven_leaves_trees
-}
-\value{
-A list of functions on seven leaves.
-        The outputs of these functions are \code{\link{agraph}} objects.
 }
 \description{
 A comprehensive listing of\ldots well\ldots both unrooted trees with seven leaves.

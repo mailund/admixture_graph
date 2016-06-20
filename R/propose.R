@@ -142,7 +142,7 @@ make_permutations <- function(populations) {
 #' eye and a simple branch. The position of the root can be moved later with the function
 #' \code{\link{make_an_outgroup}}.
 #' 
-#' @return A list of functions on four leaves.
+#' @format A list of functions on four leaves.
 #'         The outputs of these functions are \code{\link{agraph}} objects.
 #' 
 #' @family graphs
@@ -902,7 +902,7 @@ four_leaves_graphs <- list(
 #' and a simple branch. The position of the root can be moved later with the function
 #' \code{\link{make_an_outgroup}}.
 #' 
-#' @return A list of functions on five leaves.
+#' @format A list of functions on five leaves.
 #'         The outputs of these functions are \code{\link{agraph}} objects.
 #'         
 #' @family graphs
@@ -1099,7 +1099,7 @@ five_leaves_graphs <- list(
 #' eye and a simple branch. The position of the root can be moved later with the function
 #' \code{\link{make_an_outgroup}}.
 #' 
-#' @return A list of functions on six leaves.
+#' @format A list of functions on six leaves.
 #'         The outputs of these functions are \code{\link{agraph}} objects.
 #'
 #' @family graphs
@@ -1589,7 +1589,7 @@ six_leaves_graphs <- list(
 #' The position of the root can be moved later with the function
 #' \code{\link{make_an_outgroup}}.
 #' 
-#' @return A list of functions on seven leaves.
+#' @format A list of functions on seven leaves.
 #'         The outputs of these functions are \code{\link{agraph}} objects.
 #'
 #' @family graphs
@@ -1663,7 +1663,7 @@ seven_leaves_trees <- list(
 #' The position of the root can be moved later with the function
 #' \code{\link{make_an_outgroup}}.
 #' 
-#' @return A list of functions on eight leaves.
+#' @format A list of functions on eight leaves.
 #'         The outputs of these functions are \code{\link{agraph}} objects.
 #'
 #' @family graphs

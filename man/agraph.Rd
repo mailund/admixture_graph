@@ -4,7 +4,8 @@
 \alias{agraph}
 \title{Create an admixture graph object.}
 \usage{
-agraph(leaves, inner_nodes, parent_edges, admixture_proportions)
+agraph(leaves, inner_nodes, parent_edges,
+  admixture_proportions = extract_admixture_proportion_parameters(parent_edges))
 }
 \arguments{
 \item{leaves}{The names of the leaves in the admixture graph.}
