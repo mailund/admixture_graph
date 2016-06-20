@@ -15,7 +15,7 @@ edges <- parent_edges(c(edge("A", "AB"),
                         edge("AB", "ABC"),
                         edge("C", "ABC")))
 graph <- agraph(leaves, inner_nodes, edges, NULL)
-plot(graph)  
+plot(graph)
 
 ## ------------------------------------------------------------------------
 leaves <- c("A", "B", "C")
@@ -61,73 +61,18 @@ edges <- parent_edges(c(edge("A", "a"), edge("a", "ABC"),
                         edge("B", "b"),
                         admixture_edge("b", "a", "c")))
 admixtures <- admixture_proportions(c(
-    admix_props("b", "a", "c", "alpha")
+    admix_props("b", "a", "c", "x")
     ))
 graph <- agraph(leaves, inner_nodes, edges, admixtures)
 
 plot(graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 
-## ----bears_graph, fig.width=6, fig.height=5, cache=TRUE------------------
-leaves <- c("BLK", "PB",
-            "Bar", "Chi1", "Chi2", "Adm1", "Adm2",
-            "Denali", "Kenai", "Sweden") 
-inner_nodes <- c("R", "PBBB",
-                 "Adm", "Chi", "BC", "ABC",
-                 "x", "y", "z",
-                 "pb_a1", "pb_a2", "pb_a3", "pb_a4",
-                 "bc_a1", "abc_a2", "x_a3", "y_a4")
-
-edges <- parent_edges(c(edge("BLK", "R"),
-                        edge("PB", "pb_a1"),
-                        edge("pb_a1", "pb_a2"),
-                        edge("pb_a2", "pb_a3"),
-                        edge("pb_a3", "pb_a4"),
-                        edge("pb_a4", "PBBB"),
-                        
-                        edge("Chi1", "Chi"),
-                        edge("Chi2", "Chi"),
-                        edge("Chi", "BC"),
-                        edge("Bar", "BC"),
-                        edge("BC", "bc_a1"),
-                        
-                        edge("Adm1", "Adm"),
-                        edge("Adm2", "Adm"),
-                        
-                        admixture_edge("bc_a1", "pb_a1", "ABC"),
-                        edge("Adm", "ABC"),
-                        
-                        edge("ABC", "abc_a2"),
-                        admixture_edge("abc_a2", "pb_a2", "x"),
-                        
-                        edge("Denali", "x"),
-                        edge("x", "x_a3"),
-                        admixture_edge("x_a3", "pb_a3", "y"),
-                      
-                        edge("Kenai", "y"),
-                        edge("y", "y_a4"),                        
-                        admixture_edge("y_a4", "pb_a4", "z"),
-                        
-                        edge("Sweden", "z"),
-                        
-                        edge("z", "PBBB"),
-                        edge("PBBB", "R")))
- 
-
-admixtures <- admixture_proportions(c(admix_props("bc_a1", "pb_a1", "ABC", "a"),
-                                      admix_props("abc_a2", "pb_a2", "x", "b"),
-                                      admix_props("x_a3", "pb_a3", "y", "c"),
-                                      admix_props("y_a4", "pb_a4", "z", "d")))
-                                
-bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
-plot(bears_graph, show_admixture_labels = TRUE)
-
 ## ------------------------------------------------------------------------
-sf4(bears_graph, "BLK", "PB", "Adm1", "Adm2")
 sf2(bears_graph, "Bar", "Chi1")
 sf3(bears_graph, "Bar", "Chi1", "Chi2")
-sf4(bears_graph, "BLK", "PB", "Bar", "Adm2")
+sf4(bears_graph, "BLK", "Chi1", "Bar", "Chi2")
 
-## ------------------------------------------------------------------------
+## ----bears_data----------------------------------------------------------
 data(bears)
 bears
 
@@ -144,6 +89,39 @@ summary(bears_fit)
 plot(bears_fit)
 
 ## ------------------------------------------------------------------------
-coef(bears_fit)
-fitted(bears_fit)
+length(four_leaves_graphs)
+
+length(five_leaves_graphs)
+
+length(six_leaves_graphs)
+
+length(seven_leaves_trees)
+
+length(eight_leaves_trees)
+
+example_graph <- four_leaves_graphs[[15]](c("A", "B", "C", "D"))
+plot(example_graph, draw_inner_nodes = FALSE)
+
+## ----new_leaves, fig.height=15, fig.width=6------------------------------
+example_list_1 <- add_a_leaf(example_graph, "E")
+
+original <- graphics::par()$mfrow
+graphics::par(mfrow = c(6, 2))
+for (graph in example_list_1) {
+  plot(graph, draw_inner_nodes = FALSE)
+}
+
+graphics::par(mfrow = original)
+
+## ----new_admixtures------------------------------------------------------
+example_list_2 <- add_an_admixture(example_graph, "b")
+length(example_list_2)
+example_list_3 <- add_an_admixture2(example_graph, "b")
+length(example_list_3)
+
+plot(example_list_2[[5]], draw_inner_nodes = FALSE)
+
+## ----new_root------------------------------------------------------------
+graph_with_a_new_root <- make_an_outgroup(example_list_2[[5]], "D")
+plot(graph_with_a_new_root, draw_inner_nodes = FALSE)
 
