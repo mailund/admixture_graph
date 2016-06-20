@@ -4,7 +4,7 @@
 \alias{plot.agraph}
 \title{Plot an admixture graph.}
 \usage{
-\method{plot}{agraph}(x, show_leaf_labels = TRUE, draw_leaves = TRUE,
+\method{plot}{agraph}(x, show_leaf_labels = TRUE, draw_leaves = FALSE,
   color = "yellowgreen", show_inner_node_labels = FALSE,
   draw_inner_nodes = draw_leaves, inner_node_color = color,
   show_admixture_labels = FALSE, parent_order = list(),
@@ -65,7 +65,7 @@ the plot width. Non-specified inner nodes are left in peace.}
 platform for proportion labels, the width of which is
 half the distance between any two leaves. The number
 \code{platform} tells how many default platform widths
-should the platforms be wide, \emph{i. e.} zero means no
+should the platforms be wide, \emph{i.e.} zero means no
 platform.}
 
 \item{title}{Optional title for the plot.}

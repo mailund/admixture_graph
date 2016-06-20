@@ -7,67 +7,67 @@
 \format{\preformatted{List of 21
  $ tree_1          :function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1130 12 1146 3 12 3 1130 1146
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ tree_2          :function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1148 12 1164 3 12 3 1148 1164
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_1 :function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1167 21 1187 3 21 3 1167 1187
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_2 :function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1189 21 1209 3 21 3 1189 1209
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_3 :function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1211 21 1231 3 21 3 1211 1231
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_4 :function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1233 21 1253 3 21 3 1233 1253
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_5 :function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1255 21 1275 3 21 3 1255 1275
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_6 :function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1277 21 1297 3 21 3 1277 1297
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_7 :function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1299 21 1319 3 21 3 1299 1319
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_8 :function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1321 21 1341 3 21 3 1321 1341
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_9 :function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1343 21 1363 3 21 3 1343 1363
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_10:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1365 22 1385 3 22 3 1365 1385
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_11:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1387 22 1407 3 22 3 1387 1407
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_12:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1409 22 1429 3 22 3 1409 1429
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_13:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1431 22 1451 3 22 3 1431 1451
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_14:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1453 22 1473 3 22 3 1453 1473
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_15:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1475 22 1495 3 22 3 1475 1495
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_16:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1497 22 1517 3 22 3 1497 1517
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_17:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1519 22 1539 3 22 3 1519 1539
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_18:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1541 22 1561 3 22 3 1541 1561
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ one_admixture_19:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1563 22 1583 3 22 3 1563 1583
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7f9c210c3f40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
 }}
 \usage{
 six_leaves_graphs

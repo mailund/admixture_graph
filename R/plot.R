@@ -85,19 +85,19 @@ fast_plot <- function(x,
         graphics::lines(c(xpos[parents[2]], break_x_left), c(ypos[parents[2]], break_y))
         graphics::lines(c(xpos[parents[1]], break_x_right), c(ypos[parents[1]], break_y))
       }
-      graphics::segments(break_x_left, break_y, xpos[node], ypos[node], col = "red")
-      graphics::segments(break_x_right, break_y, xpos[node], ypos[node], col = "red")
+      graphics::segments(break_x_left, break_y, xpos[node], ypos[node], col = "black")
+      graphics::segments(break_x_right, break_y, xpos[node], ypos[node], col = "black")
       if (show_admixture_labels) {
         if (xpos[parents[1]] < xpos[parents[2]]) {
           graphics::text(break_x_left, break_y, graph$probs[parents[[1]], node],
-                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
+                         cex = 0.5, pos = 1, col = "black", offset = 0.1)
           graphics::text(break_x_right, break_y, graph$probs[parents[[2]], node],
-                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
+                         cex = 0.5, pos = 1, col = "black", offset = 0.1)
         } else {
           graphics::text(break_x_left, break_y, graph$probs[parents[[2]], node],
-                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
+                         cex = 0.5, pos = 1, col = "black", offset = 0.1)
           graphics::text(break_x_right, break_y, graph$probs[parents[[1]], node],
-                         cex = 0.5, pos = 1, col = "red", offset = 0.1)          
+                         cex = 0.5, pos = 1, col = "black", offset = 0.1)          
         }
       }
     }
@@ -165,7 +165,7 @@ fast_plot <- function(x,
 #'                                platform for proportion labels, the width of which is
 #'                                half the distance between any two leaves. The number
 #'                                \code{platform} tells how many default platform widths
-#'                                should the platforms be wide, \emph{i. e.} zero means no
+#'                                should the platforms be wide, \emph{i.e.} zero means no
 #'                                platform.
 #' @param title                   Optional title for the plot.
 #' @param ...                     Additional plotting options.
@@ -219,7 +219,7 @@ fast_plot <- function(x,
 #' @export
 plot.agraph <- function(x,
                         show_leaf_labels = TRUE,
-                        draw_leaves = TRUE,
+                        draw_leaves = FALSE,
                         color = "yellowgreen",
                         show_inner_node_labels = FALSE,
                         draw_inner_nodes = draw_leaves,
@@ -342,7 +342,7 @@ plot.agraph <- function(x,
             if (substr(label, 1, 1) == "(") {
               label <- substr(label, 2, nchar(label) - 1)
             }
-            graphics::text(coordinates[[i]][1] + 0.75*i_thing, coordinates[[i]][2], label,
+            graphics::text(coordinates[[i]][1] + i_thing, coordinates[[i]][2], label,
                            adj = c(0.5, 1.6), cex = 0.8)
           }
         }

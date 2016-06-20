@@ -107,7 +107,7 @@ admixtures <- admixture_proportions(c(admix_props("bc_a1", "pb_a1", "ABC", "a"),
                                       admix_props("y_a4", "pb_a4", "z", "d")))
                                 
 bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
-plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
+plot(bears_graph, show_admixture_labels = TRUE)
 ```
 
 ## Fitting a graph to data

@@ -28,6 +28,7 @@ Imports:
     utils
 Suggests:
     knitr,
+    rmarkdown,
     testthat
 URL: https://github.com/mailund/admixture_graph
 BugReports: https://github.com/mailund/admixture_graph/issues
