@@ -7,13 +7,13 @@
 \format{\preformatted{List of 3
  $ tree_1:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1693 12 1713 3 12 3 1693 1713
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcf78a93e40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ tree_2:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1715 12 1735 3 12 3 1715 1735
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcf78a93e40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
  $ tree_3:function (leaves)  
   ..- attr(*, "srcref")=Class 'srcref'  atomic [1:8] 1737 12 1757 3 12 3 1737 1757
-  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcf78a93e40> 
+  .. .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x7fcb9fcf0c40> 
 }}
 \usage{
 eight_leaves_trees
