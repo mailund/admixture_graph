@@ -143,7 +143,8 @@ admix_props <- function(child, parent1, parent2, prop)
 #' @param parent_edges  Matrix created with the \code{agraph_parents} function.
 #' @return The parents edges reduced to the rows with admixture proportions.
 extract_admixture_proportion_parameters <- function(parent_edges) {
-  parent_edges[!is.na(parent_edges[,3]),]
+  result <- parent_edges[!is.na(parent_edges[,3]),]
+  if(nrow(result) > 0) result else NULL
 }
 
 #' Create the list of edges for an admixture graph.
