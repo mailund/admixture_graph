@@ -21,5 +21,5 @@
 #' package.
 #' 
 #' @docType package
-#' @name admixturegraph
+#' @name admixturegraph-package
 NULL
