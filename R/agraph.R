@@ -15,10 +15,12 @@ agraph_parents <- function(nodes, parent_edges) {
   rownames(parents) <- colnames(parents) <- nodes
   for (row in 1:nrow(parent_edges)) {
     if (!(parent_edges[row,1] %in% nodes)) {
-      stop(paste("The node", parent_edges[row,1], "is used in the edges but is not specified as a node."))
+      stop(paste("The node", parent_edges[row,1], 
+                 "is used in the edges but is not specified as a node."))
     }
     if (!(parent_edges[row,2] %in% nodes)) {
-      stop(paste("The node", parent_edges[row,2], "is used in the edges but is not specified as a node."))
+      stop(paste("The node", parent_edges[row,2], 
+                 "is used in the edges but is not specified as a node."))
     }
     parents[parent_edges[row,1], parent_edges[row,2]] <- TRUE
   }
@@ -42,10 +44,12 @@ agraph_children <- function(nodes, parent_edges) {
   rownames(children) <- colnames(children) <- nodes
   for (row in 1:nrow(parent_edges)) {
     if (!(parent_edges[row,1] %in% nodes)) {
-      stop(paste("The node", parent_edges[row,1], "is used in the edges but is not specified as a node."))
+      stop(paste("The node", parent_edges[row,1], 
+                 "is used in the edges but is not specified as a node."))
     }
     if (!(parent_edges[row,2] %in% nodes)) {
-      stop(paste("The node", parent_edges[row,2], "is used in the edges but is not specified as a node."))
+      stop(paste("The node", parent_edges[row,2], 
+                 "is used in the edges but is not specified as a node."))
     }
     children[parent_edges[row,2], parent_edges[row,1]] <- TRUE
   }
@@ -92,7 +96,7 @@ agraph_weights <- function(nodes, admixture_weights, parents) {
 #' @param parent  The name of the parent node.
 #' 
 #' @export
-edge <- function(child, parent) c(child, parent)
+edge <- function(child, parent) c(child, parent, NA)
 
 #' Create an admixture edge from a child to two parents.
 #' 
@@ -101,9 +105,20 @@ edge <- function(child, parent) c(child, parent)
 #' @param child    The name of the child node.
 #' @param parent1  The name of the parent node.
 #' @param parent2  The name of the parent node.
+#' @param prop     Admixture proportions from \code{parent1} to \code{child}.
+#'                 If this parameter is not provided, you must explicitly
+#'                 specify the admixture proportion parameters in the
+#'                 \code{agraph} function call.
 #' 
 #' @export
-admixture_edge <- function(child, parent1, parent2) c(child, parent1, child, parent2)
+admixture_edge <- function(child, parent1, parent2, prop = NA) {
+  if (is.na(prop)) {
+    other_prop <- NA
+  } else {
+    other_prop <- paste0("(1 - ", prop, ")")
+  }
+  c(child, parent1, prop, child, parent2, other_prop)
+}
 
 #' Specify the proportions in an admixture event.
 #' 
@@ -116,7 +131,21 @@ admixture_edge <- function(child, parent1, parent2) c(child, parent1, child, par
 #' 
 #' @export
 admix_props <- function(child, parent1, parent2, prop)
-  c(child, parent1, prop, child, parent2, paste("(1 - ", prop, ")", sep=""))
+  c(child, parent1, prop, child, parent2, paste0("(1 - ", prop, ")"))
+
+#' Extract the admixture proportion parameter from edge specifications.
+#' 
+#' This function is simply selecting the edges with admixture proportion specifications
+#' so these can be handled when building a graph using \code{agraph}. It is not a function
+#' you would need to call explicitly, rather it is there to allow people \emph{not} to use
+#' it to provide admixture proportions explicitly (which we normally wouldn't recommend).
+#' 
+#' @param parent_edges  Matrix created with the \code{agraph_parents} function.
+#' @return The parents edges reduced to the rows with admixture proportions.
+extract_admixture_proportion_parameters <- function(parent_edges) {
+  result <- parent_edges[!is.na(parent_edges[,3]),]
+  if(nrow(result) > 0) result else NULL
+}
 
 #' Create the list of edges for an admixture graph.
 #' 
@@ -125,7 +154,7 @@ admix_props <- function(child, parent1, parent2, prop)
 #' @param edges  List of edges.
 #' 
 #' @export
-parent_edges <- function(edges) matrix(ncol = 2, byrow = TRUE, data = edges)
+parent_edges <- function(edges) matrix(ncol = 3, byrow = TRUE, data = edges)
 
 #' Create the list of admixture proportions for an admixture graph.
 #' 
@@ -172,7 +201,8 @@ admixture_proportions <- function(admix_props) matrix(ncol = 3, byrow = TRUE, da
 #' graph <- agraph(leaves, inner_nodes, edges, admixtures)
 #' 
 #' @export
-agraph <- function(leaves, inner_nodes, parent_edges, admixture_proportions) {
+agraph <- function(leaves, inner_nodes, parent_edges, 
+                   admixture_proportions = extract_admixture_proportion_parameters(parent_edges)) {
   nodes <- c(leaves, inner_nodes)
   parents <- agraph_parents(nodes, parent_edges)
   children <- agraph_children(nodes, parent_edges)
