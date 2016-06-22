@@ -1,3 +1,9 @@
+# Version 1.0.0.9000
+
+ * Changed specification of admixture proportions (Iussue #9) to avoid specifying redundant
+   information. The changes are still backward compatible, so old analysis scripts should
+   still work.
+
 # Version 1.0.0
 
  * A version ready for publication.

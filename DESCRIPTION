@@ -1,7 +1,7 @@
 Package: admixturegraph
 Type: Package
 Title: Admixture Graph Manipulation and Fitting
-Version: 1.0.0
+Version: 1.0.0.9000
 Date: 2015-09-24
 Authors@R: c(person("Thomas", "Mailund", email = "mailund@birc.au.dk", role = c("cre", "aut")),
              person("Kalle", "Leppala", email = "kalle.m.leppala@gmail.com", role = c("aut")))
