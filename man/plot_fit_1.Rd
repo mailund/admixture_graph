@@ -34,6 +34,6 @@ Sorry about the name, all the good ones were taken and the fact that the word "g
 two different things doesn't help any.
 }
 \seealso{
-\code{\link{contour_plot}}
+\code{\link{plot_fit_2}}
 }
 

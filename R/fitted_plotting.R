@@ -183,7 +183,7 @@ plot_fit_2 <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 
 #'
 #' @return Values for optimal cost function for values of \code{X} between zero and one, plotted.
 #'
-#' @seealso \code{\link{contour_plot}}
+#' @seealso \code{\link{plot_fit_2}}
 #'
 #' @export
 plot_fit_1 <- function(object, X, resolution = 100, show_fit = FALSE, sigma = 6, ...) {
