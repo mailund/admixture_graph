@@ -20,9 +20,12 @@ plot.agraph_fit <- function(x, sigma = 6, ...) {
 
   ggplot2::ggplot(fit) +
     ggplot2::geom_hline(yintercept = 0, linetype = 'dashed', color = 'gray') +
-    ggplot2::geom_segment(ggplot2::aes_string(x = 'test', xend = 'test', y = 'D', yend = 'graph_f4', color = 'hit'), 
+    ggplot2::geom_segment(ggplot2::aes_string(x = 'test', xend = 'test', y = 'D', 
+                                              yend = 'graph_f4', color = 'hit'), 
                           linetype = 'dashed') +
-    ggplot2::geom_errorbar(ggplot2::aes_string(x = 'test', ymin = 'error_bar_start', ymax = 'error_bar_end'), color='black') +
+    ggplot2::geom_errorbar(ggplot2::aes_string(x = 'test', 
+                                               ymin = 'error_bar_start', 
+                                               ymax = 'error_bar_end'), color='black') +
     ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'D'), color='black') +
     ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'graph_f4', color = 'hit')) +
     (if (all(fit$hit))        ggplot2::scale_color_manual(values = c("green"))
@@ -58,7 +61,8 @@ make_predict_function <- function(data, graph, parameters = extract_graph_parame
   
   function(x) {
     env <- unpack_environment(parameters, x)
-    predictions <- unlist(Map(function(expression) eval(expression, env), expressions), use.names = FALSE)
+    predictions <- unlist(Map(function(expression) eval(expression, env), expressions), 
+                          use.names = FALSE)
     predictions
   }
 }
@@ -161,7 +165,8 @@ contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma 
 #'                    if the difference between a prediction and the observation statistics is no
 #'                    more than \eqn{D*\sigma/(2*Z)}. Notice that even when plotting the number of
 #'                    fitted statistics, we have no guarantee that the chosen variables maximize
-#'                    this number as the fitting function still optimizes \code{\link{cost_function}}.
+#'                    this number as the fitting function still optimizes 
+#'                    \code{\link{cost_function}}.
 #' @param ...         Additional parameters.
 #'
 #' @return Values for optimal cost function for values of \code{X} between zero and one, plotted.
