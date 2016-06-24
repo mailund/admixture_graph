@@ -150,7 +150,7 @@ contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma 
   invisible(z)
 }
 
-#' A plot of the cost function.
+#' A plot of the cost function or number of fitted statistics.
 #'
 #' A plot of the cost function with respect to one admix variable specified by the user.
 #' Sorry about the name, all the good ones were taken and the fact that the word "graph" means
@@ -174,23 +174,26 @@ contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma 
 #' @seealso \code{\link{contour_plot}}
 #'
 #' @export
-one_dimensional_plot <- function(object, X, resolution = 100, show_fit = FALSE, sigma = 6, ...) {
+plot_fit_1 <- function(object, X, resolution = 100, show_fit = FALSE, sigma = 6, ...) {
+
   fitted_parameters <- object$best_fit # We draw a little plus sign on the best point.
-  best_x <- fitted_parameters[X]
-  x <- 0:resolution/resolution
-  y <- rep(0, resolution + 1)
+  
   data <- object$data
   reduced_matrix <- object$matrix$column_reduced
   graph <- object$graph
+  
+  epsilon <- 1e-5
   parameters <- object$parameters
-  min <- rep(0, length(object$best_fit))
+  min <- rep(epsilon, length(object$best_fit))
   names(min) <- names(object$best_fit)
-  max <- rep(1, length(object$best_fit))
+  max <- rep(1 - epsilon, length(object$best_fit))
   names(max) <- names(object$best_fit)
   point <- list(min, max)
+  
   evaluate_point_cost <- function(point) { # Plotting the cost function:
     fast_fit(data, graph, point)$best_error
   }
+  
   if (show_fit == TRUE) {
     if("Z.value" %in% colnames(data) == TRUE) {
       zvalues <- data$Z.value
@@ -211,24 +214,28 @@ one_dimensional_plot <- function(object, X, resolution = 100, show_fit = FALSE, 
     }
     number
   }
+  
   if (show_fit == TRUE) {
-    evaluate_point <- evaluate_point_fits
+    ep <- evaluate_point_fits
+    ylabel <- "Number of fitted statistics"
   } else {
-    evaluate_point <- evaluate_point_cost
+    ep <- evaluate_point_cost
+    ylabel <- "Cost function"
   }
-  best_error <- evaluate_point(list(object$best_fit, object$best_fit))
-  for (i in seq (0, resolution)) {
-    point[[1]][X] <- i/resolution
-    point[[2]][X] <- i/resolution
-    y[i + 1] <- evaluate_point(point)
-  }
-  if (show_fit == TRUE) {
-    graphics::plot(x, y, xlab = X, ylab = "cost", type = "h", col = "red", ...)
-    graphics::points(best_x, best_error, pch = 3)
-    invisible(y)
-  } else {
-    graphics::plot(x, y, xlab = X, ylab = "cost", type = "l", col = "red", ...)
-    graphics::points(best_x, best_error, pch = 3)
-    invisible(y)
-  }
+  evaluate_point <- Vectorize(function(x) {
+    p <- point
+    p[[1]][X] <- x
+    p[[2]][X] <- x
+    ep(p)
+  })
+  
+  x <- seq(epsilon, 1-epsilon, length.out = resolution)
+  y <- evaluate_point(x)
+  
+  best_x <- fitted_parameters[X]
+  best_y <- evaluate_point(best_x)
+  
+  graphics::plot(x, y, xlab = X, ylab = ylabel, type = "h", col = "red", ...)
+  graphics::points(best_x, best_y, pch = 3)
+  invisible(y)
 }

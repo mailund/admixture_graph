@@ -774,13 +774,17 @@ fast_fit <- function(data, graph,
                      optimisation_options = NULL,
                      parameters = extract_graph_parameters(graph),
                      iteration_multiplier = 3) {
-  withCallingHandlers({
-    inner_fast_fit(data, graph, point, Z.value, concentration, optimisation_options,
-                   parameters, iteration_multiplier)
-  }, error = function(e) {
-    message("Something went wrong, trying again.")
-    invokeRestart("try_again")
-  })
+  
+  inner_fast_fit(data, graph, point, Z.value, concentration, optimisation_options,
+                 parameters, iteration_multiplier)
+  
+  #withCallingHandlers({
+  #  inner_fast_fit(data, graph, point, Z.value, concentration, optimisation_options,
+  #                 parameters, iteration_multiplier)
+  #}, error = function(e) {
+  #  message("Something went wrong, trying again.")
+  #  invokeRestart("try_again")
+  #})
 }
 inner_fast_fit <- function(data, graph, point, Z.value, concentration, optimisation_options,
                            parameters, iteration_multiplier) {
@@ -927,13 +931,17 @@ fit_graph <- function(data, graph,
                       optimisation_options = NULL,
                       parameters = extract_graph_parameters(graph), 
                       iteration_multiplier = 3, qr_tol = 1e-8) {
-  withCallingHandlers({
-    inner_fit_graph(data, graph, point, Z.value, concentration, optimisation_options,
-                    parameters, iteration_multiplier, qr_tol)
-  }, error = function(e) {
-    message("Something went wrong, trying again.")
-    invokeRestart("try_again")
-  })
+  
+  inner_fit_graph(data, graph, point, Z.value, concentration, optimisation_options,
+                  parameters, iteration_multiplier, qr_tol)
+  
+  #withCallingHandlers({
+  #  inner_fit_graph(data, graph, point, Z.value, concentration, optimisation_options,
+  #                  parameters, iteration_multiplier, qr_tol)
+  #}, error = function(e) {
+  #  message("Something went wrong, trying again.")
+  #  invokeRestart("try_again")
+  #})
 }
 inner_fit_graph <- function(data, graph, point, Z.value, concentration, optimisation_options,
                             parameters, iteration_multiplier, qr_tol) {
