@@ -88,28 +88,11 @@ make_predict_function <- function(data, graph, parameters = extract_graph_parame
 #' @return The matrix of values computed and plotted.
 #'
 #' @seealso \code{\link{contour}}
-#' @seealso \code{\link{one_dimensional_plot}}
+#' @seealso \code{\link{plot_fit_1}}
 #'
 #' @export
-contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 6, ...) {
-  fitted_parameters <- object$best_fit # We draw a little plus sign on the best point.
-  best_x <- fitted_parameters[X]
-  best_y <- fitted_parameters[Y]
-  x <- 0:resolution/resolution
-  y <- 0:resolution/resolution
-  z <- matrix(0, resolution + 1, resolution + 1)
-  data <- object$data
-  reduced_matrix <- object$matrix$column_reduced
-  graph <- object$graph
-  parameters <- object$parameters
-  min <- rep(0, length(object$best_fit))
-  names(min) <- names(object$best_fit)
-  max <- rep(1, length(object$best_fit))
-  names(max) <- names(object$best_fit)
-  point <- list(min, max)
-  evaluate_point_cost <- function(point) { # Plotting the cost function:
-    fast_fit(data, graph, point)$best_error
-  }
+plot_fit_2 <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 6, ...) {
+  
   if (show_fit == TRUE) {
     if("Z.value" %in% colnames(data) == TRUE) {
       zvalues <- data$Z.value
@@ -119,6 +102,23 @@ contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma 
     }
     tol <- data$D/zvalues
     tol <- sigma*tol/2
+  }
+  
+  data <- object$data
+  reduced_matrix <- object$matrix$column_reduced
+  graph <- object$graph
+  
+  epsilon <- 1e-5
+  parameters <- object$parameters
+  min <- rep(epsilon, length(object$best_fit))
+  names(min) <- names(object$best_fit)
+  max <- rep(1 - epsilon, length(object$best_fit))
+  names(max) <- names(object$best_fit)
+  point <- list(min, max)
+  
+  
+  evaluate_point_cost <- function(point) { # Plotting the cost function:
+    fast_fit(data, graph, point)$best_error
   }
   evaluate_point_fits <- function(point) { # Plotting the number of fits:
     residuals <- residuals(fit_graph(data, graph, point))
@@ -135,18 +135,30 @@ contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma 
   } else {
     evaluate_point <- evaluate_point_cost
   }
-  for (i in seq (1, resolution)) {
-    for (j in seq(1, resolution)) {
-      point[[1]][X] <- i/resolution
-      point[[2]][X] <- i/resolution
-      point[[1]][Y] <- j/resolution
-      point[[2]][Y] <- j/resolution
-      z[i + 1, j + 1] <- evaluate_point(point)
+  
+  x <- seq(epsilon, 1-epsilon, length.out = resolution)
+  y <- seq(epsilon, 1-epsilon, length.out = resolution)
+  z <- matrix(NA, resolution, resolution)
+  
+  for (i in seq_along(x)) {
+    for (j in seq_along(y)) {
+      point[[1]][X] <- x[i]
+      point[[2]][X] <- x[i]
+      point[[1]][Y] <- y[j]
+      point[[2]][Y] <- y[j]
+      z[i, j] <- evaluate_point(point)
     }
   }
+  
   graphics::image(x, y, z, xlab = X, ylab = Y, col = rev(grDevices::heat.colors(12)), ...)
   graphics::contour(x, y, z, add = TRUE, ...)
+  
+  fitted_parameters <- object$best_fit # We draw a little plus sign on the best point.
+  best_x <- fitted_parameters[X]
+  best_y <- fitted_parameters[Y]
+  
   graphics::points(best_x, best_y, pch = 3)
+  
   invisible(z)
 }
 
