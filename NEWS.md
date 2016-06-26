@@ -1,5 +1,6 @@
 # Version 1.0.0.9001
 
+ * Added options for fitting plots to make them in grayscale (Issue #11).
  * Updated functions for plotting the cost function and number of fits as functions of admixture
    proportions (Issue #12).
 
