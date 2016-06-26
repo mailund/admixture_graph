@@ -2,12 +2,13 @@
 #' 
 #' Plot the fit of a graph to data.
 #' 
-#' @param x      Fitted graph object.
-#' @param sigma  How many standard deviations the error bars should be wide.
-#' @param ...    Additional parameters.
+#' @param x          Fitted graph object.
+#' @param sigma      How many standard deviations the error bars should be wide.
+#' @param grayscale  Should the plot be in black and white?
+#' @param ...        Additional parameters.
 #' 
 #' @export
-plot.agraph_fit <- function(x, sigma = 6, ...) {
+plot.agraph_fit <- function(x, sigma = 6, grayscale = FALSE, ...) {
   
   fit <- stats::fitted(x)
   D <- fit$D
@@ -18,6 +19,14 @@ plot.agraph_fit <- function(x, sigma = 6, ...) {
   fit$test <- factor(fit$test, levels=dplyr::arrange(fit, D)$test)
   fit$hit <- with(fit, Vectorize(dplyr::between)(graph_f4, error_bar_start, error_bar_end))
 
+  if (grayscale) {
+    hitcolor <- "black"
+    misscolor <- "black"
+  } else {
+    hitcolor <- "green"
+    misscolor <- "red"
+  }
+  
   ggplot2::ggplot(fit) +
     ggplot2::geom_hline(yintercept = 0, linetype = 'dashed', color = 'gray') +
     ggplot2::geom_segment(ggplot2::aes_string(x = 'test', xend = 'test', y = 'D', 
@@ -26,11 +35,11 @@ plot.agraph_fit <- function(x, sigma = 6, ...) {
     ggplot2::geom_errorbar(ggplot2::aes_string(x = 'test', 
                                                ymin = 'error_bar_start', 
                                                ymax = 'error_bar_end'), color='black') +
-    ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'D'), color='black') +
-    ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'graph_f4', color = 'hit')) +
-    (if (all(fit$hit))        ggplot2::scale_color_manual(values = c("green"))
-     else if (all (!fit$hit)) ggplot2::scale_color_manual(values = c("red"))
-     else                     ggplot2::scale_color_manual(values = c("red", "green"))) +
+    ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'D'), color='black', shape = 3) +
+    ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'graph_f4', color = 'hit'), shape = 16) +
+    (if (all(fit$hit))        ggplot2::scale_color_manual(values = c(hitcolor))
+     else if (all (!fit$hit)) ggplot2::scale_color_manual(values = c(misscolor))
+     else                     ggplot2::scale_color_manual(values = c(misscolor, hitcolor))) +
     ggplot2::xlab('') + ggplot2::ylab('') + 
     ggplot2::coord_flip() +
     ggplot2::theme_classic() +
