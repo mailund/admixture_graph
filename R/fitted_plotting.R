@@ -82,6 +82,7 @@ make_predict_function <- function(data, graph, parameters = extract_graph_parame
 #'                    more than \eqn{D*\sigma/(2*Z)}. Notice that even when plotting the number of
 #'                    fitted statistics, we have no guarantee that the chosen variables maximize
 #'                    this number as the fitting function still optimizes \code{\link{cost_function}}.
+#' @param grayscale   Should the figure be plotted in grayscale or in colour?
 #' @param ...         Additional parameters passed to the plotting function
 #'                    \code{\link{contour}}.
 #'   
@@ -91,7 +92,12 @@ make_predict_function <- function(data, graph, parameters = extract_graph_parame
 #' @seealso \code{\link{plot_fit_1}}
 #'
 #' @export
-plot_fit_2 <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 6, ...) {
+plot_fit_2 <- function(object, X, Y, 
+                       resolution = 10, 
+                       show_fit = FALSE, 
+                       sigma = 6, 
+                       grayscale = FALSE, 
+                       ...) {
   
   if (show_fit == TRUE) {
     if("Z.value" %in% colnames(data) == TRUE) {
@@ -150,7 +156,13 @@ plot_fit_2 <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 
     }
   }
   
-  graphics::image(x, y, z, xlab = X, ylab = Y, col = rev(grDevices::heat.colors(12)), ...)
+  if (grayscale) {
+    palette <- rev(gray(1:10 / 12))
+  } else {
+    palette <- rev(grDevices::heat.colors(12))
+  }
+  
+  graphics::image(x, y, z, xlab = X, ylab = Y, col = palette, ...)
   graphics::contour(x, y, z, add = TRUE, ...)
   
   fitted_parameters <- object$best_fit # We draw a little plus sign on the best point.
@@ -247,7 +259,7 @@ plot_fit_1 <- function(object, X, resolution = 100, show_fit = FALSE, sigma = 6,
   best_x <- fitted_parameters[X]
   best_y <- evaluate_point(best_x)
   
-  graphics::plot(x, y, xlab = X, ylab = ylabel, type = "h", col = "red", ...)
+  graphics::plot(x, y, xlab = X, ylab = ylabel, type = "h", ...)
   graphics::points(best_x, best_y, pch = 3)
   invisible(y)
 }
