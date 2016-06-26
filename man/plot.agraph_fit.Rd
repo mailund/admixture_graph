@@ -4,12 +4,14 @@
 \alias{plot.agraph_fit}
 \title{Plot the fit of a graph to data.}
 \usage{
-\method{plot}{agraph_fit}(x, sigma = 6, ...)
+\method{plot}{agraph_fit}(x, sigma = 6, grayscale = FALSE, ...)
 }
 \arguments{
 \item{x}{Fitted graph object.}
 
 \item{sigma}{How many standard deviations the error bars should be wide.}
+
+\item{grayscale}{Should the plot be in black and white?}
 
 \item{...}{Additional parameters.}
 }

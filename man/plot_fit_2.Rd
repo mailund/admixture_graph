@@ -5,7 +5,7 @@
 \title{A contour plot of the cost function.}
 \usage{
 plot_fit_2(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 6,
-  ...)
+  grayscale = FALSE, ...)
 }
 \arguments{
 \item{object}{The fitted object.}
@@ -24,6 +24,8 @@ if the difference between a prediction and the observation statistics is no
 more than \eqn{D*\sigma/(2*Z)}. Notice that even when plotting the number of
 fitted statistics, we have no guarantee that the chosen variables maximize
 this number as the fitting function still optimizes \code{\link{cost_function}}.}
+
+\item{grayscale}{Should the figure be plotted in grayscale or in colour?}
 
 \item{...}{Additional parameters passed to the plotting function
                    \code{\link{contour}}.}
