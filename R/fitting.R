@@ -774,6 +774,7 @@ fast_fit <- function(data, graph,
                      optimisation_options = NULL,
                      parameters = extract_graph_parameters(graph),
                      iteration_multiplier = 3) {
+  
   withCallingHandlers({
     inner_fast_fit(data, graph, point, Z.value, concentration, optimisation_options,
                    parameters, iteration_multiplier)
@@ -927,6 +928,7 @@ fit_graph <- function(data, graph,
                       optimisation_options = NULL,
                       parameters = extract_graph_parameters(graph), 
                       iteration_multiplier = 3, qr_tol = 1e-8) {
+  
   withCallingHandlers({
     inner_fit_graph(data, graph, point, Z.value, concentration, optimisation_options,
                     parameters, iteration_multiplier, qr_tol)

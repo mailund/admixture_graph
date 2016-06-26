@@ -1,8 +1,15 @@
+# Version 1.0.0.9001
+
+ * Added options for fitting plots to make them in grayscale (Issue #11).
+ * Updated functions for plotting the cost function and number of fits as functions of admixture
+   proportions (Issue #12).
+
 # Version 1.0.0.9000
 
  * Changed specification of admixture proportions (Iussue #9) to avoid specifying redundant
    information. The changes are still backward compatible, so old analysis scripts should
    still work.
+
 
 # Version 1.0.0
 

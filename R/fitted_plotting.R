@@ -2,12 +2,13 @@
 #' 
 #' Plot the fit of a graph to data.
 #' 
-#' @param x      Fitted graph object.
-#' @param sigma  How many standard deviations the error bars should be wide.
-#' @param ...    Additional parameters.
+#' @param x          Fitted graph object.
+#' @param sigma      How many standard deviations the error bars should be wide.
+#' @param grayscale  Should the plot be in black and white?
+#' @param ...        Additional parameters.
 #' 
 #' @export
-plot.agraph_fit <- function(x, sigma = 6, ...) {
+plot.agraph_fit <- function(x, sigma = 6, grayscale = FALSE, ...) {
   
   fit <- stats::fitted(x)
   D <- fit$D
@@ -18,16 +19,27 @@ plot.agraph_fit <- function(x, sigma = 6, ...) {
   fit$test <- factor(fit$test, levels=dplyr::arrange(fit, D)$test)
   fit$hit <- with(fit, Vectorize(dplyr::between)(graph_f4, error_bar_start, error_bar_end))
 
+  if (grayscale) {
+    hitcolor <- "black"
+    misscolor <- "black"
+  } else {
+    hitcolor <- "green"
+    misscolor <- "red"
+  }
+  
   ggplot2::ggplot(fit) +
     ggplot2::geom_hline(yintercept = 0, linetype = 'dashed', color = 'gray') +
-    ggplot2::geom_segment(ggplot2::aes_string(x = 'test', xend = 'test', y = 'D', yend = 'graph_f4', color = 'hit'), 
+    ggplot2::geom_segment(ggplot2::aes_string(x = 'test', xend = 'test', y = 'D', 
+                                              yend = 'graph_f4', color = 'hit'), 
                           linetype = 'dashed') +
-    ggplot2::geom_errorbar(ggplot2::aes_string(x = 'test', ymin = 'error_bar_start', ymax = 'error_bar_end'), color='black') +
-    ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'D'), color='black') +
-    ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'graph_f4', color = 'hit')) +
-    (if (all(fit$hit))        ggplot2::scale_color_manual(values = c("green"))
-     else if (all (!fit$hit)) ggplot2::scale_color_manual(values = c("red"))
-     else                     ggplot2::scale_color_manual(values = c("red", "green"))) +
+    ggplot2::geom_errorbar(ggplot2::aes_string(x = 'test', 
+                                               ymin = 'error_bar_start', 
+                                               ymax = 'error_bar_end'), color='black') +
+    ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'D'), color='black', shape = 3) +
+    ggplot2::geom_point(ggplot2::aes_string(x = 'test', y = 'graph_f4', color = 'hit'), shape = 16) +
+    (if (all(fit$hit))        ggplot2::scale_color_manual(values = c(hitcolor))
+     else if (all (!fit$hit)) ggplot2::scale_color_manual(values = c(misscolor))
+     else                     ggplot2::scale_color_manual(values = c(misscolor, hitcolor))) +
     ggplot2::xlab('') + ggplot2::ylab('') + 
     ggplot2::coord_flip() +
     ggplot2::theme_classic() +
@@ -58,7 +70,8 @@ make_predict_function <- function(data, graph, parameters = extract_graph_parame
   
   function(x) {
     env <- unpack_environment(parameters, x)
-    predictions <- unlist(Map(function(expression) eval(expression, env), expressions), use.names = FALSE)
+    predictions <- unlist(Map(function(expression) eval(expression, env), expressions), 
+                          use.names = FALSE)
     predictions
   }
 }
@@ -78,34 +91,23 @@ make_predict_function <- function(data, graph, parameters = extract_graph_parame
 #'                    more than \eqn{D*\sigma/(2*Z)}. Notice that even when plotting the number of
 #'                    fitted statistics, we have no guarantee that the chosen variables maximize
 #'                    this number as the fitting function still optimizes \code{\link{cost_function}}.
+#' @param grayscale   Should the figure be plotted in grayscale or in colour?
 #' @param ...         Additional parameters passed to the plotting function
 #'                    \code{\link{contour}}.
 #'   
 #' @return The matrix of values computed and plotted.
 #'
 #' @seealso \code{\link{contour}}
-#' @seealso \code{\link{one_dimensional_plot}}
+#' @seealso \code{\link{plot_fit_1}}
 #'
 #' @export
-contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma = 6, ...) {
-  fitted_parameters <- object$best_fit # We draw a little plus sign on the best point.
-  best_x <- fitted_parameters[X]
-  best_y <- fitted_parameters[Y]
-  x <- 0:resolution/resolution
-  y <- 0:resolution/resolution
-  z <- matrix(0, resolution + 1, resolution + 1)
-  data <- object$data
-  reduced_matrix <- object$matrix$column_reduced
-  graph <- object$graph
-  parameters <- object$parameters
-  min <- rep(0, length(object$best_fit))
-  names(min) <- names(object$best_fit)
-  max <- rep(1, length(object$best_fit))
-  names(max) <- names(object$best_fit)
-  point <- list(min, max)
-  evaluate_point_cost <- function(point) { # Plotting the cost function:
-    fast_fit(data, graph, point)$best_error
-  }
+plot_fit_2 <- function(object, X, Y, 
+                       resolution = 10, 
+                       show_fit = FALSE, 
+                       sigma = 6, 
+                       grayscale = FALSE, 
+                       ...) {
+  
   if (show_fit == TRUE) {
     if("Z.value" %in% colnames(data) == TRUE) {
       zvalues <- data$Z.value
@@ -115,6 +117,23 @@ contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma 
     }
     tol <- data$D/zvalues
     tol <- sigma*tol/2
+  }
+  
+  data <- object$data
+  reduced_matrix <- object$matrix$column_reduced
+  graph <- object$graph
+  
+  epsilon <- 1e-5
+  parameters <- object$parameters
+  min <- rep(epsilon, length(object$best_fit))
+  names(min) <- names(object$best_fit)
+  max <- rep(1 - epsilon, length(object$best_fit))
+  names(max) <- names(object$best_fit)
+  point <- list(min, max)
+  
+  
+  evaluate_point_cost <- function(point) { # Plotting the cost function:
+    fast_fit(data, graph, point)$best_error
   }
   evaluate_point_fits <- function(point) { # Plotting the number of fits:
     residuals <- residuals(fit_graph(data, graph, point))
@@ -131,22 +150,40 @@ contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma 
   } else {
     evaluate_point <- evaluate_point_cost
   }
-  for (i in seq (1, resolution)) {
-    for (j in seq(1, resolution)) {
-      point[[1]][X] <- i/resolution
-      point[[2]][X] <- i/resolution
-      point[[1]][Y] <- j/resolution
-      point[[2]][Y] <- j/resolution
-      z[i + 1, j + 1] <- evaluate_point(point)
+  
+  x <- seq(epsilon, 1-epsilon, length.out = resolution)
+  y <- seq(epsilon, 1-epsilon, length.out = resolution)
+  z <- matrix(NA, resolution, resolution)
+  
+  for (i in seq_along(x)) {
+    for (j in seq_along(y)) {
+      point[[1]][X] <- x[i]
+      point[[2]][X] <- x[i]
+      point[[1]][Y] <- y[j]
+      point[[2]][Y] <- y[j]
+      z[i, j] <- evaluate_point(point)
     }
   }
-  graphics::image(x, y, z, xlab = X, ylab = Y, col = rev(grDevices::heat.colors(12)), ...)
+  
+  if (grayscale) {
+    palette <- rev(gray(1:10 / 12))
+  } else {
+    palette <- rev(grDevices::heat.colors(12))
+  }
+  
+  graphics::image(x, y, z, xlab = X, ylab = Y, col = palette, ...)
   graphics::contour(x, y, z, add = TRUE, ...)
+  
+  fitted_parameters <- object$best_fit # We draw a little plus sign on the best point.
+  best_x <- fitted_parameters[X]
+  best_y <- fitted_parameters[Y]
+  
   graphics::points(best_x, best_y, pch = 3)
+  
   invisible(z)
 }
 
-#' A plot of the cost function.
+#' A plot of the cost function or number of fitted statistics.
 #'
 #' A plot of the cost function with respect to one admix variable specified by the user.
 #' Sorry about the name, all the good ones were taken and the fact that the word "graph" means
@@ -161,31 +198,35 @@ contour_plot <- function(object, X, Y, resolution = 10, show_fit = FALSE, sigma 
 #'                    if the difference between a prediction and the observation statistics is no
 #'                    more than \eqn{D*\sigma/(2*Z)}. Notice that even when plotting the number of
 #'                    fitted statistics, we have no guarantee that the chosen variables maximize
-#'                    this number as the fitting function still optimizes \code{\link{cost_function}}.
+#'                    this number as the fitting function still optimizes 
+#'                    \code{\link{cost_function}}.
 #' @param ...         Additional parameters.
 #'
 #' @return Values for optimal cost function for values of \code{X} between zero and one, plotted.
 #'
-#' @seealso \code{\link{contour_plot}}
+#' @seealso \code{\link{plot_fit_2}}
 #'
 #' @export
-one_dimensional_plot <- function(object, X, resolution = 100, show_fit = FALSE, sigma = 6, ...) {
+plot_fit_1 <- function(object, X, resolution = 100, show_fit = FALSE, sigma = 6, ...) {
+
   fitted_parameters <- object$best_fit # We draw a little plus sign on the best point.
-  best_x <- fitted_parameters[X]
-  x <- 0:resolution/resolution
-  y <- rep(0, resolution + 1)
+  
   data <- object$data
   reduced_matrix <- object$matrix$column_reduced
   graph <- object$graph
+  
+  epsilon <- 1e-5
   parameters <- object$parameters
-  min <- rep(0, length(object$best_fit))
+  min <- rep(epsilon, length(object$best_fit))
   names(min) <- names(object$best_fit)
-  max <- rep(1, length(object$best_fit))
+  max <- rep(1 - epsilon, length(object$best_fit))
   names(max) <- names(object$best_fit)
   point <- list(min, max)
+  
   evaluate_point_cost <- function(point) { # Plotting the cost function:
     fast_fit(data, graph, point)$best_error
   }
+  
   if (show_fit == TRUE) {
     if("Z.value" %in% colnames(data) == TRUE) {
       zvalues <- data$Z.value
@@ -206,24 +247,28 @@ one_dimensional_plot <- function(object, X, resolution = 100, show_fit = FALSE, 
     }
     number
   }
+  
   if (show_fit == TRUE) {
-    evaluate_point <- evaluate_point_fits
+    ep <- evaluate_point_fits
+    ylabel <- "Number of fitted statistics"
   } else {
-    evaluate_point <- evaluate_point_cost
+    ep <- evaluate_point_cost
+    ylabel <- "Cost function"
   }
-  best_error <- evaluate_point(list(object$best_fit, object$best_fit))
-  for (i in seq (0, resolution)) {
-    point[[1]][X] <- i/resolution
-    point[[2]][X] <- i/resolution
-    y[i + 1] <- evaluate_point(point)
-  }
-  if (show_fit == TRUE) {
-    graphics::plot(x, y, xlab = X, ylab = "cost", type = "h", col = "red", ...)
-    graphics::points(best_x, best_error, pch = 3)
-    invisible(y)
-  } else {
-    graphics::plot(x, y, xlab = X, ylab = "cost", type = "l", col = "red", ...)
-    graphics::points(best_x, best_error, pch = 3)
-    invisible(y)
-  }
+  evaluate_point <- Vectorize(function(x) {
+    p <- point
+    p[[1]][X] <- x
+    p[[2]][X] <- x
+    ep(p)
+  })
+  
+  x <- seq(epsilon, 1-epsilon, length.out = resolution)
+  y <- evaluate_point(x)
+  
+  best_x <- fitted_parameters[X]
+  best_y <- evaluate_point(best_x)
+  
+  graphics::plot(x, y, xlab = X, ylab = ylabel, type = "h", ...)
+  graphics::points(best_x, best_y, pch = 3)
+  invisible(y)
 }
