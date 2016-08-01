@@ -85,19 +85,19 @@ fast_plot <- function(x,
         graphics::lines(c(xpos[parents[2]], break_x_left), c(ypos[parents[2]], break_y))
         graphics::lines(c(xpos[parents[1]], break_x_right), c(ypos[parents[1]], break_y))
       }
-      graphics::segments(break_x_left, break_y, xpos[node], ypos[node], col = "black")
-      graphics::segments(break_x_right, break_y, xpos[node], ypos[node], col = "black")
+      graphics::segments(break_x_left, break_y, xpos[node], ypos[node], col = "red")
+      graphics::segments(break_x_right, break_y, xpos[node], ypos[node], col = "red")
       if (show_admixture_labels) {
         if (xpos[parents[1]] < xpos[parents[2]]) {
           graphics::text(break_x_left, break_y, graph$probs[parents[[1]], node],
-                         cex = 0.5, pos = 1, col = "black", offset = 0.1)
+                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
           graphics::text(break_x_right, break_y, graph$probs[parents[[2]], node],
-                         cex = 0.5, pos = 1, col = "black", offset = 0.1)
+                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
         } else {
           graphics::text(break_x_left, break_y, graph$probs[parents[[2]], node],
-                         cex = 0.5, pos = 1, col = "black", offset = 0.1)
+                         cex = 0.5, pos = 1, col = "red", offset = 0.1)
           graphics::text(break_x_right, break_y, graph$probs[parents[[1]], node],
-                         cex = 0.5, pos = 1, col = "black", offset = 0.1)          
+                         cex = 0.5, pos = 1, col = "red", offset = 0.1)          
         }
       }
     }
@@ -165,7 +165,7 @@ fast_plot <- function(x,
 #'                                platform for proportion labels, the width of which is
 #'                                half the distance between any two leaves. The number
 #'                                \code{platform} tells how many default platform widths
-#'                                should the platforms be wide, \emph{i.e.} zero means no
+#'                                should the platforms be wide, \emph{i. e.} zero means no
 #'                                platform.
 #' @param title                   Optional title for the plot.
 #' @param ...                     Additional plotting options.
@@ -219,10 +219,10 @@ fast_plot <- function(x,
 #' @export
 plot.agraph <- function(x,
                         show_leaf_labels = TRUE,
-                        draw_leaves = FALSE,
+                        draw_leaves = TRUE,
                         color = "yellowgreen",
                         show_inner_node_labels = FALSE,
-                        draw_inner_nodes = draw_leaves,
+                        draw_inner_nodes = FALSE,
                         inner_node_color = color,
                         show_admixture_labels = FALSE,
                         parent_order = list(),
@@ -249,9 +249,11 @@ plot.agraph <- function(x,
   }
   # Assign initial coordinates for all nodes.
   leaves <- list()
-  for (i in seq(1, length(leaf_order))) {
-    leaves[[i]] <- c(100*(i - 1)/(length(leaf_order) - 1), 0)
-  }
+  if (length(leaf_order) > 1) {
+    for (i in seq(1, length(leaf_order))) {
+      leaves[[i]] <- c(100*(i - 1)/(length(leaf_order) - 1), 0)
+    }
+  } else {leaves[[1]] <- c(50, 0)}
   names(leaves) <- leaf_order
   parents <- graph$parents
   for (i in seq(1, length(graph$inner_nodes))) {
@@ -313,7 +315,7 @@ plot.agraph <- function(x,
   # Plot everything asked for.
   xpd <- graphics::par()$xpd
   graphics::par(xpd = NA)
-  level <- platform*25/(length(leaves) - 1)
+  level <- platform*25/(max(2, length(leaves)) - 1)
   for (inner_node in names(inner)) {
     inner[[inner_node]][2] <- 100*(1 - heights[inner_node]/global_longest)
   }
@@ -342,7 +344,7 @@ plot.agraph <- function(x,
             if (substr(label, 1, 1) == "(") {
               label <- substr(label, 2, nchar(label) - 1)
             }
-            graphics::text(coordinates[[i]][1] + i_thing, coordinates[[i]][2], label,
+            graphics::text(coordinates[[i]][1] + 0.75*i_thing, coordinates[[i]][2], label,
                            adj = c(0.5, 1.6), cex = 0.8)
           }
         }
@@ -387,10 +389,9 @@ drawing_cost <- function(graph, leaves, root, inner, child_order, parent_order, 
     for (i in seq(1, length(inner))) {
       inner[[i]][1] <- x[i]
     }
-    all <- c(leaves, root, inner)
     # Calculate the cost of the input and default coordinates.
     cost <- 0
-    new <- function(u, v) {
+    new <- function(u, v) { # u and v are 2-dimensional vectors.
       w <- u + v
       U <- sqrt(u[1]^2 + u[2]^2)
       V <- sqrt(v[1]^2 + v[2]^2)
@@ -407,85 +408,76 @@ drawing_cost <- function(graph, leaves, root, inner, child_order, parent_order, 
       verticality <- abs(w%*%c(0, 1)/(W + 1e-5))  
       return((4 + 4*angle - 2*verticality)*(U + V)) # ARBITRARY CONSTANTS HERE!
     }
-    new2 <- function(u) {
+    new2 <- function(u) { # u is a two-dimensional vector.
       U <- sqrt(u[1]^2 + u[2]^2)
       verticality <- abs(u%*%c(0, 1)/(U + 1e-5))  
       return((4 - 2*verticality)*U) # ARBITRARY CONSTANTS HERE!
     }
-    level <- platform*25/(length(leaves) - 1)
-    for (i in seq(1, length(inner))) {
-      p <- parent_order[[names(inner)[i]]]
-      c <- child_order[[names(inner)[i]]]
+    level <- platform*25/(max(2, length(leaves)) - 1)
+    kids <- c(leaves, inner)
+    mums <- c(root, inner)
+    all <- c(leaves, root, inner)
+    # First the cost of parents:
+    for (i in seq(1, length(kids))) {
+      p <- parent_order[[names(kids)[i]]]
+      c <- child_order[[names(kids)[i]]]
+      if (length(p) == 1) {
+        u <- c(all[[p[1]]][1] - kids[[i]][1], all[[p[1]]][2] - kids[[i]][2])
+        cost <- cost + new2(u)
+      }
       if (length(p) == 2) {
-        u <- c(all[[p[1]]][1] - inner[[i]][1] - level, all[[p[1]]][2] - inner[[i]][2])
-        v <- c(all[[p[2]]][1] - inner[[i]][1] + level, all[[p[2]]][2] - inner[[i]][2])
+        u <- c(all[[p[1]]][1] - kids[[i]][1] - level, all[[p[1]]][2] - kids[[i]][2])
+        v <- c(all[[p[2]]][1] - kids[[i]][1] + level, all[[p[2]]][2] - kids[[i]][2])
         cost <- cost + new(u, v)
+      }
+    }
+    # Then the cost of children:
+    for (i in seq(1, length(mums))) {
+      p <- parent_order[[names(mums)[i]]]
+      c <- child_order[[names(mums)[i]]]
+      if (length(c) == 1) {
         if (length(parent_order[[c[1]]]) == 2) {
-          if (parent_order[[c[1]]][1] == names(inner)[[i]]) {
+          if (parent_order[[c[1]]][1] == names(mums)[[i]]) {
             thing <- -level
           }
-          if (parent_order[[c[1]]][2] == names(inner)[[i]]) {
+          if (parent_order[[c[1]]][2] == names(mums)[[i]]) {
             thing <- level
           }
         } else {
           thing <- 0
         }
-        u <- c(all[[c[1]]][1] - inner[[i]][1] + thing, all[[c[1]]][2] - inner[[i]][2])
+        u <- c(all[[c[1]]][1] - mums[[i]][1] + thing, all[[c[1]]][2] - mums[[i]][2])
         cost <- cost + new2(u)
       }
-      if (length(c) == 2) {
-        if (length(parent_order[[c[1]]]) == 2) {
-          if (parent_order[[c[1]]][1] == names(inner)[[i]]) {
-            thing <- -level
+      if (length(c) > 1) {
+        # We handle more than 2 kids by looking at consecutive pairs.
+        for (j in seq(1, length(c) - 1)) {
+          if (length(parent_order[[c[j]]]) == 2) {
+            if (parent_order[[c[j]]][1] == names(mums)[[i]]) {
+              thing <- -level
+            }
+            if (parent_order[[c[j]]][2] == names(mums)[[i]]) {
+              thing <- level
+            }
+          } else {
+            thing <- 0
           }
-          if (parent_order[[c[1]]][2] == names(inner)[[i]]) {
-            thing <- level
+          u <- c(all[[c[j]]][1] - mums[[i]][1] + thing, all[[c[j]]][2] - mums[[i]][2])
+          if (length(parent_order[[c[j + 1]]]) == 2) {
+            if (parent_order[[c[j + 1]]][1] == names(mums)[[i]]) {
+              thing <- -level
+            }
+            if (parent_order[[c[j + 1]]][2] == names(mums)[[i]]) {
+              thing <- level
+            }
+          } else {
+            thing <- 0
           }
-        } else {
-          thing <- 0
+          v <- c(all[[c[j + 1]]][1] - mums[[i]][1] + thing, all[[c[j + 1]]][2] - mums[[i]][2])
+          cost <- cost + new(u, v)
         }
-        u <- c(all[[c[1]]][1] - inner[[i]][1] + thing, all[[c[1]]][2] - inner[[i]][2])
-        if (length(parent_order[[c[2]]]) == 2) {
-          if (parent_order[[c[2]]][1] == names(inner)[[i]]) {
-            thing <- -level
-          }
-          if (parent_order[[c[2]]][2] == names(inner)[[i]]) {
-            thing <- level
-          }
-        } else {
-          thing <- 0
-        }
-        v <- c(all[[c[2]]][1] - inner[[i]][1] + thing, all[[c[2]]][2] - inner[[i]][2])
-        cost <- cost + new(u, v)
-        u <- c(all[[p[1]]][1] - inner[[i]][1], all[[p[1]]][2] - inner[[i]][2])
-        cost <- cost + new2(u)
       }
     }
-    # Root also.
-    c <- child_order[[names(root)[1]]]
-    if (length(parent_order[[c[1]]]) == 2) {
-      if (parent_order[[c[1]]][1] == names(inner)[[i]]) {
-        thing <- -level
-      }
-      if (parent_order[[c[1]]][2] == names(inner)[[i]]) {
-        thing <- level
-      }
-    } else {
-      thing <- 0
-    }
-    u <- c(all[[c[1]]][1] - root[[1]][1] + thing, all[[c[1]]][2] - root[[1]][2])
-    if (length(parent_order[[c[2]]]) == 2) {
-      if (parent_order[[c[2]]][1] == names(inner)[[i]]) {
-        thing <- -level
-      }
-      if (parent_order[[c[2]]][2] == names(inner)[[i]]) {
-        thing <- level
-      }
-    } else {
-      thing <- 0
-    }
-    v <- c(all[[c[2]]][1] - root[[1]][1] + thing, all[[c[2]]][2] - root[[1]][2])
-    cost <- cost + new(u, v)
     return(cost)
   } 
 }
@@ -551,13 +543,12 @@ arrange_graph <- function(graph) {
   # edges to be straight lines makes it even worse. The following algorithm is by no
   # means meant to be optimal. We only perform some clean-up on the cycles of the graph,
   # using a heuristic of dealing with the worst cycles first.
-  
   # First determine cycles corresponding to admix nodes.  We follow both branches until 
   # a common acestor is found. Unfortunately this is not unique if we hit more admix nodes 
   # on the way. Then our first tie-breaker is the age of the ancestor, if one ancestor is an
   # ancestor of the other, choose the younger one, and the second tie-breaker is the branch
   # count of the cycle, the number of branches deviating from it, up or down, not counting
-  # the admix node itself or the ancestor (doesn' matter when breaking ties of course but
+  # the admix node itself or the ancestor (doesn't matter when breaking ties of course but
   # we will use the branch count later also).
   cycles <- list()
   if (length(graph$admix_nodes) > 0) {
@@ -607,20 +598,10 @@ arrange_graph <- function(graph) {
         }
       }
     }
-    # Now that the cycles are determined, we need to make sure they really are cycles and not "eights",
-    # that is, change the parent order of the admix node to match the child order of the collision node.
-    # As several cycles might share the same collision node but not the admix node, the initial orientation
-    # has to be determined by the collision node.
-    # Always keep to left side of the cycle at [[1]] and the right side at [[2]].
-    for (i in seq(1, length(cycles))) {
-      cycle <- cycles[[i]]
-      order <- graph$child_order[[cycle$collision]]
-      if (cycle$left[length(cycle$left) - 1] != order[1]) {
-        cycles[[i]]$left <- cycle$right
-        cycles[[i]]$right <- cycle$left
-      }
-      graph$parent_order[[cycle$admix]] <- c(cycles[[i]]$left[2], cycles[[i]]$right[2])
-    }
+    # For now we don't care about parent ordering. Let's just let them be what they are and in the
+    # end change them to agree with the respective collision node child orderings.
+    # (As several cycles might share the same collision node but not the admix node, the collision
+    # node has the final say.)
     # Before clearing the cycles we need to agree on the order on which to clear them, which is quite
     # relevant. As clearing also might change the parent ordering of an older admixture node, we should
     # at least make sure the cycles originating from younger admixture nodes are cleared first. It also
@@ -676,246 +657,418 @@ arrange_graph <- function(graph) {
         }
       }
     }
-    # Then accorning to the cleaning order, turn all branches away from the cycle.
+    cycles <- update_cycle_orientation(graph$child_order, cycles)
+    # Begin cleaning from the collision nodes.
+    # If the collision node has more than 2 children, we want to move them away from
+    # the cycle too. Let's say we move them half and half to the left and to the right,
+    # tie breaker being moving to the side where the cycle is shorter, and the second tie
+    # breaker being the alphabetical order of the next nodes of the cycles.
+    for (mix in cleaning_order) {
+      cycle <- cycles[[mix]]
+      collision <- cycle$collision
+      if (length(cycle$left) < length(cycle$right)) {
+        tie <- "left"
+      } else if (length(cycle$left) > length(cycle$right)) {
+        tie <- "right"
+      } else if (cycle$left[length(cycle$left) - 1] == sort(c(cycle$left[length(cycle$left) - 1],
+                                                              cycle$right[length(cycle$right) - 1]))[1]) {
+        tie <- "left"
+      } else {
+        tie <- "right"
+      }
+      left_as_a_child <- match(cycle$left[length(cycle$left) - 1], graph$child_order[[collision]])
+      right_as_a_child <- match(cycle$right[length(cycle$right) - 1], graph$child_order[[collision]])
+      while (left_as_a_child < right_as_a_child - 1) {
+        if (tie == "left") {
+          graph$child_order[[collision]][left_as_a_child] <- graph$child_order[[collision]][left_as_a_child + 1]
+          graph$child_order[[collision]][left_as_a_child + 1] <- cycle$left[length(cycle$left) - 1]
+          left_as_a_child <- left_as_a_child + 1
+        }
+        if (tie == "right") {
+          graph$child_order[[collision]][right_as_a_child] <- graph$child_order[[collision]][right_as_a_child - 1]
+          graph$child_order[[collision]][right_as_a_child - 1] <- cycle$right[length(cycle$right) - 1]
+          right_as_a_child <- right_as_a_child - 1
+        }
+        if (tie == "left") {tie <- "right"} else {tie <- "left"}
+      }
+    }
+    cycles <- update_cycle_orientation(graph$child_order, cycles)
+    dealt_with_cycles <- list()
+    dealt_with_admixes <- character()
+    # For binary graphs, nothing has happened so far.
+    # Then accorning to the cleaning order, turn all branches away from the cycles.
     # If we encounter other admix nodes or parts of other cycles that do not share the
     # collision node, make sure the cycles have different orientations.
     # If we encounter parts of other cycles that do share the collision node, it is
     # probably better to draw the cycles intersecting (one crossing) than it is to
     # draw one inside of the other (one or more crossings plus coordinate troubles), so
     # some turnings need to be omitted.
-    for (mix in cleaning_order) { # Hey why aren't all my loops like this?
-      # Left side:
-      for (l in seq(1, length(cycles[[mix]]$left) - 1)) {
-        vertex <- cycles[[mix]]$left[l]
-        if (length(graph$child_order[[vertex]]) == 2) {
-          # So let's try this stunt:
-          # Only here on the left side of the cycle, if the vertex we see belongs to
-          # cycle with the same collision node, turn it inside instead of outside and
-          # otherwise do everything as before.
-          turn_in <- FALSE
-          for (other_cycle in cycles) {
-            other_left <- other_cycle$left[-length(other_cycle$left)]
-            other_right <- other_cycle$right[-length(other_cycle$right)]
-            other <- c(other_left, other_right)
-            if (vertex %in% other && other_cycle$admix != mix &&
-                other_cycle$collision == cycles[[mix]]$collision) {
-              if (graph$child_order[[vertex]][1] %in% other_cycle == TRUE &&
-                  graph$child_order[[vertex]][1] %in% cycles[[mix]]$left == FALSE) {
-                turn_in <- TRUE
-              } 
-              if (graph$child_order[[vertex]][2] %in% other_cycle == TRUE &&
-                  graph$child_order[[vertex]][2] %in% cycles[[mix]]$left == FALSE) {
-                turn_in <- TRUE
+    for (mix in cleaning_order) {
+      cycle <- cycles[[mix]]
+      dealt_with_cycles[[length(dealt_with_cycles) + 1]] <- cycle
+      dealt_with_admixes[length(dealt_with_admixes) + 1] <- cycle$admix
+      # Clear the left side of the cycle:
+      # If two cycles share some parts but not the full triplet of the collision node and its
+      # two descendants, our aim should be that the shared part belongs to one left and one 
+      # right side (not always possible).
+      for (i in seq(1, length(cycles))) {
+        other_cycle <- cycles[[i]]
+        if (recognize_forbidden_parellelness(cycle, other_cycle, "left") == TRUE &&
+            is.na(match(other_cycle$admix, dealt_with_admixes)) == TRUE) {
+          # Switch the other cycle around. The collision node requires extra care.
+          cycles[[i]]$left <- other_cycle$right
+          cycles[[i]]$right <- other_cycle$left
+          other_left <- match(other_cycle$left[length(other_cycle$left) - 1],
+                              graph$child_order[[other_cycle$collision]])
+          other_right <- match(other_cycle$right[length(other_cycle$right) - 1],
+                               graph$child_order[[other_cycle$collision]])
+          if (cycle$collision == other_cycle$collision) {
+            original_left <- match(cycle$left[length(cycle$left) - 1],
+                                   graph$child_order[[cycle$collision]])
+            original_right <- match(cycle$right[length(cycle$right) - 1],
+                                    graph$child_order[[cycle$collision]])
+            # It's possible that other_left = original_left, but otherwise these
+            # numbers are distinct.
+            # Move other_left to the left until it's no more right than original_left.
+            while (other_left > original_left) {
+              graph$child_order[[other_cycle$collision]][other_left] <-
+                graph$child_order[[other_cycle$collision]][other_left - 1]
+              graph$child_order[[other_cycle$collision]][other_left - 1] <-
+                other_cycle$left[length(other_cycle$left) - 1]
+              other_left <- other_left - 1
+              if (other_left == original_right) {
+                original_right <- original_right + 1
+              }
+              if (other_left == original_left) {
+                original_left <- original_left + 1
               }
             }
-          }
-          if (turn_in == FALSE) {
-            if (graph$child_order[[vertex]][2] != cycles[[mix]]$left[l - 1]) {
-              graph$child_order[[vertex]][1] <- graph$child_order[[vertex]][2]
-              graph$child_order[[vertex]][2] <- cycles[[mix]]$left[l - 1]
-            }
+            # Move other_right just to the left from other_left.
+            if (other_left > 1) {
+              beginning <- 1:(other_left - 1)
+            } else {beginning <- numeric(0)}
+            middle <- other_left:(other_right - 1)
+            if (other_right < length(graph$child_order[[other_cycle$collision]])) {
+              ending <- (other_right + 1):length(graph$child_order[[other_cycle$collision]])
+            } else {ending <- numeric(0)}
+            permutation <- c(beginning, other_right, middle, ending)
+            graph$child_order[[other_cycle$collision]] <-
+              graph$child_order[[other_cycle$collision]][permutation]
           } else {
-            if (graph$child_order[[vertex]][1] != cycles[[mix]]$left[l - 1]) {
-              graph$child_order[[vertex]][2] <- graph$child_order[[vertex]][1]
-              graph$child_order[[vertex]][1] <- cycles[[mix]]$left[l - 1]
-              # Any cycle we need to turn around because of breaking the rules like this?
-              # Possibly yes, but avoid cleaning them too much.
-              for (first_cycle in cycles) {
-                if (first_cycle$collision == vertex) {
-                  graph$child_order[[vertex]] <- c(graph$parent_order[[vertex]][2],
-                                                   graph$parent_order[[vertex]][1])
-                  cycles[[first_cycle$admix]]$left <- first_cycle$right
-                  cycles[[first_cycle$admix]]$right <- first_cycle$left
-                  rest <- character(0)
-                  for (other_cycle in cycles) {
-                    if (other_cycle$admix != first_cycle$admix) {
-                      rest <- c(rest, other_cycle$left, other_cycle$right)
-                    }
-                  }
-                  for (L in seq(1, length(first_cycle$left) - 1)) {
-                    mess <- first_cycle$left[L]
-                    if (mess %in% rest == FALSE && length(graph$child_order[[mess]] == 2)) {
-                      if (graph$child_order[[mess]][2] != first_cycle$left[L - 1]) {
-                        graph$child_order[[mess]][1] <- graph$child_order[[mess]][2]
-                        graph$child_order[[mess]][2] <- first_cycle$left[L - 1]
-                      }
-                    }
-                  }
-                  for (R in seq(1, length(first_cycle$right) - 1)) {
-                    mess <- first_cycle$right[R]
-                    if (mess %in% rest == FALSE && length(graph$child_order[[mess]] == 2)) {
-                      if (graph$child_order[[mess]][1] != first_cycle$right[R - 1]) {
-                        graph$child_order[[mess]][2] <- graph$child_order[[mess]][1]
-                        graph$child_order[[mess]][1] <- first_cycle$right[R - 1]
-                      }
-                    }
-                  }
-                }
-              }  
+            # In the typical case just switch the two places.
+            graph$child_order[[other_cycle$collision]][other_left] <- 
+              other_cycle$right[length(other_cycle$right) - 1]
+            graph$child_order[[other_cycle$collision]][other_right] <-
+              other_cycle$left[length(other_cycle$left) - 1]
+          }
+          other_cycle <- cycles[[i]] # Update
+          # We mustn't perform a full clearing on the cycle we just switched around.
+          # Instead we clear only such child edges that are not part of any cycle
+          # already dealt with.
+          for (L in seq(1, length(other_cycle$left) - 1)) {
+            vanhempi <- other_cycle$left[[L]]
+            if (L > 1 && length(graph$child_order[[vanhempi]]) > 1) {
+              lapsi <- other_cycle$left[L - 1]
+              graph$child_order <-
+                clear_node(graph$child_order, vanhempi, lapsi, "left", dealt_with_cycles)
+            }
+          }
+          for (R in seq(1, length(other_cycle$right) - 1)) {
+            vanhempi <- other_cycle$right[[R]]
+            if (R > 1 && length(graph$child_order[[vanhempi]]) > 1) {
+              lapsi <- other_cycle$right[R - 1]
+              graph$child_order <-
+                clear_node(graph$child_order, vanhempi, lapsi, "right", dealt_with_cycles)
             }
           }
         }
-        if (length(graph$parent_order[[vertex]]) == 2 && l > 1) {
-          # The collision node can't be shared here between the two cycles.
-          if (graph$parent_order[[vertex]][2] != cycles[[mix]]$left[l + 1]) {
-            graph$parent_order[[vertex]][1] <- graph$parent_order[[vertex]][2]
-            graph$parent_order[[vertex]][2] <- cycles[[mix]]$left[l + 1]
-            other_cycle <- cycles[[vertex]]
-            cycles[[vertex]]$left <- other_cycle$right
-            cycles[[vertex]]$right <- other_cycle$left
-            graph$child_order[[other_cycle$collision]] <- c(other_cycle$right[length(other_cycle$right) - 1],
-                                                            other_cycle$left[length(other_cycle$left) - 1])
-          }
-        }
-        # If two cycles share some part, we should at least suggest that the common part belongs to one left and
-        # one right side.
-        for (i in seq(1, length(cycles))) {
-          other_cycle <- cycles[[i]]
-          if (cycles[[mix]]$collision != other_cycle$collision && l != 1) {
-            # Also ensures the cycles are different.
-            other_left <- other_cycle$left[-length(other_cycle$left)][-1]
-            if (vertex %in% other_left) {
-              cycles[[i]]$left <- other_cycle$right
-              cycles[[i]]$right <- other_cycle$left
-              graph$child_order[[other_cycle$collision]] <- c(other_cycle$right[length(other_cycle$right) - 1],
-                                                              other_cycle$left[length(other_cycle$left) - 1])
-              graph$parent_order[[other_cycle$admix]] <- c(other_cycle$right[2], other_cycle$left[2])
-              # To avoid endless looping, we mustn't perform a full clearing on the cycle we just switched around.
-              # Instead we clear only such child edges that are not part of another cycle.
-              for (L in seq(1, length(cycles[[i]]$left) - 1)) {
-                old <- cycles[[i]]$left[[L]]
-                if (length(graph$child_order[[old]]) == 2) {
-                  if (graph$child_order[[old]][2] != cycles[[i]]$left[L - 1]) {
-                    young <- graph$child_order[[old]][2]
-                    let_it_be <- FALSE
-                    for (yet_another_cycle in cycles) {
-                      if (old %in% yet_another_cycle$left && young %in% yet_another_cycle$left) {
-                        let_it_be <- TRUE
-                      }
-                      if (old %in% yet_another_cycle$right && young %in% yet_another_cycle$right) {
-                        let_it_be <- TRUE
-                      }
-                    }
-                    if (let_it_be == FALSE) {
-                      graph$child_order[[old]] <- c(young, cycles[[i]]$left[L - 1])
-                    }
-                  }
-                }
-              }
-              for (R in seq(1, length(cycles[[i]]$right) - 1)) {
-                old <- cycles[[i]]$right[[R]]
-                if (length(graph$child_order[[old]]) == 2) {
-                  if (graph$child_order[[old]][1] != cycles[[i]]$right[R - 1]) {
-                    young <- graph$child_order[[old]][1]
-                    let_it_be <- FALSE
-                    for (yet_another_cycle in cycles) {
-                      if (old %in% yet_another_cycle$left && young %in% yet_another_cycle$left) {
-                        let_it_be <- TRUE
-                      }
-                      if (old %in% yet_another_cycle$right && young %in% yet_another_cycle$right) {
-                        let_it_be <- TRUE
-                      }
-                    }
-                    if (let_it_be == FALSE) {
-                      graph$child_order[[old]] <- c(cycles[[i]]$right[R - 1], young)
-                    }
-                  }
-                }
-              }
-            }
-          }
+        cycles <- update_cycle_orientation(graph$child_order, cycles)
+      } 
+      for (l in seq(1, length(cycle$left) - 1)) {
+        parent <- cycle$left[l]
+        if (l > 1 && length(graph$child_order[[parent]]) > 1) {
+          # Turn most kids away from the cycle.
+          # To make complicated graphs like Kuratowski's K(3,3) look right, we let the edges
+          # belonging to an already dealt with cycle be.
+          child <- cycle$left[l - 1]
+          graph$child_order <- clear_node(graph$child_order, parent, child, "left",
+                                          dealt_with_cycles)
         }
       }
-      # Right side:
-      for (r in seq(1, length(cycles[[mix]]$right) - 1)) {
-        vertex <- cycles[[mix]]$right[r]
-        if (length(graph$child_order[[vertex]]) == 2) {
-          if (graph$child_order[[vertex]][1] != cycles[[mix]]$right[r - 1]) {
-            graph$child_order[[vertex]][2] <- graph$child_order[[vertex]][1]
-            graph$child_order[[vertex]][1] <- cycles[[mix]]$right[r - 1]
-          }
-        }
-        if (length(graph$parent_order[[vertex]]) == 2 && r > 1) {
-          # The collision node can't be shared here between the two cycles.
-          if (graph$parent_order[[vertex]][1] != cycles[[mix]]$right[r + 1]) {
-            graph$parent_order[[vertex]][2] <- graph$parent_order[[vertex]][1]
-            graph$parent_order[[vertex]][1] <- cycles[[mix]]$right[r + 1]
-            other_cycle <- cycles[[vertex]]
-            cycles[[vertex]]$left <- other_cycle$right
-            cycles[[vertex]]$right <- other_cycle$left
-            graph$child_order[[other_cycle$collision]] <- c(other_cycle$right[length(other_cycle$right) - 1],
-                                                            other_cycle$left[length(other_cycle$left) - 1])
-          }
-        }
-        # If two cycles share some part, we should at least suggest that the common part belongs to one left and
-        # one right side.
-        for (i in seq(1, length(cycles))) {
-          other_cycle <- cycles[[i]]
-          if (cycles[[mix]]$collision != other_cycle$collision && r != 1) {
-            # Also ensures the cycles are different.
-            other_right <- other_cycle$right[-length(other_cycle$right)][-1]
-            if (vertex %in% other_right) {
-              cycles[[i]]$left <- other_cycle$right
-              cycles[[i]]$right <- other_cycle$left
-              graph$child_order[[other_cycle$collision]] <- c(other_cycle$right[length(other_cycle$right) - 1],
-                                                              other_cycle$left[length(other_cycle$left) - 1])
-              graph$parent_order[[other_cycle$admix]] <- c(other_cycle$right[2], other_cycle$left[2])
-              # To avoid endless looping, we mustn't perform a full clearing on the cycle we just switched around.
-              # Instead we clear only such child edges that are not part of another cycle.
-              for (L in seq(1, length(cycles[[i]]$left) - 1)) {
-                old <- cycles[[i]]$left[[L]]
-                if (length(graph$child_order[[old]]) == 2) {
-                  if (graph$child_order[[old]][2] != cycles[[i]]$left[L - 1]) {
-                    young <- graph$child_order[[old]][2]
-                    let_it_be <- FALSE
-                    for (yet_another_cycle in cycles) {
-                      if (old %in% yet_another_cycle$left && young %in% yet_another_cycle$left) {
-                        let_it_be <- TRUE
-                      }
-                      if (old %in% yet_another_cycle$right && young %in% yet_another_cycle$right) {
-                        let_it_be <- TRUE
-                      }
-                    }
-                    if (let_it_be == FALSE) {
-                      graph$child_order[[old]] <- c(young, cycles[[i]]$left[L - 1])
-                    }
-                  }
-                }
+      cycles <- update_cycle_orientation(graph$child_order, cycles)
+      # Clear the right side of the cycle:
+      # If two cycles share some parts but not the full triplet of the collision node and its
+      # two descendants, our aim should be that the shared part belongs to one left and one 
+      # right side (not always possible).
+      for (i in seq(1, length(cycles))) {
+        other_cycle <- cycles[[i]]
+        if (recognize_forbidden_parellelness(cycle, other_cycle, "right") == TRUE &&
+            is.na(match(other_cycle$admix, dealt_with_admixes)) == TRUE) {
+          # Switch the other cycle around. The collision node requires extra care.
+          cycles[[i]]$left <- other_cycle$right
+          cycles[[i]]$right <- other_cycle$left
+          other_left <- match(other_cycle$left[length(other_cycle$left) - 1],
+                              graph$child_order[[other_cycle$collision]])
+          other_right <- match(other_cycle$right[length(other_cycle$right) - 1],
+                               graph$child_order[[other_cycle$collision]])
+          if (cycle$collision == other_cycle$collision) {
+            original_left <- match(cycle$left[length(cycle$left) - 1],
+                                   graph$child_order[[cycle$collision]])
+            original_right <- match(cycle$right[length(cycle$right) - 1],
+                                    graph$child_order[[cycle$collision]])
+            # It's possible that other_right = original_right, but otherwise these
+            # numbers are distinct.
+            # Move other_right to the right until it's no more left than original_right.
+            while (other_right < original_right) {
+              graph$child_order[[other_cycle$collision]][other_right] <-
+                graph$child_order[[other_cycle$collision]][other_right + 1]
+              graph$child_order[[other_cycle$collision]][other_right + 1] <-
+                other_cycle$right[length(other_cycle$right) - 1]
+              other_right <- other_right + 1
+              if (other_right == original_left) {
+                original_left <- original_left - 1
               }
-              for (R in seq(1, length(cycles[[i]]$right) - 1)) {
-                old <- cycles[[i]]$right[[R]]
-                if (length(graph$child_order[[old]]) == 2) {
-                  if (graph$child_order[[old]][1] != cycles[[i]]$right[R - 1]) {
-                    young <- graph$child_order[[old]][1]
-                    let_it_be <- FALSE
-                    for (yet_another_cycle in cycles) {
-                      if (old %in% yet_another_cycle$left && young %in% yet_another_cycle$left) {
-                        let_it_be <- TRUE
-                      }
-                      if (old %in% yet_another_cycle$right && young %in% yet_another_cycle$right) {
-                        let_it_be <- TRUE
-                      }
-                    }
-                    if (let_it_be == FALSE) {
-                      graph$child_order[[old]] <- c(cycles[[i]]$right[R - 1], young)
-                    }
-                  }
-                }
+              if (other_right == original_right) {
+                original_right <- original_right - 1
               }
+            }
+            # Move other_left just to the right from other_right.
+            if (other_left > 1) {
+              beginning <- 1:(other_left - 1)
+            } else {beginning <- numeric(0)}
+            middle <- (other_left + 1):other_right
+            if (other_right < length(graph$child_order[[other_cycle$collision]])) {
+              ending <- (other_right + 1):length(graph$child_order[[other_cycle$collision]])
+            } else {ending <- numeric(0)}
+            permutation <- c(beginning, middle, other_left, ending)
+            graph$child_order[[other_cycle$collision]] <-
+              graph$child_order[[other_cycle$collision]][permutation]
+          } else {
+            # In the typical case just switch the two places.
+            graph$child_order[[other_cycle$collision]][other_left] <- 
+              other_cycle$right[length(other_cycle$right) - 1]
+            graph$child_order[[other_cycle$collision]][other_right] <-
+              other_cycle$left[length(other_cycle$left) - 1]
+          }
+          other_cycle <- cycles[[i]] # Update
+          # We mustn't perform a full clearing on the cycle we just switched around.
+          # Instead we clear only such child edges that are not part of any cycle
+          # already dealt with.
+          for (L in seq(1, length(other_cycle$left) - 1)) {
+            vanhempi <- other_cycle$left[[L]]
+            if (L > 1 && length(graph$child_order[[vanhempi]]) > 1) {
+              lapsi <- other_cycle$left[L - 1]
+              graph$child_order <-
+                clear_node(graph$child_order, vanhempi, lapsi, "left", dealt_with_cycles)
+            }
+          }
+          for (R in seq(1, length(other_cycle$right) - 1)) {
+            vanhempi <- other_cycle$right[[R]]
+            if (R > 1 && length(graph$child_order[[vanhempi]]) > 1) {
+              lapsi <- other_cycle$right[R - 1]
+              graph$child_order <-
+                clear_node(graph$child_order, vanhempi, lapsi, "right", dealt_with_cycles)
             }
           }
         }
+        cycles <- update_cycle_orientation(graph$child_order, cycles)
       }
+      for (r in seq(1, length(cycle$right) - 1)) {
+        parent <- cycle$right[r]
+        if (r > 1 && length(graph$child_order[[parent]]) > 1) {
+          # Turn most kids away from the cycle.
+          # To make complicated graphs like Kuratowski's K(3,3) look right, we let the edges
+          # belonging to an already dealt with cycle be.
+          child <- cycle$right[r - 1]
+          graph$child_order <- clear_node(graph$child_order, parent, child, "right",
+                                          dealt_with_cycles)
+        }
+      }
+      # A little exception to cover graphs where two cycles share the collision node together
+      # with the two edges leading to it:
+      graph$child_order <- exceptional_behavior(graph$child_order, cycle, cycles)
+      cycles <- update_cycle_orientation(graph$child_order, cycles)
     }
   }
-  # One last thing: we want to record a single parent in parent_order just likewe record a single child
-  # to child_order.
+  # Now we fix the parent orderings to make sure the cycles really are cycles and not "eights",
+  # that is, to change the parent order of the admix node to match the child order of the
+  # collision node.
+  remove_eightness <- remove_eightness(graph$parent_order, graph$child_order, cycles)
+  graph$parent_order <- remove_eightness$parent_order
+  cycles <- remove_eightness$cycles
+  # One last thing: we want to record a single parent in parent_order just likewe  record a single
+  # child to child_order.
   for (node in graph$nodes) {
     if (is.na(graph$parent_of[node]) == FALSE) {
       graph$parent_order[[node]] <- graph$parent_of[node]
     }
   }
   return(list(parent_order = graph$parent_order, child_order = graph$child_order, cycles = cycles))
+}
+
+update_cycle_orientation <- function(child_order, cycles) {
+  if (length(cycles) > 0) {
+    for (i in seq(1, length(cycles))) {
+      cycle <- cycles[[i]]
+      order <- child_order[[cycle$collision]]
+      left_as_a_child <- match(cycle$left[length(cycle$left) - 1], order)
+      right_as_a_child <- match(cycle$right[length(cycle$right) - 1], order)
+      if (left_as_a_child > right_as_a_child) {
+        cycles[[i]]$left <- cycle$right
+        cycles[[i]]$right <- cycle$left
+      }
+    }
+  }
+  return(cycles)
+}
+
+exceptional_behavior <- function(child_order, cycle, cycles) {
+  for (other_cycle in cycles) {
+    if (cycle$collision == other_cycle$collision && cycle$admix != other_cycle$admix) {
+      # Search for the left meeting node:
+      left_meet <- cycle$left[match(TRUE, (cycle$left %in% other_cycle$left))]
+      # Search for the right meeting node:
+      right_meet <- cycle$right[match(TRUE, (cycle$right %in% other_cycle$right))]
+      # Compare child orders:
+      left_c <- match(cycle$left[match(left_meet, cycle$left) - 1],
+                      child_order[[left_meet]])
+      right_c <- match(cycle$right[match(right_meet, cycle$right) - 1],
+                       child_order[[right_meet]])
+      left_o <- match(other_cycle$left[match(left_meet, other_cycle$left) - 1],
+                      child_order[[left_meet]])
+      right_o <- match(other_cycle$right[match(right_meet, other_cycle$right) - 1],
+                       child_order[[right_meet]])
+      if (left_c > left_o && right_c < right_o) {
+        if (right_c > 1) {
+          beginning <- 1:(right_c - 1)
+        } else {beginning <- numeric(0)}
+        middle <- (right_c + 1):right_o
+        if (right_o < length(child_order[[right_meet]])) {
+          ending <- (right_o + 1):length(child_order[[right_meet]])
+        } else {ending <- numeric(0)}
+        permutation <- c(beginning, middle, right_c, ending)
+        child_order[[right_meet]] <- child_order[[right_meet]][permutation]
+      }
+    }
+  }
+  return(child_order)
+}
+
+remove_eightness <- function(parent_order, child_order, cycles) {
+  if (length(cycles) > 0) {
+    for (i in seq(1, length(cycles))) {
+      cycle <- cycles[[i]]
+      order <- child_order[[cycle$collision]]
+      left_as_a_child <- match(cycle$left[length(cycle$left) - 1], order)
+      right_as_a_child <- match(cycle$right[length(cycle$right) - 1], order)
+      if (left_as_a_child > right_as_a_child) {
+        cycles[[i]]$left <- cycle$right
+        cycles[[i]]$right <- cycle$left
+      }
+      parent_order[[cycle$admix]] <- c(cycles[[i]]$left[2], cycles[[i]]$right[2])
+    }
+  }
+  return(list(parent_order = parent_order, cycles = cycles))
+}
+
+recognize_forbidden_parellelness <- function(cycle1, cycle2, direction) {
+  problem <- FALSE
+  # Check if left sides touch:
+  if (direction == "left") {
+    for (i in seq(1, length(cycle1$left) - 1)) {
+      for (j in seq(1, length(cycle2$left) - 1)) {
+        if (cycle1$left[i] == cycle2$left[j] && i > 1 && j > 1) {
+          problem <- TRUE
+        }
+        if (cycle1$left[i] == cycle2$left[j] && cycle1$left[i + 1] == cycle2$left[j + 1]) {
+          problem <- TRUE
+        }
+      }  
+    }
+  }
+  # Check if right sides touch:
+  if (direction == "right") {
+    for (i in seq(1, length(cycle1$right) - 1)) {
+      for (j in seq(1, length(cycle2$right) - 1)) {
+        if (cycle1$right[i] == cycle2$right[j] && i > 1 && j > 1) {
+          problem <- TRUE
+        }
+        if (cycle1$right[i] == cycle2$right[j] && cycle1$right[i + 1] == cycle2$right[j + 1]) {
+          problem <- TRUE
+        }
+      }
+    }  
+  }
+  # Pardon if the cycles share the collision nodes and the two nodes right below it:
+  if (cycle1$collision == cycle2$collision &&
+      cycle1$left[length(cycle1$left) - 1] == cycle2$left[length(cycle2$left) - 1] &&
+      cycle1$right[length(cycle1$right) - 1] == cycle2$right[length(cycle2$right) - 1]) {
+    problem <- FALSE
+  }
+  return(problem)
+}
+
+clear_node <- function(child_order, parent, child, direction, cycles = NULL) {
+  total <- length(child_order[[parent]])
+  number <- match(child, child_order[[parent]])
+  skipped <- 0
+  if (direction == "left") {
+    while (number < total - skipped) {
+      mover <- child_order[[parent]][number + skipped + 1]
+      skip <- FALSE
+      for (cyc in cycles) {
+        if (parent %in% cyc$left && mover %in% cyc$left) {
+          skip <- TRUE
+        }
+        if (parent %in% cyc$right && mover %in% cyc$right) {
+          skip <- TRUE
+        }
+      }
+      if (skip == TRUE) {
+        skipped <- skipped + 1
+      } else {
+        if (number > 1) {
+          beginning <- 1:(number - 1)
+        } else {beginning <- numeric(0)}
+        middle <- number:(number + skipped)
+        if (number + skipped + 1 < total) {
+          ending <- (number + skipped + 2):total
+        } else {ending <- numeric(0)}
+        permutation <- c(beginning, number + skipped + 1, middle, ending)
+        child_order[[parent]] <- child_order[[parent]][permutation]
+        number <- number + 1
+      }
+    }
+  }
+  if (direction == "right") {
+    while (number > 1 + skipped) {
+      mover <- child_order[[parent]][number - skipped - 1]
+      skip <- FALSE
+      for (cyc in cycles) {
+        if (parent %in% cyc$left && mover %in% cyc$left) {
+          skip <- TRUE
+        }
+        if (parent %in% cyc$right && mover %in% cyc$right) {
+          skip <- TRUE
+        }
+      }
+      if (skip == TRUE) {
+        skipped <- skipped + 1
+      } else {
+        if (number - skipped - 1 > 1) {
+          beginning <- 1:(number - skipped - 2)
+        } else {beginning <- numeric(0)}
+        middle <- (number - skipped):number
+        if (number < total) {
+          ending <- (number + 1):total
+        } else {ending <- numeric(0)}
+        permutation <- c(beginning, middle, number - skipped - 1, ending)
+        child_order[[parent]] <- child_order[[parent]][permutation]
+        number <- number - 1
+      }
+    }
+  }
+  return(child_order)
 }
 
 leaf_order <- function(graph, parent_order, child_order) {
@@ -937,7 +1090,7 @@ leaf_order <- function(graph, parent_order, child_order) {
     }
     heights[node] <- longest - 1
   }
-  # Calculate some tentative values for the x-coordinates, just to get a goog guess for leaf ordering.
+  # Calculate some tentative values for the x-coordinates, just to get a good guess for leaf ordering.
   x_order <- graph$nodes[order(heights)]
   silly_x <- rep(0, length(graph$nodes))
   names(silly_x) <- graph$nodes
@@ -949,15 +1102,12 @@ leaf_order <- function(graph, parent_order, child_order) {
       if (length(graph$child_order[[parent]]) == 1) {
         silly_x[vertex] <- silly_x[parent]
       }
-      if (length(graph$child_order[[parent]]) == 2) {
-        # First born of a single parent:
-        if (graph$child_order[[parent]][1] == vertex) {
-          silly_x[vertex] <- silly_x[parent] - 2^(-heights[vertex] + 1)
-        }
-        # Second child of a single parent:
-        if (graph$child_order[[parent]][2] == vertex) {
-          silly_x[vertex] <- silly_x[parent] + 2^(-heights[vertex] + 1)
-        }
+      # One of many children of a single parent:
+      if (length(graph$child_order[[parent]]) > 1) {
+        index <- match(vertex, graph$child_order[[parent]])
+        step <- 2^(-heights[vertex] + 2) / (length(graph$child_order[[parent]]) - 1)
+        leftmost <- silly_x[parent] - 2^(-heights[vertex] + 1)
+        silly_x[vertex] <- leftmost + (index - 1) * step
       }
     } else {
       # Child of two parents:
@@ -965,46 +1115,58 @@ leaf_order <- function(graph, parent_order, child_order) {
       right_parent <- graph$parent_order[[vertex]][2]
       if (silly_x[left_parent] < silly_x[right_parent]) {
         # Consistent parents:
+        # The starting point is the average.
         silly_x[vertex] <- 0.5*(silly_x[left_parent] + silly_x[right_parent])
-        if (length(graph$child_order[[left_parent]]) == 2 &&
-            length(graph$child_order[[right_parent]]) == 2) {
-          if (graph$child_order[[left_parent]][1] == vertex) {
-            silly_x[vertex] <- silly_x[vertex] - 2^(-heights[vertex] + 2)
-          }
-          if (graph$child_order[[right_parent]][1] == vertex) {
-            silly_x[vertex] <- silly_x[vertex] - 2^(-heights[vertex] + 2)
-          }
-          if (graph$child_order[[left_parent]][2] == vertex) {
-            silly_x[vertex] <- silly_x[vertex] + 2^(-heights[vertex] + 2)
-          }
-          if (graph$child_order[[right_parent]][2] == vertex) {
-            silly_x[vertex] <- silly_x[vertex] + 2^(-heights[vertex] + 2)
-          }
+        # Then we adjust according to ordering of step simblings. 
+        # With strict boundaries enforced to keep the cousings and such away.
+        if (length(graph$child_order[[left_parent]]) > 1) {
+          index <- match(vertex, graph$child_order[[left_parent]])
+          step <- 2^(-heights[vertex] + 1) / (length(graph$child_order[[left_parent]]) - 1)
+          leftmost <- silly_x[vertex] - 2^(-heights[vertex])
+          silly_x[vertex] <- leftmost + (index - 1) * step
+        }
+        if (length(graph$child_order[[right_parent]]) > 1) {
+          index <- match(vertex, graph$child_order[[right_parent]])
+          step <- 2^(-heights[vertex] + 1) / (length(graph$child_order[[right_parent]]) - 1)
+          leftmost <- silly_x[vertex] - 2^(-heights[vertex])
+          silly_x[vertex] <- leftmost + (index - 1) * step
         }
       } else {
         # Inconsistent parents:
         decision <- 0
-        if (length(graph$child_order[[left_parent]]) == 2) {
-          if (graph$child_order[[left_parent]][1] == vertex) {
-            decision <- decision - 1
-          }
-          if (graph$child_order[[left_parent]][2] == vertex) {
-            decision <- decision + 1
-          }
+        if (length(graph$child_order[[left_parent]]) > 1) {
+          index <- match(vertex, graph$child_order[[left_parent]])
+          change <- 2 * (index - 1) / (length(graph$child_order[[left_parent]]) - 1) - 2
+          decision <- decision + change
         }
-        if (length(graph$child_order[[right_parent]]) == 2) {
-          if (graph$child_order[[right_parent]][1] == vertex) {
-            decision <- decision - 1
-          }
-          if (graph$child_order[[right_parent]][2] == vertex) {
-            decision <- decision + 1
-          }
+        if (length(graph$child_order[[right_parent]]) > 1) {
+          index <- match(vertex, graph$child_order[[right_parent]])
+          change <- 2 * (index - 1) / (length(graph$child_order[[right_parent]]) - 1) - 2
+          decision <- decision + change
         }
         if (decision < 0) {
-          silly_x[vertex] <- silly_x[right_parent] - 2^(-heights[vertex] + 1)
+          # Position like a child of the right parent only.
+          if (length(graph$child_order[[right_parent]]) == 1) {
+            silly_x[vertex] <- silly_x[right_parent]
+          }
+          if (length(graph$child_order[[right_parent]]) > 1) {
+            index <- match(vertex, graph$child_order[[right_parent]])
+            step <- 2^(-heights[vertex] + 2) / (length(graph$child_order[[right_parent]]) - 1)
+            leftmost <- silly_x[right_parent] - 2^(-heights[vertex] + 1)
+            silly_x[vertex] <- leftmost + (index - 1) * step
+          }
         }
         if (decision > 0) {
-          silly_x[vertex] <- silly_x[left_parent] + 2^(-heights[vertex] + 1)
+          # Position like a child of the left parent only.
+          if (length(graph$child_order[[left_parent]]) == 1) {
+            silly_x[vertex] <- silly_x[left_parent]
+          }
+          if (length(graph$child_order[[left_parent]]) > 1) {
+            index <- match(vertex, graph$child_order[[left_parent]])
+            step <- 2^(-heights[vertex] + 2) / (length(graph$child_order[[left_parent]]) - 1)
+            leftmost <- silly_x[right_parent] - 2^(-heights[vertex] + 1)
+            silly_x[vertex] <- leftmost + (index - 1) * step
+          }
         }
         if (decision == 0) {
           silly_x[vertex] <- 0.5*(silly_x[left_parent] + silly_x[right_parent])
@@ -1046,8 +1208,12 @@ all_paths_to_leaves <- function(graph, node) {
       path_list[[j]] <- c(node, previous[[j]])
     }
   } else {
-    previous <- c(all_paths_to_leaves(graph, graph$child_order[[node]][1]),
-                  all_paths_to_leaves(graph, graph$child_order[[node]][2]))
+    previous <- c(all_paths_to_leaves(graph, graph$child_order[[node]][1]))
+    if (length(graph$child_order[[node]]) > 1) {
+      for (k in seq(2, length(graph$child_order[[node]]))) {
+        previous <- c(previous, all_paths_to_leaves(graph, graph$child_order[[node]][k]))
+      }
+    }
     for (j in seq(1, length(previous))) {
       path_list[[j]] <- c(node, previous[[j]])
     }
