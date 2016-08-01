@@ -1,3 +1,7 @@
+# Version 1.0.0.9002
+
+ * Updated code for laying out graphs with nodes that have more than two children.
+
 # Version 1.0.0.9001
 
  * Added options for fitting plots to make them in grayscale (Issue #11).
