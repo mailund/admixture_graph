@@ -1202,11 +1202,6 @@ all_paths_to_leaves <- function(graph, node) {
   path_list <- list()
   if (node %in% graph$leaves) {
     path_list[[1]] <- c(node)
-  } else if (node %in% graph$admix_nodes) {
-    previous <- all_paths_to_leaves(graph, graph$child_order[[node]][1])
-    for (j in seq(1, length(previous))) {
-      path_list[[j]] <- c(node, previous[[j]])
-    }
   } else {
     previous <- c(all_paths_to_leaves(graph, graph$child_order[[node]][1]))
     if (length(graph$child_order[[node]]) > 1) {
