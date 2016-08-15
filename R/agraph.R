@@ -214,3 +214,107 @@ agraph <- function(leaves, inner_nodes, parent_edges,
                  children = children),
             class = "agraph")
 }
+
+#' Extract trees
+#'
+#' Extracts all the trees embedded in an agraph object
+#' 
+#' @param graph  An agraph object
+#' 
+#' @return  A list of trees
+#' 
+#' @export
+extract_trees <- function(graph) {
+  to_do_list <- list(graph)
+  tree_list <- list()
+  while (length(to_do_list) > 0) {
+    G <- to_do_list[[1]]
+    to_do_list[[1]] <- NULL
+    if (length(extract_graph_parameters(G)$admix_prop) > 0) {
+      new_graphs <- split_first_admixture(G)
+      to_do_list[[length(to_do_list) + 1]] <- new_graphs[[1]]
+      to_do_list[[length(to_do_list) + 1]] <- new_graphs[[2]]
+    } else {
+      tree_list[[length(tree_list) + 1]] <- remove_joints_from_a_tree(G)
+    }
+  }
+  return(tree_list)
+}
+
+split_first_admixture <- function(graph) {
+  split <- FALSE
+  nodes <- graph$nodes
+  leaves <- graph$leaves
+  inner_nodes <- graph$inner_nodes
+  edge_vector1 <- character(0)
+  edge_vector2 <- character(0)
+  for (i in seq(1, NROW(graph$parents))) {
+    row <- graph$parents[i, ]
+    if (length(row[row == TRUE]) == 0) {
+      # This is the root row.
+    } else if (length(row[row == TRUE]) == 1) {
+      # Keep the normal edge.
+      edge_vector1 <- c(edge_vector1, edge(nodes[i], nodes[which(row == TRUE)[1]]))
+      edge_vector2 <- c(edge_vector2, edge(nodes[i], nodes[which(row == TRUE)[1]]))
+    } else if (length(row[row == TRUE]) == 2) {
+      # Either split the admixture into two or keep it.
+      if (split == FALSE) {
+        # Splitting.
+        edge_vector1 <- c(edge_vector1, edge(nodes[i], nodes[which(row == TRUE)[1]]))
+        edge_vector2 <- c(edge_vector2, edge(nodes[i], nodes[which(row == TRUE)[2]]))
+        split <- TRUE
+      } else {
+        # The names of the admixture proportions can be forgotten!
+        edge_vector1 <- c(edge_vector1, admixture_edge(nodes[i], nodes[which(row == TRUE)[1]],
+                                                       nodes[which(row == TRUE)[2]], i))
+        edge_vector2 <- c(edge_vector2, admixture_edge(nodes[i], nodes[which(row == TRUE)[1]],
+                                                       nodes[which(row == TRUE)[2]], i))
+      }
+    }
+  }
+  graph1 <- agraph(leaves, inner_nodes, parent_edges(edge_vector1))
+  graph2 <- agraph(leaves, inner_nodes, parent_edges(edge_vector2))
+  # The graphs might now contain joints, inner nodes with one parent and one child.
+  # They are easier to remove once we have no admixtures left, so for now we leave them be.
+  return(list(graph1, graph2))
+}
+
+remove_joints_from_a_tree <- function(tree) {
+  # The joints must be removed one at a time.
+  work_left <- TRUE
+  while (work_left == TRUE) {
+    nodes <- tree$nodes
+    count <- 0
+    for (i in seq(1, NROW(tree$parents))) {
+      row <- tree$parents[i, ]
+      column <- tree$parents[, i]
+      if (length(row[row == TRUE]) == 1 && length(column[column == TRUE]) == 1) {
+        # There is at least one joint left; we call it remove and remove it during this iteration.
+        remove <- nodes[i]
+        count <- count + 1
+      }
+    }
+    if (count == 0) {
+      work_left <- FALSE # All clear.
+    } else {
+      leaves <- tree$leaves
+      inner_nodes <- tree$inner_nodes
+      inner_nodes <- inner_nodes[-which(inner_nodes == remove)]
+      edge_vector <- character(0)
+      for (i in seq(1, NROW(tree$parents))) {
+        row <- tree$parents[i, ]
+        column <- tree$parents[, i]
+        if (nodes[i] == remove) {
+          edge_vector <- c(edge_vector, edge(nodes[which(column == TRUE)[1]],
+                                             nodes[which(row == TRUE)[1]]))
+        } else {
+          if (length(row[row == TRUE]) == 1 && row[remove] == FALSE) {
+            edge_vector <- c(edge_vector, edge(nodes[i], nodes[which(row == TRUE)[1]]))
+          }
+        }
+      }  
+    }
+    tree <- agraph(leaves, inner_nodes, parent_edges(edge_vector))
+  }
+  return(tree)
+}
