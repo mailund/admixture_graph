@@ -20,7 +20,6 @@
 #' @seealso \code{\link{plot.agraph}}
 #' 
 #' @examples
-#' # Here is an example of a graph that doesn't behave right under fast_plot(),
 #' # taken from the collection of all the admixture graphs with four leaves and at
 #' # most two admixture events:
 #' 

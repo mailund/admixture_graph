@@ -26,7 +26,8 @@ Imports:
     parallel,
     pracma,
     stats,
-    utils
+    utils,
+    grDevices
 Suggests:
     knitr,
     rmarkdown,
