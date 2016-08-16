@@ -166,7 +166,7 @@ plot_fit_2 <- function(object, X, Y,
   }
   
   if (grayscale) {
-    palette <- rev(gray(1:10 / 12))
+    palette <- rev(grDevices::gray(1:10 / 12))
   } else {
     palette <- rev(grDevices::heat.colors(12))
   }

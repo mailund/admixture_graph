@@ -32,7 +32,6 @@ exact same coordinates; for clearer reasults try \code{\link{plot.agraph}}
 function and might be unpredictable).
 }
 \examples{
-# Here is an example of a graph that doesn't behave right under fast_plot(),
 # taken from the collection of all the admixture graphs with four leaves and at
 # most two admixture events:
 
