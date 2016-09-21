@@ -37,11 +37,13 @@ this (the two new admixture edges can both go where ever) either.
 
 \code{\link{six_leaves_graphs}}
 
-\code{\link{seven_leaves_trees}}
+\code{\link{seven_leaves_graphs}}
 
 \code{\link{eight_leaves_trees}}
 
 \code{\link{fit_permutations_and_graphs}}
+
+\code{\link{fit_graph_list}}
 
 \code{\link{add_a_leaf}}
 

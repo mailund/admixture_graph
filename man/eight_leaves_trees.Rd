@@ -10,7 +10,7 @@
 eight_leaves_trees
 }
 \description{
-A comprehensive listing of three unrooted trees with eight leaves.
+A comprehensive listing of four unrooted trees with eight leaves.
 The position of the root can be moved later with the function
 \code{\link{make_an_outgroup}}.
 }
@@ -43,7 +43,7 @@ for (i in seq(1, length(eight_leaves_trees))) {
 
 Other graphs: \code{\link{five_leaves_graphs}},
   \code{\link{four_leaves_graphs}},
-  \code{\link{seven_leaves_trees}},
+  \code{\link{seven_leaves_graphs}},
   \code{\link{six_leaves_graphs}}
 }
 \keyword{datasets}

@@ -36,4 +36,4 @@ URL: https://github.com/mailund/admixture_graph
 BugReports: https://github.com/mailund/admixture_graph/issues
 VignetteBuilder: knitr
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 5.0.0

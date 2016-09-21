@@ -4,8 +4,12 @@
 \name{four_leaves_graphs}
 \alias{four_leaves_graphs}
 \title{Four leaves graphs.}
-\format{A list of functions on four leaves.
-        The outputs of these functions are \code{\link{agraph}} objects.}
+\format{A list of functions on four leaves and a parameter \code{permutations} which
+        is \code{FALSE} by default.
+        The outputs of these functions are either single \code{\link{agraph}} objects
+        with the input vector as leaves, or if \code{permutations} is \code{TRUE},
+        lists of all the possible \code{\link{agraph}} objects with that leaf set up
+        to symmetry.}
 \usage{
 four_leaves_graphs
 }
@@ -47,7 +51,7 @@ for (i in seq(1, length(four_leaves_graphs))) {
 
 Other graphs: \code{\link{eight_leaves_trees}},
   \code{\link{five_leaves_graphs}},
-  \code{\link{seven_leaves_trees}},
+  \code{\link{seven_leaves_graphs}},
   \code{\link{six_leaves_graphs}}
 }
 \keyword{datasets}
