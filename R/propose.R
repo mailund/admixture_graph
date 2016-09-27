@@ -1767,7 +1767,4395 @@ five_leaves_graphs <- list(
     }
     if (permutations == FALSE) {result <- result[[1]]}
     result
+  },
+  
+  # two admixtures
+  two_admixtures_1 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "x", "z"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "z", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_2 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "u"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "z", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "z", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_3 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "z"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_4 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "M"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "z", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "z", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_5 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "M"),
+        edge("u", "z"),
+        edge("v", "z"),
+        edge(leaves[1], "N"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "x"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_6 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "z"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_7 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "y"),
+        edge("v", "u"),
+        edge(leaves[1], "z"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_8 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "M"),
+        edge("u", "y"),
+        edge("v", "u"),
+        edge(leaves[1], "z"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_9 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "v"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "N"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "x"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_10 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "N"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "x"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_11 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "z"),
+        edge("y", "x"),
+        edge("z", "R"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "y"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "R"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_12 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "M"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_13 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "y"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "v"),
+        admixture_edge("N", "u", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "v", "a"),
+        admix_props("N", "u", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_14 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "M"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "v"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "x", "u"),
+        admixture_edge("N", "v", "u")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "u", "a"),
+        admix_props("N", "v", "u", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_15 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "x", "u"),
+        admixture_edge("N", "v", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "u", "a"),
+        admix_props("N", "v", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_16 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "x"),
+        edge("v", "u"),
+        edge(leaves[1], "z"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "u"),
+        admixture_edge("N", "v", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "u", "a"),
+        admix_props("N", "v", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_17 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "x"),
+        edge("v", "y"),
+        edge(leaves[1], "z"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "u"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "u", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_18 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "v", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "v", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_19 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "M"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_20 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "z", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "z", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_21 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "y"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "v"),
+        admixture_edge("N", "M", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "v", "a"),
+        admix_props("N", "M", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_22 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "y"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "v"),
+        admixture_edge("N", "v", "u")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "v", "a"),
+        admix_props("N", "v", "u", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_23 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "v"),
+        edge("u", "y"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "z"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "x", "z"),
+        admixture_edge("N", "v", "u")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "z", "a"),
+        admix_props("N", "v", "u", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_24 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "z"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "v", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "v", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_25 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "M"),
+        edge(leaves[1], "z"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_26 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "z"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "z", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "z", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_27 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "M"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "N"),
+        edge(leaves[2], "v"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "x", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "x", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_28 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "y"),
+        edge("v", "u"),
+        edge(leaves[1], "R"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "z", "u"),
+        admixture_edge("N", "M", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "u", "a"),
+        admix_props("N", "M", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_29 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "M"),
+        edge(leaves[1], "R"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "u", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_30 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "z"),
+        edge(leaves[1], "R"),
+        edge(leaves[2], "v"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "M"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "u", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_31 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "M"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "R", "u"),
+        admixture_edge("N", "z", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "R", "u", "a"),
+        admix_props("N", "z", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_32 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "u", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "u", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_33 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "M"),
+        edge("v", "N"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "z", "u")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "z", "u", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_34 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "y"),
+        edge("v", "M"),
+        edge(leaves[1], "R"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "z", "u"),
+        admixture_edge("N", "z", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "u", "a"),
+        admix_props("N", "z", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_35 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "R"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "u", "y"),
+        admixture_edge("N", "v", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "y", "a"),
+        admix_props("N", "v", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_36 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "R"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "M"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "u", "y"),
+        admixture_edge("N", "z", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "y", "a"),
+        admix_props("N", "z", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_37 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "y"),
+        edge("v", "N"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "u"),
+        admixture_edge("N", "u", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "u", "a"),
+        admix_props("N", "u", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_38 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "z"),
+        admixture_edge("N", "u", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "z", "a"),
+        admix_props("N", "u", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_39 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "N"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "z"),
+        admixture_edge("N", "u", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "z", "a"),
+        admix_props("N", "u", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_40 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "x"),
+        edge("v", "N"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "z"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "z"),
+        admixture_edge("N", "u", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "z", "a"),
+        admix_props("N", "u", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_41 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "N"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "M"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "y"),
+        admixture_edge("N", "y", "R")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "y", "a"),
+        admix_props("N", "y", "R", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_42 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "M"),
+        edge("u", "y"),
+        edge("v", "R"),
+        edge(leaves[1], "N"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_43 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "M", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "M", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_44 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "M"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_45 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "z", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "z", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_46 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "v", "y"),
+        admixture_edge("N", "M", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "v", "y", "a"),
+        admix_props("N", "M", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_47 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "y"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "v", "u"),
+        admixture_edge("N", "M", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "v", "u", "a"),
+        admix_props("N", "M", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_48 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "M"),
+        edge("u", "x"),
+        edge("v", "u"),
+        edge(leaves[1], "z"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "v", "y"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "v", "y", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_49 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "y"),
+        edge("v", "u"),
+        edge(leaves[1], "R"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "v", "z"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "v", "z", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_50 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "v"),
+        edge("u", "y"),
+        edge("v", "u"),
+        edge(leaves[1], "R"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "z"),
+        edge(leaves[4], "M"),
+        edge(leaves[5], "x"),
+        admixture_edge("M", "y", "z"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "z", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_51 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "N"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "u", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "u", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_52 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "u", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "u", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_53 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "M"),
+        edge("u", "z"),
+        edge("v", "z"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "u", "x")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "u", "x", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_54 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "M"),
+        edge("u", "z"),
+        edge("v", "N"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "z"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "u", "x")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "u", "x", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_55 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "M"),
+        edge("u", "y"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "z"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "u", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "u", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_56 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "z"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "u", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "u", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_57 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "y"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "z"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "x"),
+        admixture_edge("N", "u", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "x", "a"),
+        admix_props("N", "u", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_58 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "x"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "y"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "x"),
+        admixture_edge("N", "u", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "x", "a"),
+        admix_props("N", "u", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_59 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "N"),
+        edge(leaves[1], "M"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "x"),
+        admixture_edge("N", "u", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "x", "a"),
+        admix_props("N", "u", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_60 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "u", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "u", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_61 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "M"),
+        edge("v", "N"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "u", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "u", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_62 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "M"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "R"),
+        admixture_edge("N", "u", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "R", "a"),
+        admix_props("N", "u", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_63 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "N"),
+        edge("v", "z"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "u"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_64 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "M"),
+        edge("u", "x"),
+        edge("v", "u"),
+        edge(leaves[1], "N"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "y"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "v", "R"),
+        admixture_edge("N", "v", "u")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "v", "R", "a"),
+        admix_props("N", "v", "u", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_65 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "M"),
+        edge("u", "z"),
+        edge("v", "N"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "v"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "z", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "z", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_66 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "x"),
+        edge("v", "y"),
+        edge(leaves[1], "N"),
+        edge(leaves[2], "v"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "z", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "z", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_67 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "x"),
+        edge("v", "z"),
+        edge(leaves[1], "N"),
+        edge(leaves[2], "v"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "z", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "z", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_68 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "M"),
+        edge(leaves[1], "N"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "u"),
+        admixture_edge("M", "y", "R"),
+        admixture_edge("N", "x", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "R", "a"),
+        admix_props("N", "x", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_69 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "N"),
+        edge(leaves[2], "v"), 
+        edge(leaves[3], "R"),
+        edge(leaves[4], "x"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "z"),
+        admixture_edge("N", "u", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "z", "a"),
+        admix_props("N", "u", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_70 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "M"),
+        edge("v", "N"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "v"), 
+        edge(leaves[3], "R"),
+        edge(leaves[4], "x"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "z"),
+        admixture_edge("N", "u", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "z", "a"),
+        admix_props("N", "u", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_71 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "M"),
+        edge("v", "N"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "u"),
+        admixture_edge("M", "x", "z"),
+        admixture_edge("N", "y", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "z", "a"),
+        admix_props("N", "y", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_72 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "N"),
+        edge("v", "y"),
+        edge(leaves[1], "z"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "u"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_73 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "x"),
+        edge("v", "N"),
+        edge(leaves[1], "y"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "u"),
+        admixture_edge("M", "y", "z"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "z", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_74 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "x"),
+        edge("v", "N"),
+        edge(leaves[1], "y"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "u"),
+        admixture_edge("M", "x", "z"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "z", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_75 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "N"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "y"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "z"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "z", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_76 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "N"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "R", "z"),
+        admixture_edge("N", "y", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "R", "z", "a"),
+        admix_props("N", "y", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_77 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "x"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "y"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "y", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_78 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "x"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_79 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "x"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "x"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "x", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_80 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "x"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "M"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "x"),
+        admixture_edge("N", "y", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "x", "a"),
+        admix_props("N", "y", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_81 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "x"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "x"),
+        admixture_edge("N", "y", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "x", "a"),
+        admix_props("N", "y", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_82 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_83 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "M"),
+        edge("u", "N"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "x"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "R"),
+        admixture_edge("N", "y", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "R", "a"),
+        admix_props("N", "y", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_84 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "M"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "x"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "R"),
+        admixture_edge("N", "y", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "R", "a"),
+        admix_props("N", "y", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_85 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "N"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "x"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "y", "x"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "y", "x", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_86 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "z"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "u", "x"),
+        admixture_edge("N", "M", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "x", "a"),
+        admix_props("N", "M", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_87 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "M"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "u", "x"),
+        admixture_edge("N", "z", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "x", "a"),
+        admix_props("N", "z", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_88 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "y"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "x"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "x", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_89 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "x"),
+        admixture_edge("N", "y", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "x", "a"),
+        admix_props("N", "y", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_90 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "v"),
+        edge("u", "x"),
+        edge("v", "y"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "u", "v"),
+        admixture_edge("N", "z", "u")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "v", "a"),
+        admix_props("N", "z", "u", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_91 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "x"),
+        edge("v", "z"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "u", "v"),
+        admixture_edge("N", "y", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "v", "a"),
+        admix_props("N", "y", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_92 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "y"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "z"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "v"),
+        admixture_edge("N", "u", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "v", "a"),
+        admix_props("N", "u", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_93 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 120
+      leaf_permutations <- symmetry_5_VII(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "x"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "v"),
+        admixture_edge("N", "v", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "v", "a"),
+        admix_props("N", "v", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_94 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "x"),
+        edge("u", "y"),
+        edge("v", "z"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "R"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "v"),
+        admixture_edge("N", "z", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "v", "a"),
+        admix_props("N", "z", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_95 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "x"),
+        edge("u", "y"),
+        edge("v", "z"),
+        edge(leaves[1], "R"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "y"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "N"),
+        admixture_edge("M", "u", "v"),
+        admixture_edge("N", "u", "v")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "v", "a"),
+        admix_props("N", "u", "v", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_96 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "z"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "v", "u"),
+        admixture_edge("N", "M", "x")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "v", "u", "a"),
+        admix_props("N", "M", "x", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_97 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "M"),
+        edge("u", "y"),
+        edge("v", "y"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "v"),
+        admixture_edge("N", "x", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "v", "a"),
+        admix_props("N", "x", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_98 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "M"),
+        edge("z", "y"),
+        edge("u", "x"),
+        edge("v", "x"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "y"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "v"),
+        admixture_edge("N", "R", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "v", "a"),
+        admix_props("N", "R", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_99 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "z"),
+        edge("v", "N"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "y"), 
+        edge(leaves[3], "x"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "y"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "y", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_100 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "y"),
+        edge("v", "N"),
+        edge(leaves[1], "M"),
+        edge(leaves[2], "v"), 
+        edge(leaves[3], "x"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "z"),
+        admixture_edge("N", "u", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "z", "a"),
+        admix_props("N", "u", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_101 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "z"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "x"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "x"),
+        admixture_edge("N", "u", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "x", "a"),
+        admix_props("N", "u", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_102 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "N"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "x"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "x"),
+        admixture_edge("N", "u", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "x", "a"),
+        admix_props("N", "u", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_103 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "x"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "x"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "x", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_104 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "x"),
+        edge("v", "z"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "M", "u")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "M", "u", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_105 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "M"),
+        edge("v", "z"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "x", "u")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "x", "u", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_106 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "x"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "N"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "u"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "u", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_107 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "x"),
+        edge("v", "y"),
+        edge(leaves[1], "y"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "z"),
+        edge(leaves[4], "z"),
+        edge(leaves[5], "N"),
+        admixture_edge("M", "v", "u"),
+        admixture_edge("N", "v", "u")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "v", "u", "a"),
+        admix_props("N", "v", "u", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_108 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "y"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "u"),
+        edge(leaves[4], "N"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "u"),
+        admixture_edge("N", "M", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "u", "a"),
+        admix_props("N", "M", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_109 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "y"),
+        edge("v", "N"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "z"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "u"),
+        admixture_edge("N", "u", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "u", "a"),
+        admix_props("N", "u", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_110 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "y"),
+        edge("v", "z"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "y"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "x", "u"),
+        admixture_edge("N", "u", "z")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "x", "u", "a"),
+        admix_props("N", "u", "z", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_111 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "x"),
+        edge("v", "N"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "y"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "u", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "u", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_112 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "M"),
+        edge("v", "u"),
+        edge(leaves[1], "N"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "z", "R"),
+        admixture_edge("N", "u", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "R", "a"),
+        admix_props("N", "u", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_113 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "M"),
+        edge("v", "N"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "z", "R"),
+        admixture_edge("N", "u", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "R", "a"),
+        admix_props("N", "u", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_114 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "y"),
+        edge("v", "u"),
+        edge(leaves[1], "N"),
+        edge(leaves[2], "x"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "z", "R"),
+        admixture_edge("N", "u", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "R", "a"),
+        admix_props("N", "u", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_115 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "z"),
+        edge("v", "N"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "v"), 
+        edge(leaves[3], "R"),
+        edge(leaves[4], "x"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "u", "y"),
+        admixture_edge("N", "z", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "u", "y", "a"),
+        admix_props("N", "z", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_116 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "y"),
+        edge("v", "N"),
+        edge(leaves[1], "M"),
+        edge(leaves[2], "v"), 
+        edge(leaves[3], "R"),
+        edge(leaves[4], "x"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "u"),
+        admixture_edge("N", "z", "u")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "u", "a"),
+        admix_props("N", "z", "u", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_117 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 15
+      leaf_permutations <- symmetry_5_IV(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "x"),
+        edge("u", "M"),
+        edge("v", "N"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "u"), 
+        edge(leaves[3], "R"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "z", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "z", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_118 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "R"),
+        edge("z", "x"),
+        edge("u", "N"),
+        edge("v", "u"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "y"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "z"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "x", "M")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "x", "M", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_119 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "x"),
+        edge("u", "N"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "R"), 
+        edge(leaves[3], "M"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "z", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "z", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_120 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 60
+      leaf_permutations <- symmetry_5_I(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "y"),
+        edge("u", "R"),
+        edge("v", "u"),
+        edge(leaves[1], "v"),
+        edge(leaves[2], "z"), 
+        edge(leaves[3], "N"),
+        edge(leaves[4], "u"),
+        edge(leaves[5], "v"),
+        admixture_edge("M", "z", "x"),
+        admixture_edge("N", "M", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "x", "a"),
+        admix_props("N", "M", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
+  },
+  
+  two_admixtures_121 <- function(leaves, permutations = FALSE) {
+    if (permutations == TRUE) {
+      P <- 30
+      leaf_permutations <- symmetry_5_II(leaves)
+    } else {
+      P <- 1
+      leaf_permutations <- rbind(leaves)
+    }
+    result <- vector(mode = "list", length = P)
+    for (j in seq(1, P)) {
+      leaves <- leaf_permutations[j, ]
+      inner_nodes <- c("R", "x", "y", "z", "u", "v", "M", "N")
+      edges <- parent_edges(c(
+        edge("x", "R"),
+        edge("y", "x"),
+        edge("z", "x"),
+        edge("u", "R"),
+        edge("v", "u"),
+        edge(leaves[1], "u"),
+        edge(leaves[2], "M"), 
+        edge(leaves[3], "v"),
+        edge(leaves[4], "v"),
+        edge(leaves[5], "N"),
+        admixture_edge("M", "z", "y"),
+        admixture_edge("N", "z", "y")
+      ))
+      admixtures <- admixture_proportions(c(
+        admix_props("M", "z", "y", "a"),
+        admix_props("N", "z", "y", "b")
+      ))
+      result[[j]] <- agraph(leaves, inner_nodes, edges, admixtures)  
+    }
+    if (permutations == FALSE) {result <- result[[1]]}
+    result
   }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 )
 
 symmetry_5_I <- function(leaves) {
@@ -1872,6 +6260,16 @@ symmetry_5_VI <- function(leaves) {
         num[1] < num[5]) {
       output <- rbind(output, candidate)
     }
+  }
+  output <- output[-1, ]
+  output
+}
+
+symmetry_5_VII <- function(leaves) {
+  output <- character(5)
+  all_permutations <- make_permutations(leaves)
+  for (candidate in all_permutations) {
+    output <- rbind(output, candidate)
   }
   output <- output[-1, ]
   output
