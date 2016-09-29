@@ -235,7 +235,7 @@ extract_trees <- function(graph) {
       to_do_list[[length(to_do_list) + 1]] <- new_graphs[[1]]
       to_do_list[[length(to_do_list) + 1]] <- new_graphs[[2]]
     } else {
-      tree_list[[length(tree_list) + 1]] <- remove_joints_from_a_tree(G)
+      tree_list[[length(tree_list) + 1]] <- remove_false_leaves(remove_joints_from_a_tree(G))
     }
   }
   return(tree_list)
@@ -281,6 +281,7 @@ split_first_admixture <- function(graph) {
 
 remove_joints_from_a_tree <- function(tree) {
   # The joints must be removed one at a time.
+  still_original <- TRUE
   work_left <- TRUE
   while (work_left == TRUE) {
     nodes <- tree$nodes
@@ -289,7 +290,8 @@ remove_joints_from_a_tree <- function(tree) {
       row <- tree$parents[i, ]
       column <- tree$parents[, i]
       if (length(row[row == TRUE]) == 1 && length(column[column == TRUE]) == 1) {
-        # There is at least one joint left; we call it remove and remove it during this iteration.
+        # There is at least one joint left; we call it remove and remove it during this iteration.\
+        still_original <- FALSE
         remove <- nodes[i]
         count <- count + 1
       }
@@ -314,7 +316,43 @@ remove_joints_from_a_tree <- function(tree) {
         }
       }  
     }
-    tree <- agraph(leaves, inner_nodes, parent_edges(edge_vector))
+    if (still_original == FALSE) {
+      tree <- agraph(leaves, inner_nodes, parent_edges(edge_vector))
+    }
+  }
+  return(tree)
+}
+
+remove_false_leaves <- function(tree) {
+  still_original <- TRUE
+  leaves <- tree$leaves
+  inner_nodes <- tree$inner_nodes
+  nodes <- tree$nodes
+  work_left <- TRUE
+  while (work_left == TRUE) {
+    work_left <- FALSE
+    for (i in seq(1, NROW(tree$parents))) {
+      name <- colnames(tree$parents)[i]
+      column <- tree$parents[, i]
+      if (length(column[column == TRUE]) == 0
+          && is.na(match(name, leaves)) == TRUE
+          && work_left == FALSE) {
+        still_original <- FALSE
+        work_left <- TRUE
+        inner_nodes <- inner_nodes[-which(inner_nodes == name)]
+        edge_vector <- character(0)
+        for (i in seq(1, NROW(tree$parents))) {
+          row <- tree$parents[i, ]
+          if (nodes[i] != name && length(row[row == TRUE]) == 1) {
+            edge_vector <- c(edge_vector, edge(nodes[i], nodes[which(row == TRUE)[1]]))
+          }
+        }
+      }
+    }
+    if (still_original == FALSE) {
+      tree <- agraph(leaves, inner_nodes, parent_edges(edge_vector))
+      tree <- remove_joints_from_a_tree(tree)
+    }
   }
   return(tree)
 }
