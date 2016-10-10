@@ -8,15 +8,17 @@ agraph(leaves, inner_nodes, parent_edges,
   admixture_proportions = extract_admixture_proportion_parameters(parent_edges))
 }
 \arguments{
-\item{leaves}{The names of the leaves in the admixture graph.}
+\item{leaves}{The names of the leaves in the admixture graph. Do not use \code{(, )}
+or a single \code{R}.}
 
-\item{inner_nodes}{The name of the inner nodes in the admxture graph.}
+\item{inner_nodes}{The name of the inner nodes in the admxture graph.  Do not use \code{(, )}
+or a single \code{R} except for the root if you wish.}
 
 \item{parent_edges}{The list of edges in the graph, created by 
 \code{\link{parent_edges}}.}
 
 \item{admixture_proportions}{The list of admixture proportions; created by 
-\code{\link{admixture_proportions}}.}
+\code{\link{admixture_proportions}}. Do not use \code{+, -, *, (, )}.}
 }
 \value{
 An admixture graph object.

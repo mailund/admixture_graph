@@ -14,15 +14,15 @@ agraph_parents <- function(nodes, parent_edges) {
   parents <- matrix(FALSE, n, n)
   rownames(parents) <- colnames(parents) <- nodes
   for (row in 1:nrow(parent_edges)) {
-    if (!(parent_edges[row,1] %in% nodes)) {
-      stop(paste("The node", parent_edges[row,1], 
+    if (!(parent_edges[row, 1] %in% nodes)) {
+      stop(paste("The node", parent_edges[row, 1], 
                  "is used in the edges but is not specified as a node."))
     }
-    if (!(parent_edges[row,2] %in% nodes)) {
-      stop(paste("The node", parent_edges[row,2], 
+    if (!(parent_edges[row, 2] %in% nodes)) {
+      stop(paste("The node", parent_edges[row, 2], 
                  "is used in the edges but is not specified as a node."))
     }
-    parents[parent_edges[row,1], parent_edges[row,2]] <- TRUE
+    parents[parent_edges[row, 1], parent_edges[row, 2]] <- TRUE
   }
   parents
 }
@@ -73,9 +73,9 @@ agraph_weights <- function(nodes, admixture_weights, parents) {
   rownames(weights) <- colnames(weights) <- nodes
   if (!is.null(admixture_weights)) {
     for (row in 1:nrow(admixture_weights)) {
-      child <- admixture_weights[row,1]
-      parent <- admixture_weights[row,2]
-      admix_weight <- admixture_weights[row,3]
+      child <- admixture_weights[row, 1]
+      parent <- admixture_weights[row, 2]
+      admix_weight <- admixture_weights[row, 3]
       
       if (! parents[child,parent]) {
         stop(paste("There is no edge in the graph from", child, "to", parent))
@@ -169,12 +169,14 @@ admixture_proportions <- function(admix_props) matrix(ncol = 3, byrow = TRUE, da
 #' 
 #' Create an admixture graph object, an acyclic directed graph.
 #' 
-#' @param leaves                 The names of the leaves in the admixture graph.
-#' @param inner_nodes            The name of the inner nodes in the admxture graph.
+#' @param leaves                 The names of the leaves in the admixture graph. Do not use \code{(, )}
+#'                               or a single \code{R}.
+#' @param inner_nodes            The name of the inner nodes in the admxture graph.  Do not use \code{(, )}
+#'                               or a single \code{R} except for the root if you wish.
 #' @param parent_edges           The list of edges in the graph, created by 
 #'                               \code{\link{parent_edges}}.
 #' @param admixture_proportions  The list of admixture proportions; created by 
-#'                               \code{\link{admixture_proportions}}.
+#'                               \code{\link{admixture_proportions}}. Do not use \code{+, -, *, (, )}.
 #'
 #' @return An admixture graph object.
 #' 

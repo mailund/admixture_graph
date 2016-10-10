@@ -14,6 +14,7 @@
 six_leaves_graphs
 }
 \description{
+Kind of obsolete since the introduction of \code{\link{all_graphs}}.
 A comprehensive listing of all the \eqn{21} admixture graphs with six leaves and
 at most one admixture event. Our convention is that the position of the root does
 not matter (as long as it's not after an admixture event) and that graphs that have
@@ -38,9 +39,13 @@ for (i in seq(1, length(six_leaves_graphs))) {
 
 }
 \seealso{
+\code{\link{all_graphs}}
+
 \code{\link{make_permutations}}
 
 \code{\link{fit_permutations_and_graphs}}
+
+\code{\link{fit_graph_list}}
 
 \code{\link{add_a_leaf}}
 

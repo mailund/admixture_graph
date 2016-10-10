@@ -4,7 +4,7 @@
 \alias{make_an_outgroup}
 \title{Make an outgroup.}
 \usage{
-make_an_outgroup(graph, outgroup)
+make_an_outgroup(graph, outgroup = "", all_neutral = FALSE)
 }
 \arguments{
 \item{graph}{An admixture graph.}

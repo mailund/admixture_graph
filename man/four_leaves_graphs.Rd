@@ -14,7 +14,8 @@
 four_leaves_graphs
 }
 \description{
-A comprehensive listing of all the \eqn{35} admixture graphs with four leaves and
+Kind of obsolete since the introduction of \code{\link{all_graphs}}.
+A comprehensive listing of all the \eqn{37} admixture graphs with four leaves and
 at most two admixture events. Our convention is that the position of the root does
 not matter (as long as it's not after an admixture event) and that graphs that have
 \emph{eyes}, two inner nodes with the property that all the paths between any two
@@ -37,9 +38,13 @@ for (i in seq(1, length(four_leaves_graphs))) {
 
 }
 \seealso{
+\code{\link{all_graphs}}
+
 \code{\link{make_permutations}}
 
 \code{\link{fit_permutations_and_graphs}}
+
+\code{\link{fit_graph_list}}
 
 \code{\link{add_a_leaf}}
 

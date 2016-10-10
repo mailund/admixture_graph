@@ -21,17 +21,7 @@ Fits a list of graphs to given data using parallel computation. This function
 needs \code{doParallel}, \code{foreach} and \code{parallel} installed.
 }
 \seealso{
-\code{\link{make_permutations}}
-
-\code{\link{four_leaves_graphs}}
-
-\code{\link{five_leaves_graphs}}
-
-\code{\link{six_leaves_graphs}}
-
-\code{\link{seven_leaves_graphs}}
-
-\code{\link{eight_leaves_trees}}
+\code{\link{all_graphs}}
 
 \code{\link{fit_permutations_and_graphs}}
 }

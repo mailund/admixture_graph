@@ -12,6 +12,7 @@ seven_leaves_trees
 \description{
 The function \code{\link{seven_leaves_graphs}} is better than this as it also contains
 graphs with one admixture. (This function is only kept for legacy reasons.)
+Even more obsolete since the introduction of \code{\link{all_graphs}}.
 }
 \keyword{datasets}
 
