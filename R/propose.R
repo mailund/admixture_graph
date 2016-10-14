@@ -11591,22 +11591,61 @@ all_graphs <- function(populations, admixture_events) {
       tree_list <- temp_list
     }
   }
-  # Add admixture events while weeding out the duplicates after each addition.
+  # Add admixture events while weeding out the duplicates as soon as they appear.
   graph_list <- tree_list
-  new_list <- tree_list
   if (admixture_events > 0) {
+    old_list <- tree_list
     for (j in seq(1, admixture_events)) {
-      temp_list <- list()
+      new_list <- list()
+      canon_list <- list()
       name <- paste("p", j, sep = "")
-      for (graph in new_list) {
-        temp_list <- c(temp_list, add_an_admixture(graph, name))
+      for (graph in old_list) {
+        temp_list <- add_an_admixture(graph, name)
         # add_an_admixture2() sometimes makes eyes but this doesn't.
+        # We're sorting them here in order to not create one giant list to drain all the memory.
+        for (candidate in temp_list) {
+          canon <- paste(as.character(as.numeric(canonise_graph(candidate))), sep = "", collapse = "")
+          if (length(new_list) > 0) {
+            old_length <- length(canon_list)
+            canon_list <- try_to_add(canon_list, canon)
+            new_length <- length(canon_list)
+            if (new_length > old_length) {
+              new_list[[length(new_list) + 1]] <- candidate
+            }
+          } else {
+            canon_list <- list(canon)
+            new_list <- list(candidate)
+          }
+        }
       }
-      new_list <- remove_duplicates(temp_list)
+      old_list <- new_list
       graph_list <- c(graph_list, new_list)
     }
   }
   return(graph_list)
+}
+
+try_to_add <- function(canon_list, canon) {
+  B <- length(canon_list) # Current block size.
+  N <- 1 + floor(B/2) # Middle element of the current block.
+  while (B > 0) {
+    if (canon == canon_list[[N]]) {
+      B <- 0
+    } else if (canon < canon_list[[N]]) {
+      if (B < 2) {
+        canon_list <- append(canon_list, canon, N - 1)
+      }
+      B <- ceiling((B - 1)/2)
+      N <- N - ceiling(B/2)
+    } else if (canon > canon_list[[N]]) {
+      if (B < 3) {
+        canon_list <- append(canon_list, canon, N)
+      }
+      B <- floor((B - 1)/2)
+      N <- N + 1 + floor(B/2)
+    }
+  }
+  return(canon_list)
 }
 
 #' Seven leaves trees.
