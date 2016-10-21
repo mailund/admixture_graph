@@ -102,12 +102,15 @@ make_mcmc_model <- function(graph, data) {
 #' @param cores            Number of cores to spread the chains across. Best performance is when cores=no_temperatures
 #' @param no_flips         Mean number of times a flip between two chains should be proposed after each step
 #' @param max_tmp          The highest temperature
+#' @param verbose          Logical value determining if a progress bar should be shown during
+#'                         the run.
 #' 
 #' @return A matrix containing the trace of the chain with temperature 1.
 #' 
 #' @export
 run_metropolis_hasting <- function(model, initial_state, iterations, 
-                                   no_temperatures = 1, cores = 1, no_flips = 1, max_tmp = 100) {
+                                   no_temperatures = 1, cores = 1, no_flips = 1, max_tmp = 100,
+                                   verbose = TRUE) {
   
   if (!requireNamespace("parallel", quietly = TRUE)) {
     stop("The MCMC functionality requires that the parallel packate is installed.")
@@ -170,7 +173,8 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
   common_mean <- current_states[1,]
   
   
-  pb <- utils::txtProgressBar(min = 1, max = iterations, style=3)
+  if (verbose)
+    pb <- utils::txtProgressBar(min = 1, max = iterations, style=3)
   
   #variable used for monitoring
   avg_temp_update_probability <- 0
@@ -243,7 +247,8 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
     #     t_flip=t_flip+proc.time()-tlast
     #     tlast=proc.time()
     
-    utils::setTxtProgressBar(pb, i)
+    if (verbose)
+      utils::setTxtProgressBar(pb, i)
   }
   
   trace 
