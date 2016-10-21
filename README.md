@@ -2,11 +2,11 @@
 Admixture Graph Manipulation and Fitting
 ========================================
 
-The package provides functionality to analyse and test admixture graphs against the \(f\) statistics described in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson *et al.*, Genetics, Vol. 192, 1065--1093, 2012.
+The package provides functionality to analyse and test admixture graphs against the *f* statistics described in the paper [Ancient Admixture in Human History](http://tinyurl.com/o5a4kr4), Patternson *et al.*, Genetics, Vol. 192, 1065--1093, 2012.
 
-The \(f\) statistics --- \(f2\), \(f3\), and \(f4\) --- extract information about correlations between gene frequencies in different populations (or single diploid genome samples), which can be informative about patterns of gene flow between these populations in form of admixture events. If a graph is constructed as a hypothesis for the relationship between the populations, equations for the expected values of the \(f\) statistics can be extracted, as functions of edge lenghs --- representing genetic drift --- and admixture proportions.
+The *f* statistics --- *f2*, *f3*, and *f4* --- extract information about correlations between gene frequencies in different populations (or single diploid genome samples), which can be informative about patterns of gene flow between these populations in form of admixture events. If a graph is constructed as a hypothesis for the relationship between the populations, equations for the expected values of the *f* statistics can be extracted, as functions of edge lenghs --- representing genetic drift --- and admixture proportions.
 
-This package provides functions for extracting these equations and for fitting them against computed \(f\) statistics. It does not currently provide functions for computing the \(f\) statistics --- for that we refer to the [ADMIXTOOLS](https://github.com/DReichLab/AdmixTools) software package.
+This package provides functions for extracting these equations and for fitting them against computed *f* statistics. It does not currently provide functions for computing the *f* statistics --- for that we refer to the [ADMIXTOOLS](https://github.com/DReichLab/AdmixTools) software package.
 
 Example
 -------
@@ -15,7 +15,7 @@ Below is a quick example of how the package can be used. The example uses data f
 
 The BLK sample is the black bear, the PB sample is a polar bear, and the rest are brown bears.
 
-I have taken the \(f\) statistics from Table 1 in the paper:
+I have taken the *f* statistics from Table 1 in the paper:
 
 ``` r
 data(bears)
@@ -41,7 +41,7 @@ bears
 #> 18 BLK PB Sweden  Kenai 0.0719     9.6
 ```
 
-The `D` column is the \(f4(W,X;Y,Z)\) statistic and the `Z` column is the \(Z\)-values obtained from a blocked jacknife (see Patterson *et al.* for details).
+The `D` column is the f4(W,X;Y,Z) statistic and the `Z` column is the *Z*-values obtained from a blocked jacknife (see Patterson *et al.* for details).
 
 From the statistics we can see that the ABC bears (Adm, Bar and Chi) are closer related to the polar bears compared to the other brown bears. The paper explains this with gene flow from polar bears into the ABC bears and going further out from there, but we can also explain this by several waves of admixture from ancestral polar bears into brown bears:
 
@@ -71,36 +71,30 @@ edges <- parent_edges(c(edge("BLK", "R"),
                         edge("Adm1", "Adm"),
                         edge("Adm2", "Adm"),
                         
-                        admixture_edge("bc_a1", "pb_a1", "ABC"),
+                        admixture_edge("bc_a1", "pb_a1", "ABC", "a"),
                         edge("Adm", "ABC"),
                         
                         edge("ABC", "abc_a2"),
-                        admixture_edge("abc_a2", "pb_a2", "x"),
+                        admixture_edge("abc_a2", "pb_a2", "x", "b"),
                         
                         edge("Denali", "x"),
                         edge("x", "x_a3"),
-                        admixture_edge("x_a3", "pb_a3", "y"),
+                        admixture_edge("x_a3", "pb_a3", "y", "c"),
                       
                         edge("Kenai", "y"),
                         edge("y", "y_a4"),                        
-                        admixture_edge("y_a4", "pb_a4", "z"),
+                        admixture_edge("y_a4", "pb_a4", "z", "d"),
                         
                         edge("Sweden", "z"),
                         
                         edge("z", "PBBB"),
                         edge("PBBB", "R")))
- 
 
-admixtures <- admixture_proportions(c(admix_props("bc_a1", "pb_a1", "ABC", "a"),
-                                      admix_props("abc_a2", "pb_a2", "x", "b"),
-                                      admix_props("x_a3", "pb_a3", "y", "c"),
-                                      admix_props("y_a4", "pb_a4", "z", "d")))
-                                
-bears_graph <- agraph(leaves, inner_nodes, edges, admixtures)
-plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
+bears_graph <- agraph(leaves, inner_nodes, edges)
+plot(bears_graph, show_admixture_labels = TRUE)
 #> fminbnd:  Exiting: Maximum number of function evaluations has been exceeded
 #>          - increase MaxFunEvals option.
-#>          Current function value: 2097.43464986477
+#>          Current function value: 3027.34762333968
 ```
 
 ![](README-graph-1.png)
@@ -108,7 +102,7 @@ plot(bears_graph, show_inner_node_labels = TRUE, show_admixture_labels = TRUE)
 Fitting a graph to data
 -----------------------
 
-The graph makes predictions on how the \(f4\) statistics should look. The graph parameters can be fit to observed statistics using the `fit_graph` function:
+The graph makes predictions on how the *f4* statistics should look. The graph parameters can be fit to observed statistics using the `fit_graph` function:
 
 ``` r
 fit <- fit_graph(bears, bears_graph)
@@ -199,7 +193,7 @@ plot(fit)
 
 ![](README-fitted_data-1.png)
 
-The plot shows the onserved \(f4\) statistics with error bars (in black) plus the predicted values from the graph.
+The plot shows the observed *f4* statistics with error bars (in black) plus the predicted values from the graph.
 
 The result of this is a `ggplot2` object that you can modify by adding `ggplot2` commands in the usual way.
 
