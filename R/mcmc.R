@@ -374,7 +374,7 @@ model_likelihood_n <- function(log_likelihoods, no_samples = 100) {
 #' The numerical issues with adding a lot of numbers in log space is unstable
 #' so we get a better estimate by doing it several times on different permutations
 #' of the data. This function calculates the mean of the Bayes factors over different permutations of the
-#' input and estimates the standard devition.
+#' input and estimates the standard deviation.
 #'
 #' @param logL1              Samples of log likelihoods from the posterior distribution of the first graph.
 #' @param logL2              Samples of log likelihoods from the posterior distribution of the second graph.

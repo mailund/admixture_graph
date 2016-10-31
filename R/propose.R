@@ -11648,6 +11648,60 @@ try_to_add <- function(canon_list, canon) {
   return(canon_list)
 }
 
+graph_to_vector <- function(graph) {
+  matrix <- graph$parents
+  vector <- as.vector(matrix)
+  names(vector) <- colnames(matrix)
+  return(vector)
+}
+
+vector_to_graph <- function(vector) {
+  column_amount <- 1
+  while(is.na(names(vector)[column_amount]) == FALSE) {
+    column_amount <- column_amount + 1
+  }
+  column_amount <- column_amount - 1
+  parents <- matrix(vector, ncol = column_amount)
+  colnames(parents) <- names(vector)[1:column_amount]
+  rownames(parents) <- names(vector)[1:column_amount]
+  leaves <- character(0)
+  inner_nodes <- character(0)
+  edges <- rep("", 3)
+  admixtures <- rbind(rep("", 3), rep("", 3))
+  admix_name_count <- 1
+  for (j in seq(1, column_amount)) {
+    C <- parents[, j]
+    R <- parents[j, ]
+    if (length(C[C == TRUE]) == 0) {
+      leaves <- c(leaves, rownames(parents)[j])
+    } else {
+      inner_nodes <- c(inner_nodes, rownames(parents)[j])
+    }
+    if (length(R[R == TRUE]) == 1) {
+      edges <- rbind(edges, parent_edges(edge(rownames(parents)[j], rownames(parents)[which(R == T)])))
+    } else if (length(R[R == TRUE]) == 2) {
+      admix_name <- paste("p", admix_name_count, sep = "")
+      admix_name_count <- admix_name_count + 1
+      edges <- rbind(edges, parent_edges(admixture_edge(rownames(parents)[j],
+                                                        rownames(parents)[which(R == T)[1]],
+                                                        rownames(parents)[which(R == T)[2]])))
+      admixtures <- rbind(admixtures, admixture_proportions(c(admix_props(rownames(parents)[j],
+                                                                          rownames(parents)[which(R == T)[1]], 
+                                                                          rownames(parents)[which(R == T)[2]], 
+                                                                          admix_name))))
+    }
+  }
+  edges <- edges[-1, ]
+  if (NROW(admixtures) == 2) {
+    admixtures <- NULL
+  } else {
+    admixtures <- admixtures[-1, ]
+    admixtures <- admixtures[-1, ]
+  }
+  graph <- agraph(leaves, inner_nodes, edges, admixtures)
+  return(graph)
+}
+
 #' Seven leaves trees.
 #' 
 #' The function \code{\link{seven_leaves_graphs}} is better than this as it also contains
