@@ -1,9 +1,10 @@
-
 #' Collect the information about a graph and a data set needed to run an MCMC on it.
 #' 
-#' @param graph  The admixture graph to analyse
-#' @param data   The data set to compute the posterior over
+#' @param graph  The admixture graph to analyse.
+#' @param data   The data set to compute the posterior over.
+#' 
 #' @return A model object wrapping functions and data needed to sample from the MCMC.
+#' 
 #' @export
 make_mcmc_model <- function(graph, data) {
 
@@ -23,7 +24,7 @@ make_mcmc_model <- function(graph, data) {
     admix_idx <- c()
   }
     
-  edges_idx <- (n_admix+1):length(parameter_names)
+  edges_idx <- (n_admix + 1):length(parameter_names)
                                                      
   logL <- log_likelihood(f, concentration, matrix, graph, params)
   
@@ -44,14 +45,14 @@ make_mcmc_model <- function(graph, data) {
   
   log_prior <- function(state) {
     # just a reasonably wide normal dist in log space...
-    sum(log(stats::dnorm(state, sd=1)))
+    sum(log(stats::dnorm(state, sd = 1)))
   }
   
   log_likelihood <- function(state) {
     graph_space_state <- transform_to_graph_space(state)
     admix <- graph_space_state[admix_idx]
     edges <- graph_space_state[edges_idx]
-    edges <- matrix(edges, ncol=1)
+    edges <- matrix(edges, ncol = 1)
     tryCatch(logL(admix, edges), finally = -Inf)
   }
   
@@ -98,10 +99,10 @@ make_mcmc_model <- function(graph, data) {
 #' @param model            Object constructed with \code{\link{make_mcmc_model}}.
 #' @param initial_state    The initial set of graph parameters.
 #' @param iterations       Number of iterations to sample.
-#' @param no_temperatures  Number of chains in the MC3 procedure
-#' @param cores            Number of cores to spread the chains across. Best performance is when cores=no_temperatures
-#' @param no_flips         Mean number of times a flip between two chains should be proposed after each step
-#' @param max_tmp          The highest temperature
+#' @param no_temperatures  Number of chains in the MC3 procedure.
+#' @param cores            Number of cores to spread the chains across. Best performance is when \code{cores = no_temperatures}.
+#' @param no_flips         Mean number of times a flip between two chains should be proposed after each step.
+#' @param max_tmp          The highest temperature.
 #' @param verbose          Logical value determining if a progress bar should be shown during
 #'                         the run.
 #' 
@@ -117,8 +118,8 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
   }
   
   # tlast=proc.time()
-  if(no_temperatures>1){
-    temperatures <- max_tmp^(0:(no_temperatures-1)/(no_temperatures-1))
+  if(no_temperatures > 1){
+    temperatures <- max_tmp^(0:(no_temperatures - 1)/(no_temperatures -1))
   }
   else{
     temperatures <- 1
@@ -135,7 +136,7 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
   trace <- matrix(nrow = iterations, ncol = length(model$parameter_names) + 3)
   colnames(trace) <- c(model$parameter_names, "prior", "likelihood", "posterior")
   
-  current_states <- t(replicate(no_temperatures,mcmc_initial)) #
+  current_states <- t(replicate(no_temperatures,mcmc_initial))
   current_prior <- model$log_prior(mcmc_initial)
   current_priors <- rep(current_prior,no_temperatures)
   current_likelihood <- model$log_likelihood(mcmc_initial)
@@ -148,12 +149,12 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
     current_posterior <- l$current_posterior
     temperature <- l$temperature
     sigma <- l$sigma
-    proposal_state <- model$multnorm_proposal(current_state,sigma=sigma)
+    proposal_state <- model$multnorm_proposal(current_state, sigma=sigma)
     proposal_prior <- model$log_prior(proposal_state)
     proposal_likelihood <- model$log_likelihood(proposal_state)
     proposal_posterior <- proposal_prior + proposal_likelihood
     
-    log_accept_prob <- proposal_posterior/temperature-current_posterior/temperature
+    log_accept_prob <- proposal_posterior/temperature - current_posterior/temperature
     if (log(stats::runif(1)) < log_accept_prob) {
       current_state <- proposal_state
       current_prior <- proposal_prior
@@ -168,25 +169,26 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
   }
   
   #initialise adaption parameters
-  ad_params <- rep(0.02,no_temperatures)
-  sigmas <- replicate(no_temperatures, diag(length(current_states[1,]))*0.1, simplify = F)
-  common_mean <- current_states[1,]
+  ad_params <- rep(0.02, no_temperatures)
+  sigmas <- replicate(no_temperatures, diag(length(current_states[1, ]))*0.1, simplify = F)
+  common_mean <- current_states[1, ]
   
   
   if (verbose)
-    pb <- utils::txtProgressBar(min = 1, max = iterations, style=3)
+    pb <- utils::txtProgressBar(min = 1, max = iterations, style = 3)
   
   #variable used for monitoring
   avg_temp_update_probability <- 0
   
   for (i in 1:iterations) {
     
-    trace[i,] <- c(model$transform_to_graph_space(current_states[1,]), current_priors[1], current_likelihoods[1], current_posteriors[1])
+    trace[i,] <- c(model$transform_to_graph_space(current_states[1, ]), current_priors[1],
+                   current_likelihoods[1], current_posteriors[1])
     
     #making a list of lists of arguments for each chain
-    listOfStepInformation=list()
+    listOfStepInformation = list()
     for(j in 1:no_temperatures){
-      stepOfInformation <- list(current_posterior = current_posteriors[j], current_state = current_states[j,], 
+      stepOfInformation <- list(current_posterior = current_posteriors[j], current_state = current_states[j, ], 
                                 temperature = temperatures[j], sigma = ad_params[j]*sigmas[[j]])
       listOfStepInformation[[j]] <- stepOfInformation
     }
@@ -199,7 +201,7 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
     for(j in 1:no_temperatures){
       
       #the adaption parameter is updated
-      ad_params[j] <- ad_params[j]*exp(gamma*(reses[[j]]$alpha-0.234))
+      ad_params[j] <- ad_params[j]*exp(gamma*(reses[[j]]$alpha - 0.234))
       
       #the new step is saved
       current_states[j,] <- reses[[j]]$current_state
@@ -208,37 +210,37 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
       current_posteriors[j] <- reses[[j]]$current_posterior
       
       #update of the covariance matrix
-      common_mean=common_mean+gamma*(current_states[j,]-common_mean)/no_temperatures
-      xbar <- current_states[j,]-common_mean
-      sigmas[[j]] <- sigmas[[j]]+gamma*(xbar %o% xbar - sigmas[[j]])
+      common_mean <- common_mean + gamma*(current_states[j, ] - common_mean)/no_temperatures
+      xbar <- current_states[j,] - common_mean
+      sigmas[[j]] <- sigmas[[j]] + gamma*(xbar %o% xbar - sigmas[[j]])
     }
     
     #Here flips between temperatures are proposed
-    flips <- stats::rpois(1,lambda=no_flips)
+    flips <- stats::rpois(1, lambda = no_flips)
     if (no_temperatures > 1) {
       for (p in numeric(flips)) {
-        r <- sample(no_temperatures,2)
+        r <- sample(no_temperatures, 2)
         m <- r[1]
         j <- r[2]
-        current <- current_posteriors[j]/temperatures[j]+current_posteriors[m]/temperatures[m]
-        new <- current_posteriors[m]/temperatures[j]+current_posteriors[j]/temperatures[m]
+        current <- current_posteriors[j]/temperatures[j] + current_posteriors[m]/temperatures[m]
+        new <- current_posteriors[m]/temperatures[j] + current_posteriors[j]/temperatures[m]
         a <- exp(new-current)
         if (stats::runif(1) < a){
           tmp_post <- current_posteriors[j]
           tmp_lik <- current_likelihoods[j]
           tmp_pri <- current_priors[j]
           tmp_sta <- current_states[j,]
-          current_states[j,] <- current_states[m,]
+          current_states[j, ] <- current_states[m,]
           current_priors[j] <- current_priors[m]
           current_likelihoods[j] <- current_likelihoods[m]
           current_posteriors[j] <- current_posteriors[m]
-          current_states[m,] <- tmp_sta
+          current_states[m, ] <- tmp_sta
           current_priors[m] <- tmp_pri
           current_likelihoods[m] <- tmp_lik
           current_posteriors[m] <- tmp_post
         }
-        if (p==1) {
-          avg_temp_update_probability <- ((i-1)*avg_temp_update_probability+a)/i
+        if (p == 1) {
+          avg_temp_update_probability <- ((i - 1)*avg_temp_update_probability + a)/i
         }
       }
       
@@ -260,9 +262,10 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
 #' 
 #' @param trace  A trace from an MCMC run.
 #' @param k      Number of rows to discard as burn-in.
+#' 
 #' @export
 burn_in <- function(trace, k) {
-  trace[-seq(1,k), ]
+  trace[-seq(1, k), ]
 }
 
 #' Thins out an MCMC trace.
@@ -271,26 +274,26 @@ burn_in <- function(trace, k) {
 #' 
 #' @param trace  A trace from an MCMC run.
 #' @param k      The number of lines to skip over per retained sample.
+#' 
 #' @export
 thinning <- function(trace, k) {
-  trace[seq(1,nrow(trace), by=k),]
+  trace[seq(1, nrow(trace), by = k),]
 }
-
-
 
 ## Model likelihoods ####
 
 #' Computes the log of a sum of numbers all given in log-space.
 #' 
 #' Given a sequence of numbers \eqn{[\log(x_1), \log(x_2), ..., \log(x_n)]}, computes \eqn{\log(\sum_{i=1}^n x_i)}.
-#' For adding two numbers that are given in log space we use the expression \code{max(x, y) + log1p(exp( -abs(x - y) ))}
+#' For adding two numbers that are given in log space we use the expression \code{max(x, y) + log1p(exp(-abs(x - y)))}
 #' which is a good approximation if \code{x} and \code{y} are of the same order of magnitude, but if they
 #' are of very different sizes just returns the maximum of the two. To prevent adding numbers of very different
-#' magnitude we iteratively add the numbers pairwise. Because of nummerical issues with doing this, the order
+#' magnitude we iteratively add the numbers pairwise. Because of numerical issues with doing this, the order
 #' of the input values can affect the result.
 #' 
-#' @param log_values    Sequence of numbers in log space \eqn{[\log(x_1), \log(x_2), ..., \log(x_n)]}
-#' @return              \eqn{\log(\sum_{i=1}^n x_i)}
+#' @param log_values  Sequence of numbers in log space \eqn{[\log(x_1), \log(x_2), ..., \log(x_n)]}.
+#' 
+#' @return \eqn{\log(\sum_{i = 1}^n x_i)}.
 #' 
 #' @export
 log_sum_of_logs <- function(log_values) {
@@ -301,7 +304,7 @@ log_sum_of_logs <- function(log_values) {
       return(y)
     if (y == -Inf)
       return(x)
-    max(x, y) + log1p(exp( -abs(x - y) ))
+    max(x, y) + log1p(exp(-abs(x - y)))
   }
   
   # We do this for short enough vectors to make the rest work
@@ -323,7 +326,7 @@ log_sum_of_logs <- function(log_values) {
     #cat(log_values[1:min(10,length(log_values))], "\n")
     indices <- 2*seq_len(length(log_values) / 2) - 1
     log_values <- 
-      unlist(Map(function(idx) log_add(log_values[idx], log_values[idx+1]), indices))  
+      unlist(Map(function(idx) log_add(log_values[idx], log_values[idx + 1]), indices))  
   }
   log_values
 }
@@ -334,8 +337,10 @@ log_sum_of_logs <- function(log_values) {
 #' Doing this by sampling from priors is very inefficient, so we use samples from the posteriors to importance
 #' sample the likelihood.
 #' 
-#' @param log_likelihoods    Samples of log likelihoods from the posterior distribution of the graph.
-#' @return                   The likelihood of a graph where graph parameters are integrated out.
+#' @param log_likelihoods  Samples of log likelihoods from the posterior distribution of the graph.
+#' 
+#' @return The likelihood of a graph where graph parameters are integrated out.
+#' 
 #' @export
 model_likelihood <- function(log_likelihoods) {
   log_mean_inverse_log <- log_sum_of_logs(-log_likelihoods) - log(length(log_likelihoods))
@@ -354,10 +359,12 @@ model_likelihood <- function(log_likelihoods) {
 #' of the data.This function calculates the mean of the likelihoods over different permutations of the
 #' input and estimates the standard devition.
 #'
-#' @param log_likelihoods    Samples of log likelihoods from the posterior distribution of the graph.
-#' @param no_samples         Number of permutations to sample when computing the result.
-#' @return                   The likelihood of a graph where graph parameters are integrated out given as the mean and standard
-#'                           deviation over \code{no_samples} different permutations of the input.
+#' @param  log_likelihoods    Samples of log likelihoods from the posterior distribution of the graph.
+#' @param  no_samples         Number of permutations to sample when computing the result.
+#' 
+#' @return The likelihood of a graph where graph parameters are integrated out given as the mean and standard
+#'         deviation over \code{no_samples} different permutations of the input.
+#'         
 #' @export
 model_likelihood_n <- function(log_likelihoods, no_samples = 100) {
   samples <- replicate(no_samples, model_likelihood(log_likelihoods))
@@ -376,14 +383,15 @@ model_likelihood_n <- function(log_likelihoods, no_samples = 100) {
 #' of the data. This function calculates the mean of the Bayes factors over different permutations of the
 #' input and estimates the standard deviation.
 #'
-#' @param logL1              Samples of log likelihoods from the posterior distribution of the first graph.
-#' @param logL2              Samples of log likelihoods from the posterior distribution of the second graph.
-#' @param no_samples         Number of permutations to sample when computing the result.
-#' @return                   The Bayes factor between the two graphs given as the mean and standard
-#'                           deviation over \code{no_samples} different permutations of the input.
+#' @param logL1       Samples of log likelihoods from the posterior distribution of the first graph.
+#' @param logL2       Samples of log likelihoods from the posterior distribution of the second graph.
+#' @param no_samples  Number of permutations to sample when computing the result.
+#' 
+#' @return The Bayes factor between the two graphs given as the mean and standard
+#'         deviation over \code{no_samples} different permutations of the input.
+#'         
 #' @export
 model_bayes_factor_n <- function(logL1, logL2, no_samples = 100) {
   samples <- replicate(no_samples, model_likelihood(logL1) - model_likelihood(logL2))
   cbind(mean = mean(samples), sd = stats::sd(samples))
 }
-

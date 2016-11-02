@@ -223,7 +223,7 @@ agraph <- function(leaves, inner_nodes, parent_edges,
 #' 
 #' @param graph  An agraph object
 #' 
-#' @return  A list of trees
+#' @return A list of trees
 #' 
 #' @export
 extract_trees <- function(graph) {

@@ -11648,6 +11648,16 @@ try_to_add <- function(canon_list, canon) {
   return(canon_list)
 }
 
+#' Graph to vector.
+#' 
+#' Encodes an \code{\link{agraph}} object into a logical vector for saving memory. The admixture
+#' proportion names will be lost.
+#' 
+#' @param graph  A graph.
+#' 
+#' @return The logical vector representing the graph.
+#' 
+#' @export
 graph_to_vector <- function(graph) {
   matrix <- graph$parents
   vector <- as.vector(matrix)
@@ -11655,6 +11665,16 @@ graph_to_vector <- function(graph) {
   return(vector)
 }
 
+#' Vector to graph.
+#' 
+#' Interprets a logical vector back to an \code{\link{agraph}} object. The admixture
+#' proportion names are now lost.
+#' 
+#' @param graph  A logical vector.
+#' 
+#' @return The graph corresponding to the vector.
+#' 
+#' @export
 vector_to_graph <- function(vector) {
   column_amount <- 1
   while(is.na(names(vector)[column_amount]) == FALSE) {

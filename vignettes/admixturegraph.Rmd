@@ -443,6 +443,6 @@ The Bayes factor comparing the two models can be obtained just from subtracting 
 model_bayes_factor_n(thinned_1[,"likelihood"], thinned_2[,"likelihood"], 100)
 ```
 
-The result here shows a very strong support for the first model compared to the second. While both models give a similar fit to the data, the second has many more parameters, and when integrating over the parameter space the more complex model is penalised for having these extra parameters. 
+The result here shows a very strong support for the first model compared to the second. While both models give a similar fit to the data, the second has many more parameters, and when integrating over the parameter space the more complex model is penalised for having these extra parameters.
 
 # References
