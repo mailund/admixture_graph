@@ -72,7 +72,7 @@ make_mcmc_model <- function(graph, data) {
        edge_parmeters = edge_parameters, 
        parameter_names = parameter_names,
        
-       multnorm_proposal=multnorm_proposal,
+       multnorm_proposal = multnorm_proposal,
        proposal = proposal,
        transform_to_graph_space = transform_to_graph_space,
        transform_to_mcmc_space = transform_to_mcmc_space)
@@ -103,8 +103,7 @@ make_mcmc_model <- function(graph, data) {
 #' @param cores            Number of cores to spread the chains across. Best performance is when \code{cores = no_temperatures}.
 #' @param no_flips         Mean number of times a flip between two chains should be proposed after each step.
 #' @param max_tmp          The highest temperature.
-#' @param verbose          Logical value determining if a progress bar should be shown during
-#'                         the run.
+#' @param verbose          Logical value determining if a progress bar should be shown during the run.
 #' 
 #' @return A matrix containing the trace of the chain with temperature 1.
 #' 
@@ -114,12 +113,12 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
                                    verbose = TRUE) {
   
   if (!requireNamespace("parallel", quietly = TRUE)) {
-    stop("The MCMC functionality requires that the parallel packate is installed.")
+    stop("The MCMC functionality requires that the parallel package is installed.")
   }
   
-  # tlast=proc.time()
+  # tlast = proc.time()
   if(no_temperatures > 1){
-    temperatures <- max_tmp^(0:(no_temperatures - 1)/(no_temperatures -1))
+    temperatures <- max_tmp^(0:(no_temperatures - 1)/(no_temperatures - 1))
   }
   else{
     temperatures <- 1
@@ -127,7 +126,7 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
   
   
   if (length(initial_state) != length(model$parameter_names)) {
-    stop(paste0("The length of the initial state, (", length(initial_state), 
+    stop(paste0("The length of the initial state, (", length(initial_state),
                 ") does not match the number of graph parameters (",
                 length(model$parameter_names), ")."))
   }
@@ -136,20 +135,22 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
   trace <- matrix(nrow = iterations, ncol = length(model$parameter_names) + 3)
   colnames(trace) <- c(model$parameter_names, "prior", "likelihood", "posterior")
   
-  current_states <- t(replicate(no_temperatures,mcmc_initial))
+  current_states <- t(replicate(no_temperatures, mcmc_initial))
   current_prior <- model$log_prior(mcmc_initial)
-  current_priors <- rep(current_prior,no_temperatures)
+  current_priors <- rep(current_prior, no_temperatures)
   current_likelihood <- model$log_likelihood(mcmc_initial)
-  current_likelihoods <- rep(current_likelihood,no_temperatures)
+  current_likelihoods <- rep(current_likelihood, no_temperatures)
   current_posterior <- current_prior + current_likelihood
-  current_posteriors <- rep(current_posterior,no_temperatures)
+  current_posteriors <- rep(current_posterior, no_temperatures)
   
   onestep <- function(l){
     current_state <- l$current_state
+    current_prior <- l$current_prior
+    current_likelihood <- l$current_likelihood
     current_posterior <- l$current_posterior
     temperature <- l$temperature
     sigma <- l$sigma
-    proposal_state <- model$multnorm_proposal(current_state, sigma=sigma)
+    proposal_state <- model$multnorm_proposal(current_state, sigma = sigma)
     proposal_prior <- model$log_prior(proposal_state)
     proposal_likelihood <- model$log_likelihood(proposal_state)
     proposal_posterior <- proposal_prior + proposal_likelihood
@@ -182,19 +183,20 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
   
   for (i in 1:iterations) {
     
-    trace[i,] <- c(model$transform_to_graph_space(current_states[1, ]), current_priors[1],
+    trace[i, ] <- c(model$transform_to_graph_space(current_states[1, ]), current_priors[1],
                    current_likelihoods[1], current_posteriors[1])
     
     #making a list of lists of arguments for each chain
     listOfStepInformation = list()
     for(j in 1:no_temperatures){
-      stepOfInformation <- list(current_posterior = current_posteriors[j], current_state = current_states[j, ], 
+      stepOfInformation <- list(current_posterior = current_posteriors[j], current_state = current_states[j, ],
+                                current_prior = current_priors[j], current_likelihood = current_likelihoods[j],
                                 temperature = temperatures[j], sigma = ad_params[j]*sigmas[[j]])
       listOfStepInformation[[j]] <- stepOfInformation
     }
     
     #making each step take a step
-    reses <- parallel::mclapply(listOfStepInformation, onestep, mc.cores=cores)
+    reses <- parallel::mclapply(listOfStepInformation, onestep, mc.cores = cores)
     
     #Here adaption takes place and the new step is saved
     gamma <- 0.1/sqrt(i)
@@ -204,14 +206,14 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
       ad_params[j] <- ad_params[j]*exp(gamma*(reses[[j]]$alpha - 0.234))
       
       #the new step is saved
-      current_states[j,] <- reses[[j]]$current_state
+      current_states[j, ] <- reses[[j]]$current_state
       current_priors[j] <- reses[[j]]$current_prior
       current_likelihoods[j] <- reses[[j]]$current_likelihood
       current_posteriors[j] <- reses[[j]]$current_posterior
       
       #update of the covariance matrix
       common_mean <- common_mean + gamma*(current_states[j, ] - common_mean)/no_temperatures
-      xbar <- current_states[j,] - common_mean
+      xbar <- current_states[j, ] - common_mean
       sigmas[[j]] <- sigmas[[j]] + gamma*(xbar %o% xbar - sigmas[[j]])
     }
     
@@ -229,8 +231,8 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
           tmp_post <- current_posteriors[j]
           tmp_lik <- current_likelihoods[j]
           tmp_pri <- current_priors[j]
-          tmp_sta <- current_states[j,]
-          current_states[j, ] <- current_states[m,]
+          tmp_sta <- current_states[j, ]
+          current_states[j, ] <- current_states[m, ]
           current_priors[j] <- current_priors[m]
           current_likelihoods[j] <- current_likelihoods[m]
           current_posteriors[j] <- current_posteriors[m]
@@ -246,8 +248,8 @@ run_metropolis_hasting <- function(model, initial_state, iterations,
       
     }
     
-    #     t_flip=t_flip+proc.time()-tlast
-    #     tlast=proc.time()
+    #     t_flip = t_flip+proc.time()-tlast
+    #     tlast = proc.time()
     
     if (verbose)
       utils::setTxtProgressBar(pb, i)
@@ -277,14 +279,14 @@ burn_in <- function(trace, k) {
 #' 
 #' @export
 thinning <- function(trace, k) {
-  trace[seq(1, nrow(trace), by = k),]
+  trace[seq(1, nrow(trace), by = k), ]
 }
 
 ## Model likelihoods ####
 
 #' Computes the log of a sum of numbers all given in log-space.
 #' 
-#' Given a sequence of numbers \eqn{[\log(x_1), \log(x_2), ..., \log(x_n)]}, computes \eqn{\log(\sum_{i=1}^n x_i)}.
+#' Given a sequence of numbers \eqn{[\log(x_1), \log(x_2), ..., \log(x_n)]}, computes \eqn{\log(\sum_{i = 1}^n x_i)}.
 #' For adding two numbers that are given in log space we use the expression \code{max(x, y) + log1p(exp(-abs(x - y)))}
 #' which is a good approximation if \code{x} and \code{y} are of the same order of magnitude, but if they
 #' are of very different sizes just returns the maximum of the two. To prevent adding numbers of very different
@@ -359,8 +361,8 @@ model_likelihood <- function(log_likelihoods) {
 #' of the data.This function calculates the mean of the likelihoods over different permutations of the
 #' input and estimates the standard devition.
 #'
-#' @param  log_likelihoods    Samples of log likelihoods from the posterior distribution of the graph.
-#' @param  no_samples         Number of permutations to sample when computing the result.
+#' @param log_likelihoods  Samples of log likelihoods from the posterior distribution of the graph.
+#' @param no_samples       Number of permutations to sample when computing the result.
 #' 
 #' @return The likelihood of a graph where graph parameters are integrated out given as the mean and standard
 #'         deviation over \code{no_samples} different permutations of the input.
