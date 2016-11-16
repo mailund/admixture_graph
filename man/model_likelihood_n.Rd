@@ -13,7 +13,7 @@ model_likelihood_n(log_likelihoods, no_samples = 100)
 }
 \value{
 The likelihood of a graph where graph parameters are integrated out given as the mean and standard
-                          deviation over \code{no_samples} different permutations of the input.
+        deviation over \code{no_samples} different permutations of the input.
 }
 \description{
 The likelihood of a graph can be computed by integrating over all the graph parameters (with appropriate priors).

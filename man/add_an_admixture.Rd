@@ -26,7 +26,7 @@ A list of graphs made by adding a new admixture event to the input graph. The li
 }
 \description{
 Given an admixture graph, selects a child edge and a parent edges and adds a new edge from the 
-parent edge to the childedge with an admixture event, if possible. 
+parent edge to the child edge with an admixture event, if possible.
 Thus, the resulting graph is an extension of the input graph in the sense that erasing one of
 the admixture edges (the new one) we get the original admixture graph. However, we know that 
 in practice when fitting data to admixture graphs, the best graph with \eqn{k} admixture events
@@ -103,19 +103,11 @@ print(length(long_list))
 
 }
 \seealso{
-\code{\link{make_permutations}}
-
-\code{\link{four_leaves_graphs}}
-
-\code{\link{five_leaves_graphs}}
-
-\code{\link{six_leaves_graphs}}
-
-\code{\link{seven_leaves_trees}}
-
-\code{\link{eight_leaves_trees}}
+\code{\link{all_graphs}}
 
 \code{\link{fit_permutations_and_graphs}}
+
+\code{\link{fit_graph_list}}
 
 \code{\link{add_a_leaf}}
 

@@ -5,7 +5,7 @@
 \title{Run a Metropolis-Hasting MCMC to sample graph parameters.}
 \usage{
 run_metropolis_hasting(model, initial_state, iterations, no_temperatures = 1,
-  cores = 1, no_flips = 1, max_tmp = 100)
+  cores = 1, no_flips = 1, max_tmp = 100, verbose = TRUE)
 }
 \arguments{
 \item{model}{Object constructed with \code{\link{make_mcmc_model}}.}
@@ -14,13 +14,16 @@ run_metropolis_hasting(model, initial_state, iterations, no_temperatures = 1,
 
 \item{iterations}{Number of iterations to sample.}
 
-\item{no_temperatures}{Number of chains in the MC3 procedure}
+\item{no_temperatures}{Number of chains in the MC3 procedure.}
 
-\item{cores}{Number of cores to spread the chains across. Best performance is when cores=no_temperatures}
+\item{cores}{Number of cores to spread the chains across. Best performance is when \code{cores = no_temperatures}.}
 
-\item{no_flips}{Mean number of times a flip between two chains should be proposed after each step}
+\item{no_flips}{Mean number of times a flip between two chains should be proposed after each step.}
 
-\item{max_tmp}{The highest temperature}
+\item{max_tmp}{The highest temperature.}
+
+\item{verbose}{Logical value determining if a progress bar should be shown during
+the run.}
 }
 \value{
 A matrix containing the trace of the chain with temperature 1.

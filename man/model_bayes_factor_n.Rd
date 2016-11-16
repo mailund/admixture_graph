@@ -15,7 +15,7 @@ model_bayes_factor_n(logL1, logL2, no_samples = 100)
 }
 \value{
 The Bayes factor between the two graphs given as the mean and standard
-                          deviation over \code{no_samples} different permutations of the input.
+        deviation over \code{no_samples} different permutations of the input.
 }
 \description{
 The likelihood of a graph can be computed by integrating over all the graph parameters (with appropriate priors).
@@ -27,6 +27,6 @@ between them.
 The numerical issues with adding a lot of numbers in log space is unstable
 so we get a better estimate by doing it several times on different permutations
 of the data. This function calculates the mean of the Bayes factors over different permutations of the
-input and estimates the standard devition.
+input and estimates the standard deviation.
 }
 

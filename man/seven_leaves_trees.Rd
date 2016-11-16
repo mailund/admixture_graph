@@ -10,41 +10,9 @@
 seven_leaves_trees
 }
 \description{
-A comprehensive listing of\ldots well\ldots both unrooted trees with seven leaves.
-The position of the root can be moved later with the function
-\code{\link{make_an_outgroup}}.
-}
-\examples{
-\donttest{
-# While the usage of this function is pretty self-explanatory, let's plot all the graphs
-# just for browsing.
-for (i in seq(1, length(seven_leaves_trees))) {
-  graph <- seven_leaves_trees[[i]](c("A", "B", "C", "D", "E", "F", "G"))
-  # This is how you include quotation marks in strings by the way:
-  title <- paste("seven_leaves_trees[[", i,
-                 "]](c(\\"A\\", \\"B\\", \\"C\\", \\"D\\", \\"E\\", \\"F\\", \\"G\\"))", sep = "")
-  plot(graph, color = "seagreen", title = title)
-}
-}
-
-}
-\seealso{
-\code{\link{make_permutations}}
-
-\code{\link{fit_permutations_and_graphs}}
-
-\code{\link{add_a_leaf}}
-
-\code{\link{add_an_admixture}}
-
-\code{\link{add_an_admixture2}}
-
-\code{\link{make_an_outgroup}}
-
-Other graphs: \code{\link{eight_leaves_trees}},
-  \code{\link{five_leaves_graphs}},
-  \code{\link{four_leaves_graphs}},
-  \code{\link{six_leaves_graphs}}
+The function \code{\link{seven_leaves_graphs}} is better than this as it also contains
+graphs with one admixture. (This function is only kept for legacy reasons.)
+Even more obsolete since the introduction of \code{\link{all_graphs}}.
 }
 \keyword{datasets}
 

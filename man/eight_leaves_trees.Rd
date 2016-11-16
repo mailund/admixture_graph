@@ -10,7 +10,8 @@
 eight_leaves_trees
 }
 \description{
-A comprehensive listing of three unrooted trees with eight leaves.
+Kind of obsolete since the introduction of \code{\link{all_graphs}}.
+A comprehensive listing of all the four unrooted trees with eight leaves.
 The position of the root can be moved later with the function
 \code{\link{make_an_outgroup}}.
 }
@@ -29,9 +30,13 @@ for (i in seq(1, length(eight_leaves_trees))) {
 
 }
 \seealso{
+\code{\link{all_graphs}}
+
 \code{\link{make_permutations}}
 
 \code{\link{fit_permutations_and_graphs}}
+
+\code{\link{fit_graph_list}}
 
 \code{\link{add_a_leaf}}
 
@@ -43,7 +48,7 @@ for (i in seq(1, length(eight_leaves_trees))) {
 
 Other graphs: \code{\link{five_leaves_graphs}},
   \code{\link{four_leaves_graphs}},
-  \code{\link{seven_leaves_trees}},
+  \code{\link{seven_leaves_graphs}},
   \code{\link{six_leaves_graphs}}
 }
 \keyword{datasets}

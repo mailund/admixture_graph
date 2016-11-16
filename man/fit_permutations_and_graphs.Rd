@@ -61,8 +61,10 @@ plot(best_graphs[[1]]$graph, color = "goldenrod", title = best_graphs[[1]]$best_
 
 \code{\link{six_leaves_graphs}}
 
-\code{\link{seven_leaves_trees}}
+\code{\link{seven_leaves_graphs}}
 
 \code{\link{eight_leaves_trees}}
+
+\code{\link{fit_graph_list}}
 }
 

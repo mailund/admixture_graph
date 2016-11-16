@@ -7,9 +7,9 @@
 make_mcmc_model(graph, data)
 }
 \arguments{
-\item{graph}{The admixture graph to analyse}
+\item{graph}{The admixture graph to analyse.}
 
-\item{data}{The data set to compute the posterior over}
+\item{data}{The data set to compute the posterior over.}
 }
 \value{
 A model object wrapping functions and data needed to sample from the MCMC.

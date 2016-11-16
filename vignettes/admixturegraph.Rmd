@@ -277,4 +277,172 @@ graph_with_a_new_root <- make_an_outgroup(example_list_2[[5]], "D")
 plot(graph_with_a_new_root, draw_inner_nodes = FALSE)
 ```
 
+# Model comparisons and parameter posteriors
+
+The package provides an MCMC for sampling over posterior probabilities of parameters and, by integrating out parameters, for computing the likelihood of a topology which in turn can be used to compute Bayes factors for comparing two topologies.
+
+To illustrate the use of this MCMC we consider two alternative topologies for the bears data contained in the package, one that models polar bears as admixed:
+
+```{r}
+leaves <- c("BLK", "PB",
+            "Bar", "Chi1", "Chi2", "Adm1", "Adm2",
+            "Denali", "Kenai", "Sweden") 
+inner_nodes <- c("R", "X", "Y", "Z", "A", "B", "C", "D",
+                 "E", "F", "G", "H")
+
+edges <- parent_edges(c(edge("BLK", "R"),
+                        edge("PB", "Z"),
+                        admixture_edge("Z", "Y", "E", "a"),
+                        edge("Y", "X"),
+                        edge("X", "R"),
+                        edge("Chi1", "G"),
+                        edge("Chi2", "G"),
+                        edge("Bar", "F"),
+                        edge("G", "F"),
+                        edge("F", "E"),
+                        edge("E", "D"),
+                        edge("Adm1", "H"),
+                        edge("Adm2", "H"),
+                        edge("H", "D"),
+                        edge("D", "C"),
+                        edge("Denali", "C"),
+                        edge("C", "B"),
+                        edge("Kenai", "B"),
+                        edge("B", "A"),
+                        edge("Sweden", "A"),
+                        edge("A", "X")))
+
+bears_graph_1 <- agraph(leaves, inner_nodes, edges)
+plot(bears_graph_1)
+```
+
+and another that considers brown bears admixed, but with several waves of admixture for capturing that the f4 statistics indicate that some brown bears are closer related to polar bears than others.
+
+```{r}
+leaves <- c("BLK", "PB",
+            "Bar", "Chi1", "Chi2", "Adm1", "Adm2",
+            "Denali", "Kenai", "Sweden") 
+inner_nodes <- c("R", "PBBB",
+                 "Adm", "Chi", "BC", "ABC",
+                 "x", "y", "z",
+                 "pb_a1", "pb_a2", "pb_a3", "pb_a4",
+                 "bc_a1", "abc_a2", "x_a3", "y_a4")
+
+edges <- parent_edges(c(edge("BLK", "R"),
+                        edge("PB", "pb_a1"),
+                        edge("pb_a1", "pb_a2"),
+                        edge("pb_a2", "pb_a3"),
+                        edge("pb_a3", "pb_a4"),
+                        edge("pb_a4", "PBBB"),
+                        
+                        edge("Chi1", "Chi"),
+                        edge("Chi2", "Chi"),
+                        edge("Chi", "BC"),
+                        edge("Bar", "BC"),
+                        edge("BC", "bc_a1"),
+                        
+                        edge("Adm1", "Adm"),
+                        edge("Adm2", "Adm"),
+                        
+                        admixture_edge("bc_a1", "pb_a1", "ABC", "a"),
+                        edge("Adm", "ABC"),
+                        
+                        edge("ABC", "abc_a2"),
+                        admixture_edge("abc_a2", "pb_a2", "x", "b"),
+                        
+                        edge("Denali", "x"),
+                        edge("x", "x_a3"),
+                        admixture_edge("x_a3", "pb_a3", "y", "c"),
+                      
+                        edge("Kenai", "y"),
+                        edge("y", "y_a4"),                        
+                        admixture_edge("y_a4", "pb_a4", "z", "d"),
+                        
+                        edge("Sweden", "z"),
+                        
+                        edge("z", "PBBB"),
+                        edge("PBBB", "R")))
+
+bears_graph_2 <- agraph(leaves, inner_nodes, edges)
+plot(bears_graph_2)
+```
+
+Both graphs provide a reasonably good fit to the data, but the second is of course more complex than the first.
+
+```{r}
+library(magrittr)
+bears %>% fit_graph(bears_graph_1) %>% plot
+bears %>% fit_graph(bears_graph_2) %>% plot
+```
+
+To use the MCMC we first need to extract relevant information from the data and the graphs to build the Markov chain. This is done using the `make_mcmc_model` function.
+
+```{r}
+mcmc1 <- make_mcmc_model(bears_graph_1, bears)
+mcmc2 <- make_mcmc_model(bears_graph_2, bears)
+```
+
+When constructing the MCMC, the package works out which parameters can be inferred from the avialable $f$-statistics. With this toy example there is not information about any of the terminal edges, since $f_4$ statistics do not provide information about this, so the parameters we can sample over are fewer than the graphs actually contain.
+
+```{r}
+mcmc1$parameter_names
+mcmc2$parameter_names
+```
+
+To sample from the MCMCs we use the function `run_metropolis_hasting`. It requires an initial state for the Markov chain. With MCMCs it is usually a good idea to sample several chains with different initial states, but for the purpose of this document we just use a single starting point for each model, and simply use 0.5 for all parameters.
+
+```{r mcmc_samples, cache=TRUE}
+initial1 <- rep(0.5, length(mcmc1$parameter_names))
+initial2 <- rep(0.5, length(mcmc2$parameter_names))
+
+chain1 <- run_metropolis_hasting(mcmc1, initial1, iterations = 10000, verbose = FALSE)
+chain2 <- run_metropolis_hasting(mcmc2, initial2, iterations = 10000, verbose = FALSE)
+```
+
+Once the chains have run, we can extract posterior samples, corresponding likelihoods, and posterior distributions from the chains. These chains can be analysed using various summary statistics such as implemented in the `coda` package, but for the purpose of this documentation we just show the trace of one parameter for each of the chains:
+
+```{r}
+chain1 %>% head
+plot(chain1[,"a"])
+
+chain2 %>% head
+plot(chain2[,"a"])
+```
+
+We can remove a burn-in section of the chains and thin the remainder using functions `burn_in` and `thinning`:
+
+```{r}
+thinned_1 <- chain1 %>% burn_in(4000) %>% thinning(100)
+thinned_2 <- chain2 %>% burn_in(4000) %>% thinning(100)
+plot(thinned_1[,"a"])
+plot(thinned_2[,"a"])
+
+hist(thinned_1[,"a"])
+hist(thinned_2[,"a"])
+```
+
+We can obtain a model likelihood -- capturing the likelihood of a graph topology by integrating over its parameter -- using the `model_likelihood` function.
+
+```{r}
+model_likelihood(thinned_1[,"likelihood"])
+model_likelihood(thinned_2[,"likelihood"])
+```
+
+This likelihood is in log-space and computing it requires the addition of many likelihood values that can vary in absolute magnitude, a process that is potentially numerically unstable. To get a feeling of the numerical stability of this computation we can permute the likelihoods and capture the variation in results. For this we can use the `model_likelihood_n` function, where `n` refers to the number of permutations to use.
+
+```{r, cache = TRUE}
+model_likelihood_n(thinned_1[,"likelihood"], 100)
+model_likelihood_n(thinned_2[,"likelihood"], 100)
+```
+
+The result shows the mean log-likelhood over the permutations together with the standard deviation over permutations.
+
+The logarithm of the Bayes factor comparing the two models can be obtained just from subtracting one log-likelihood from the other, but we can obtain it together with the variation due to the numerical algorithm using the `model_bayes_factor_n` function:
+
+```{r, cache = TRUE}
+model_bayes_factor_n(thinned_1[,"likelihood"], thinned_2[,"likelihood"], 100)
+```
+
+The result here shows a non-significant support (Bayes factor 1.66) for the first model compared to the second.
+
 # References

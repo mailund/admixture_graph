@@ -4,13 +4,18 @@
 \name{four_leaves_graphs}
 \alias{four_leaves_graphs}
 \title{Four leaves graphs.}
-\format{A list of functions on four leaves.
-        The outputs of these functions are \code{\link{agraph}} objects.}
+\format{A list of functions on four leaves and a parameter \code{permutations} which
+        is \code{FALSE} by default.
+        The outputs of these functions are either single \code{\link{agraph}} objects
+        with the input vector as leaves, or if \code{permutations} is \code{TRUE},
+        lists of all the possible \code{\link{agraph}} objects with that leaf set up
+        to symmetry.}
 \usage{
 four_leaves_graphs
 }
 \description{
-A comprehensive listing of all the \eqn{35} admixture graphs with four leaves and
+Kind of obsolete since the introduction of \code{\link{all_graphs}}.
+A comprehensive listing of all the \eqn{37} admixture graphs with four leaves and
 at most two admixture events. Our convention is that the position of the root does
 not matter (as long as it's not after an admixture event) and that graphs that have
 \emph{eyes}, two inner nodes with the property that all the paths between any two
@@ -33,9 +38,13 @@ for (i in seq(1, length(four_leaves_graphs))) {
 
 }
 \seealso{
+\code{\link{all_graphs}}
+
 \code{\link{make_permutations}}
 
 \code{\link{fit_permutations_and_graphs}}
+
+\code{\link{fit_graph_list}}
 
 \code{\link{add_a_leaf}}
 
@@ -47,7 +56,7 @@ for (i in seq(1, length(four_leaves_graphs))) {
 
 Other graphs: \code{\link{eight_leaves_trees}},
   \code{\link{five_leaves_graphs}},
-  \code{\link{seven_leaves_trees}},
+  \code{\link{seven_leaves_graphs}},
   \code{\link{six_leaves_graphs}}
 }
 \keyword{datasets}

@@ -29,19 +29,11 @@ graph with \eqn{k - 1} admixture events. Most likely it doesn't need to be an ex
 this (the two new admixture edges can both go where ever) either.
 }
 \seealso{
-\code{\link{make_permutations}}
-
-\code{\link{four_leaves_graphs}}
-
-\code{\link{five_leaves_graphs}}
-
-\code{\link{six_leaves_graphs}}
-
-\code{\link{seven_leaves_trees}}
-
-\code{\link{eight_leaves_trees}}
+\code{\link{all_graphs}}
 
 \code{\link{fit_permutations_and_graphs}}
+
+\code{\link{fit_graph_list}}
 
 \code{\link{add_a_leaf}}
 
