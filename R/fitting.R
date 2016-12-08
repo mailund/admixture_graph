@@ -666,6 +666,8 @@ edge_optimisation_function <- function(data, concentration, matrix, graph,
 #'                 identity matrix.
 #' 
 #' @return The Cholesky decomposition of the inverted covariance matrix.
+#' 
+#' @export
 calculate_concentration <- function(data, Z.value) {
   concentration <- matrix(0, NROW(data), NROW(data))
   if (Z.value == TRUE) {

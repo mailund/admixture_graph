@@ -1,7 +1,7 @@
 Package: admixturegraph
 Type: Package
 Title: Admixture Graph Manipulation and Fitting
-Version: 1.0.1
+Version: 1.0.2
 Date: 2016-08-15
 Authors@R: c(person("Thomas", "Mailund", email = "mailund@birc.au.dk", role = c("cre", "aut")),
              person("Kalle", "Leppala", email = "kalle.m.leppala@gmail.com", role = c("aut")),
@@ -22,6 +22,7 @@ Imports:
     ggplot2,
     graphics,
     MASS,
+    methods,
     neldermead,
     parallel,
     pracma,
