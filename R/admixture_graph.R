@@ -2,8 +2,8 @@
 #' 
 #' The package provides functionality to analyse and test admixture graphs 
 #' against the \eqn{f} statistics described in the paper 
-#' \href{http://tinyurl.com/o5a4kr4}{Ancient Admixture in Human History},
-#' Patternson \emph{et al.}, Genetics, Vol. 192, 1065--1093, 2012.
+#' Ancient Admixture in Human History,
+#' Patterson \emph{et al.}, Genetics, Vol. 192, 1065--1093, 2012.
 #' 
 #' The \eqn{f} statistics -- \eqn{f_2}, \eqn{f_3}, and \eqn{f_4} -- extract 
 #' information about correlations between gene frequencies in different 

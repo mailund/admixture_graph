@@ -1,3 +1,16 @@
+# Version 1.0.2
+
+ * Fixed a bug in the MCMC code.
+ * Introduced admixture graph library in the data folder in the form of matrices, and new
+   functions graph_to_vector() and vector_to_graph() to interpret the matrix data.
+ * Added rename_nodes() for renaming graph nodes in user defined or automised manner.
+ * Added canonise_graph() and remove_duplicates() for detecting isomorphism among graphs
+   with labeled leaves.
+ * Added all_graphs() although the data folder already contains a big admixture graph library.
+ * New parallel computing fitting function fit_graph_list() that takes one list and data
+   as an input instead of a list and permutations.
+ * Updated the vignette.
+
 # Version 1.0.1
 
  * Updated code for laying out graphs with nodes that have more than two children.
@@ -7,7 +20,6 @@
  * Changed specification of admixture proportions (Iussue #9) to avoid specifying redundant
    information. The changes are still backward compatible, so old analysis scripts should
    still work.
-
 
 # Version 1.0.0
 

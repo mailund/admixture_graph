@@ -1,8 +1,8 @@
 Package: admixturegraph
 Type: Package
 Title: Admixture Graph Manipulation and Fitting
-Version: 1.0.1
-Date: 2016-08-15
+Version: 1.0.2
+Date: 2016-12-12
 Authors@R: c(person("Thomas", "Mailund", email = "mailund@birc.au.dk", role = c("cre", "aut")),
              person("Kalle", "Leppala", email = "kalle.m.leppala@gmail.com", role = c("aut")),
              person("Svend", "Nielsen", email = "svn@cs.au.dk", role = c("aut")))
@@ -13,27 +13,20 @@ Description: Implements tools for building and visualising admixture graphs
     the graph -- and graph parameters (edge lengths and admixture proportions) can
     be fitted to observed statistics.
 License: GPL-2
-Depends:
-    R (>= 3.2.2)
-Imports:
-    doParallel,
-    dplyr,
-    foreach,
-    ggplot2,
-    graphics,
-    MASS,
-    neldermead,
-    parallel,
-    pracma,
-    stats,
-    utils,
-    grDevices
-Suggests:
-    knitr,
-    rmarkdown,
-    testthat
+Depends: R (>= 3.2.2)
+Imports: doParallel, dplyr, foreach, ggplot2, graphics, MASS, methods,
+        neldermead, parallel, pracma, stats, utils, grDevices
+Suggests: knitr, rmarkdown, testthat
 URL: https://github.com/mailund/admixture_graph
 BugReports: https://github.com/mailund/admixture_graph/issues
 VignetteBuilder: knitr
 LazyData: true
-RoxygenNote: 5.0.0
+RoxygenNote: 5.0.1
+NeedsCompilation: no
+Packaged: 2016-12-13 11:19:36 UTC; jonbe185
+Author: Thomas Mailund [cre, aut],
+  Kalle Leppala [aut],
+  Svend Nielsen [aut]
+Maintainer: Thomas Mailund <mailund@birc.au.dk>
+Repository: CRAN
+Date/Publication: 2016-12-13 15:33:28

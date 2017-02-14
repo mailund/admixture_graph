@@ -13,7 +13,7 @@ log_sum_of_logs(log_values)
 \eqn{\log(\sum_{i = 1}^n x_i)}.
 }
 \description{
-Given a sequence of numbers \eqn{[\log(x_1), \log(x_2), ..., \log(x_n)]}, computes \eqn{\log(\sum_{i=1}^n x_i)}.
+Given a sequence of numbers \eqn{[\log(x_1), \log(x_2), ..., \log(x_n)]}, computes \eqn{\log(\sum_{i = 1}^n x_i)}.
 For adding two numbers that are given in log space we use the expression \code{max(x, y) + log1p(exp(-abs(x - y)))}
 which is a good approximation if \code{x} and \code{y} are of the same order of magnitude, but if they
 are of very different sizes just returns the maximum of the two. To prevent adding numbers of very different

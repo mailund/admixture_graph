@@ -7,7 +7,7 @@
 vector_to_graph(vector)
 }
 \arguments{
-\item{graph}{A logical vector.}
+\item{vector}{A logical vector.}
 }
 \value{
 The graph corresponding to the vector.

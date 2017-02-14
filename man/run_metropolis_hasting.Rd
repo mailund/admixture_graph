@@ -22,8 +22,7 @@ run_metropolis_hasting(model, initial_state, iterations, no_temperatures = 1,
 
 \item{max_tmp}{The highest temperature.}
 
-\item{verbose}{Logical value determining if a progress bar should be shown during
-the run.}
+\item{verbose}{Logical value determining if a progress bar should be shown during the run.}
 }
 \value{
 A matrix containing the trace of the chain with temperature 1.

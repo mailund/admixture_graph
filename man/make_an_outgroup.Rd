@@ -10,6 +10,8 @@ make_an_outgroup(graph, outgroup = "", all_neutral = FALSE)
 \item{graph}{An admixture graph.}
 
 \item{outgroup}{A leaf we want to be the outgroup.}
+
+\item{all_neutral}{For when other functions need to root graphs in a neutral way.}
 }
 \value{
 An admixture graph with the given leaf as an outgroup, if possible.

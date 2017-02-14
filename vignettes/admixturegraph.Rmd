@@ -187,7 +187,6 @@ For fitting data the package expects the observed statistics in a data frame wit
 For the bear samples we have the following statistics [@Cahill:2014fo]:
 
 ```{r bears_data}
-data(bears)
 bears
 ```
 
@@ -227,33 +226,27 @@ See also `coef.agraph_fit`, `fitted.agraph_fit`, `print.agraph_fit` and `residua
 The number of different admixture graphs grows extremely fast with the number of leaves and admixture events, so determining the phylogeny of a given set of populations by fitting every graph to the data with brute force might not be feasible.
 We provide some tools for restricting the search space.
 
-For just a few populations and a few admixture events `admixturegraph` contains the complete collections of possible graphs: `four_leaves_graphs` for admixture graphs with four leaves and at most two admixture events, `five_leaves_graphs` and `six_leaves_graphs` for admixture graphs with five and six leaves, respectively, and at most two admixture event, and
-`seven_leaves_trees` and `eight_leaves_trees` for trees with seven and eight leaves, respectively.
+For just a few populations and a few admixture events `admixturegraph` contains the complete collections of possible graphs.
+The graphs are stored as logical matrices in the data files `graphs_x_y.RData`, where `x` is the number of leaves and `y` the
+number of admixture events. Each row in such a matrix corresponds to a unique graph with the first capital letters of the alphabet as
+the population names; use the function `vector_to_graph` to interpret the vector as a graph and `rename_nodes` to rename the nodes. 
 
 ```{r}
-length(four_leaves_graphs)
-
-length(five_leaves_graphs)
-
-length(six_leaves_graphs)
-
-length(seven_leaves_trees)
-
-length(eight_leaves_trees)
-
-example_graph <- four_leaves_graphs[[15]](c("A", "B", "C", "D"))
-plot(example_graph, draw_inner_nodes = FALSE)
+example_graph <- vector_to_graph(graphs_3_1[1, ])
+new_names <- list(A = "P1", B = "P2", C = "P3")
+example_graph <- rename_nodes(example_graph, new_names)
+plot(example_graph)
 ```
 
 A given graph can be expanded to a list of bigger graphs by several functions. To add a new leaf to an existing graph use `add_a_leaf`:
 
 ```{r new_leaves, fig.height=15, fig.width=6}
-example_list_1 <- add_a_leaf(example_graph, "E")
+example_list_1 <- add_a_leaf(example_graph, "P4")
 
 original <- graphics::par()$mfrow
-graphics::par(mfrow = c(6, 2))
+graphics::par(mfrow = c(3, 2))
 for (graph in example_list_1) {
-  plot(graph, draw_inner_nodes = FALSE)
+  plot(graph)
 }
 
 graphics::par(mfrow = original)
@@ -262,19 +255,19 @@ graphics::par(mfrow = original)
 To add a new admixture event to an existing graph use either `add_an_admixture` or `add_an_admixture2`; the former is only adding one parental edge assuming the other one already exist in the graph and the latter is detaching one edge and reattaching it with two parental edges anywhere in the original graph (provided that the result still is a valid admixture graph):
 
 ```{r new_admixtures}
-example_list_2 <- add_an_admixture(example_graph, "b")
+example_list_2 <- add_an_admixture(example_graph, "p2")
 length(example_list_2)
-example_list_3 <- add_an_admixture2(example_graph, "b")
+example_list_3 <- add_an_admixture2(example_graph, "p2")
 length(example_list_3)
 
-plot(example_list_2[[5]], draw_inner_nodes = FALSE)
+plot(example_list_2[[5]])
 ```
 
 None of these functions care where the original root was --- its position has no effect on the predictions `sf2`, `sf3` and `sf4` as long as the admixture events remain the same. However, if we want we can select any non-admixed leaf as an outgroup, meaning that the root will be placed on the edge leading to the leaf:
 
 ```{r new_root}
-graph_with_a_new_root <- make_an_outgroup(example_list_2[[5]], "D")
-plot(graph_with_a_new_root, draw_inner_nodes = FALSE)
+graph_with_a_new_root <- make_an_outgroup(example_list_2[[5]], "P2")
+plot(graph_with_a_new_root)
 ```
 
 # Model comparisons and parameter posteriors
@@ -286,14 +279,14 @@ To illustrate the use of this MCMC we consider two alternative topologies for th
 ```{r}
 leaves <- c("BLK", "PB",
             "Bar", "Chi1", "Chi2", "Adm1", "Adm2",
-            "Denali", "Kenai", "Sweden") 
-inner_nodes <- c("R", "X", "Y", "Z", "A", "B", "C", "D",
+            "Denali", "Kenai", "Sweden")
+
+inner_nodes <- c("R", "X", "Z", "A", "B", "C", "D",
                  "E", "F", "G", "H")
 
 edges <- parent_edges(c(edge("BLK", "R"),
                         edge("PB", "Z"),
-                        admixture_edge("Z", "Y", "E", "a"),
-                        edge("Y", "X"),
+                        admixture_edge("Z", "X", "E", "a"),
                         edge("X", "R"),
                         edge("Chi1", "G"),
                         edge("Chi2", "G"),
@@ -322,6 +315,7 @@ and another that considers brown bears admixed, but with several waves of admixt
 leaves <- c("BLK", "PB",
             "Bar", "Chi1", "Chi2", "Adm1", "Adm2",
             "Denali", "Kenai", "Sweden") 
+
 inner_nodes <- c("R", "PBBB",
                  "Adm", "Chi", "BC", "ABC",
                  "x", "y", "z",
@@ -334,32 +328,24 @@ edges <- parent_edges(c(edge("BLK", "R"),
                         edge("pb_a2", "pb_a3"),
                         edge("pb_a3", "pb_a4"),
                         edge("pb_a4", "PBBB"),
-                        
                         edge("Chi1", "Chi"),
                         edge("Chi2", "Chi"),
                         edge("Chi", "BC"),
                         edge("Bar", "BC"),
                         edge("BC", "bc_a1"),
-                        
                         edge("Adm1", "Adm"),
                         edge("Adm2", "Adm"),
-                        
                         admixture_edge("bc_a1", "pb_a1", "ABC", "a"),
                         edge("Adm", "ABC"),
-                        
                         edge("ABC", "abc_a2"),
                         admixture_edge("abc_a2", "pb_a2", "x", "b"),
-                        
                         edge("Denali", "x"),
                         edge("x", "x_a3"),
                         admixture_edge("x_a3", "pb_a3", "y", "c"),
-                      
                         edge("Kenai", "y"),
                         edge("y", "y_a4"),                        
                         admixture_edge("y_a4", "pb_a4", "z", "d"),
-                        
                         edge("Sweden", "z"),
-                        
                         edge("z", "PBBB"),
                         edge("PBBB", "R")))
 
@@ -370,9 +356,8 @@ plot(bears_graph_2)
 Both graphs provide a reasonably good fit to the data, but the second is of course more complex than the first.
 
 ```{r}
-library(magrittr)
-bears %>% fit_graph(bears_graph_1) %>% plot
-bears %>% fit_graph(bears_graph_2) %>% plot
+plot(fit_graph(bears, bears_graph_1))
+plot(fit_graph(bears, bears_graph_2))
 ```
 
 To use the MCMC we first need to extract relevant information from the data and the graphs to build the Markov chain. This is done using the `make_mcmc_model` function.
@@ -402,37 +387,37 @@ chain2 <- run_metropolis_hasting(mcmc2, initial2, iterations = 10000, verbose = 
 Once the chains have run, we can extract posterior samples, corresponding likelihoods, and posterior distributions from the chains. These chains can be analysed using various summary statistics such as implemented in the `coda` package, but for the purpose of this documentation we just show the trace of one parameter for each of the chains:
 
 ```{r}
-chain1 %>% head
-plot(chain1[,"a"])
+head(chain1)
+plot(chain1[, "a"])
 
-chain2 %>% head
-plot(chain2[,"a"])
+head(chain2)
+plot(chain2[, "a"])
 ```
 
 We can remove a burn-in section of the chains and thin the remainder using functions `burn_in` and `thinning`:
 
 ```{r}
-thinned_1 <- chain1 %>% burn_in(4000) %>% thinning(100)
-thinned_2 <- chain2 %>% burn_in(4000) %>% thinning(100)
-plot(thinned_1[,"a"])
-plot(thinned_2[,"a"])
+thinned_1 <- thinning(burn_in(chain1, 4000), 100)
+thinned_2 <- thinning(burn_in(chain2, 4000), 100)
+plot(thinned_1[, "a"])
+plot(thinned_2[, "a"])
 
-hist(thinned_1[,"a"])
-hist(thinned_2[,"a"])
+hist(thinned_1[, "a"])
+hist(thinned_2[, "a"])
 ```
 
 We can obtain a model likelihood -- capturing the likelihood of a graph topology by integrating over its parameter -- using the `model_likelihood` function.
 
 ```{r}
-model_likelihood(thinned_1[,"likelihood"])
-model_likelihood(thinned_2[,"likelihood"])
+model_likelihood(thinned_1[, "likelihood"])
+model_likelihood(thinned_2[, "likelihood"])
 ```
 
 This likelihood is in log-space and computing it requires the addition of many likelihood values that can vary in absolute magnitude, a process that is potentially numerically unstable. To get a feeling of the numerical stability of this computation we can permute the likelihoods and capture the variation in results. For this we can use the `model_likelihood_n` function, where `n` refers to the number of permutations to use.
 
 ```{r, cache = TRUE}
-model_likelihood_n(thinned_1[,"likelihood"], 100)
-model_likelihood_n(thinned_2[,"likelihood"], 100)
+model_likelihood_n(thinned_1[, "likelihood"], 100)
+model_likelihood_n(thinned_2[, "likelihood"], 100)
 ```
 
 The result shows the mean log-likelhood over the permutations together with the standard deviation over permutations.
@@ -440,7 +425,7 @@ The result shows the mean log-likelhood over the permutations together with the 
 The logarithm of the Bayes factor comparing the two models can be obtained just from subtracting one log-likelihood from the other, but we can obtain it together with the variation due to the numerical algorithm using the `model_bayes_factor_n` function:
 
 ```{r, cache = TRUE}
-model_bayes_factor_n(thinned_1[,"likelihood"], thinned_2[,"likelihood"], 100)
+model_bayes_factor_n(thinned_1[, "likelihood"], thinned_2[, "likelihood"], 100)
 ```
 
 The result here shows a non-significant support (Bayes factor 1.66) for the first model compared to the second.

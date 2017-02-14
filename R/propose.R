@@ -10958,8 +10958,9 @@ add_an_admixture2 <- function(graph, admixture_variable_name, outgroup = "") {
 #' If not possible (\emph{i. e.} if the leaf has admixture in its ancestry), puts the root
 #' somewhere else.
 #' 
-#' @param graph     An admixture graph.
-#' @param outgroup  A leaf we want to be the outgroup.
+#' @param graph        An admixture graph.
+#' @param outgroup     A leaf we want to be the outgroup.
+#' @param all_neutral  For when other functions need to root graphs in a neutral way.
 #' 
 #' @return An admixture graph with the given leaf as an outgroup, if possible.
 #'
@@ -11670,7 +11671,7 @@ graph_to_vector <- function(graph) {
 #' Interprets a logical vector back to an \code{\link{agraph}} object. The admixture
 #' proportion names are now lost.
 #' 
-#' @param graph  A logical vector.
+#' @param vector  A logical vector.
 #' 
 #' @return The graph corresponding to the vector.
 #' 
