@@ -1,3 +1,7 @@
+# Version 1.0.2.9000
+
+ * Export to the qpGraph format.
+
 # Version 1.0.2
 
  * Fixed a bug in the MCMC code.
