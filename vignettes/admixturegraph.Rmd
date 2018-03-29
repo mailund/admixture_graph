@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
+set.seed(1234)
 library(admixturegraph)
 library(neldermead)
 ```
@@ -425,9 +426,10 @@ The result shows the mean log-likelhood over the permutations together with the 
 The logarithm of the Bayes factor comparing the two models can be obtained just from subtracting one log-likelihood from the other, but we can obtain it together with the variation due to the numerical algorithm using the `model_bayes_factor_n` function:
 
 ```{r, cache = TRUE}
-model_bayes_factor_n(thinned_1[, "likelihood"], thinned_2[, "likelihood"], 100)
+logBF <- model_bayes_factor_n(thinned_1[, "likelihood"], thinned_2[, "likelihood"], 100)
+logBF
 ```
 
-The result here shows a non-significant support (Bayes factor 1.66) for the first model compared to the second.
+The result here shows a non-significant support (Bayes factor `r round(logBF[1], digits = 2)` [sd +/- `r round(logBF[2], digits = 2)`]) for the first model compared to the second.
 
 # References
